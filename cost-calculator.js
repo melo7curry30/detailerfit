@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
       {plan:'Essentials', monthly:29.99, annualMonthly:25.00, annualTotal:299.99, users:'1 user'},
       {plan:'Beginner', monthly:74.99, annualMonthly:62.50, annualTotal:749.99, users:'2 users'},
       {plan:'Pro', monthly:149.99, annualMonthly:125.00, annualTotal:1499.99, users:'4 users'},
-      {plan:'Elite', monthly:299, annualMonthly:249.17, annualTotal:2990, users:'10 users'},
+      {plan:'Elite', monthly:299, annualMonthly:249, annualTotal:2990, users:'10 users'},
       {plan:'Max', monthly:699, annualMonthly:582.50, annualTotal:6990, users:'Unlimited users'}
     ];
     let seatIndex = team <= 1 ? 0 : team <= 2 ? 1 : team <= 4 ? 2 : team <= 10 ? 3 : 4;
@@ -39,9 +39,19 @@ document.addEventListener('DOMContentLoaded', () => {
     else if (jobs <= 50) p={plan:'Starter',monthly:29,capacity:'Unlimited users · 50 jobs/mo'};
     else if (jobs <= 150) p={plan:'Growing',monthly:79,capacity:'Unlimited users · 150 jobs/mo'};
     else if (jobs <= 500) p={plan:'Premium',monthly:149,capacity:'Unlimited users · 500 jobs/mo'};
-    else p={plan:'Premium Plus',monthly:349,capacity:'Unlimited users · 1,500+ jobs/mo'};
+    else {
+      const extraJobs=Math.max(0,jobs-1500);
+      p={
+        plan:'Premium Plus',
+        monthly:349+(extraJobs*0.20),
+        capacity:extraJobs>0
+          ? `Unlimited users · 1,500 jobs included + ${extraJobs} extra @ $0.20/job`
+          : 'Unlimited users · 1,500 jobs/mo'
+      };
+    }
 
     let why = `${jobs} jobs/month and ${team} user${team===1?'':'s'} point to ${p.plan}.`;
+    if (jobs > 1500) why += ` The published $0.20-per-extra-job charge adds $${((jobs-1500)*0.20).toFixed(2).replace('.00','')} to the $349 Premium Plus base.`;
     if (selfBooking) why += ' Online Bookings are published across all plans.';
     if (routeOpt) why += ' Auto Routing is available as an add-on across plans.';
 
@@ -61,27 +71,35 @@ document.addEventListener('DOMContentLoaded', () => {
       return {
         name:'Jobber', url:'jobber.html', plan:'Contact Sales', monthly:null,
         annualMonthly:null, annualTotal:null, complete:false,
-        capacity:'16+ users · verify current configuration',
-        why:'The explicit Help Center plan capacities used by DetailerFit stop at 15 users.',
-        watch:'Jobber’s current pricing page and Help Center are not perfectly aligned on some larger-team configurations. Verify the live quote.'
+        capacity:'16+ users · contact sales',
+        why:'Jobber publishes custom pricing for teams of 16 or more.',
+        watch:'A live quote is required, so DetailerFit does not guess the monthly total.'
       };
     }
-    if (team === 1 && !routeOpt) p={plan:'Core',monthly:49,annualMonthly:29,capacity:'1 user'};
-    else if (team === 1) p={plan:'Connect',monthly:139,annualMonthly:99,capacity:'1-user configuration'};
-    else if (team <= 5) p={plan:'Connect',monthly:199,annualMonthly:149,capacity:'Up to 5 users'};
-    else if (team <= 10) p={plan:'Grow',monthly:399,annualMonthly:299,capacity:'Up to 10 users'};
-    else p={plan:'Plus',monthly:699,annualMonthly:529,capacity:'Up to 15 users'};
+
+    const needsConnect=team>1||routeOpt;
+    if (!needsConnect) {
+      p={plan:'Core',monthly:49,annualMonthly:29,capacity:'1 user'};
+    } else if (team <= 1) {
+      p={plan:'Connect',monthly:139,annualMonthly:99,capacity:'1-user configuration'};
+    } else if (team <= 5) {
+      p={plan:'Connect',monthly:199,annualMonthly:149,capacity:'5 users included'};
+    } else if (team <= 10) {
+      p={plan:'Connect',monthly:299,annualMonthly:229,capacity:'10 users included'};
+    } else {
+      p={plan:'Connect',monthly:399,annualMonthly:299,capacity:'15 users included'};
+    }
 
     const reasons=[];
-    if (team > 1) reasons.push(`${team} users move the conservative capacity match above Core`);
-    if (routeOpt) reasons.push('route optimization is available on Connect, Grow and Plus');
+    if (team > 1) reasons.push(`${team} users require a multi-user configuration because Core is one user`);
+    if (routeOpt) reasons.push('route optimization is available on Connect, Grow, and Plus');
     if (selfBooking) reasons.push('online booking is already available on Core');
     return {
       name:'Jobber', url:'jobber.html', plan:p.plan, monthly:p.monthly,
       annualMonthly:p.annualMonthly, annualTotal:p.annualMonthly*12, complete:true,
       capacity:p.capacity,
       why: reasons.length ? reasons.join('; ') + '.' : 'Core is the lowest published no-commitment configuration for one user.',
-      watch:'DetailerFit uses the explicit Help Center capacity limits conservatively where Jobber’s current official pages differ.'
+      watch:'Current Jobber pricing varies by plan and team-size configuration. This calculator uses the lowest published configuration that meets the selected requirements.'
     };
   };
 

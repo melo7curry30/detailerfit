@@ -69,13 +69,13 @@ document.addEventListener('DOMContentLoaded',()=>{
     "ServiceM8":{
       s:0,url:"servicem8.html",
       why:"Excellent entry economics, online booking on all published plans and unlimited users on paid plans.",
-      baseWatch:"ServiceM8 is explicitly Apple-first. Android field staff use ServiceM8 Lite rather than the full iPhone/iPad field experience.",
+      baseWatch:"ServiceM8 is explicitly Apple-first. Android field staff use ServiceM8 Lite rather than the full iPhone/iPad field experience. Premium Plus includes 1,500 jobs; additional jobs are published at $0.20 each.",
       tags:["Apple-first","Unlimited users on paid plans"]
     },
     "Jobber":{
       s:0,url:"jobber.html",
       why:"A mature general field-service workflow with online booking on Core and stronger automation, routing and team tools above it.",
-      baseWatch:"Jobber is not detailing-specific. Its current pricing page and Help Center are not perfectly aligned on some larger-team configurations, so verify the current team quote.",
+      baseWatch:"Jobber is not detailing-specific. Current pricing varies by team-size configuration; Core is one user, while Connect is sold in 1 / 5 / 10 / 15-user configurations.",
       tags:["iOS + Android","General field service"]
     },
     "Urable":{
@@ -112,16 +112,26 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(jobs<=50)return {plan:'Starter',cost:29,annual:'',users:'Unlimited users · 50 jobs/mo'};
     if(jobs<=150)return {plan:'Growing',cost:79,annual:'',users:'Unlimited users · 150 jobs/mo'};
     if(jobs<=500)return {plan:'Premium',cost:149,annual:'',users:'Unlimited users · 500 jobs/mo'};
-    return {plan:'Premium Plus',cost:349,annual:'',users:'Unlimited users · 1,500+ jobs/mo'};
+    const extraJobs=Math.max(0,jobs-1500);
+    const cost=349+(extraJobs*0.20);
+    return {
+      plan:'Premium Plus',
+      cost,
+      annual:'',
+      users:extraJobs>0
+        ? `Unlimited users · 1,500 jobs included + ${extraJobs} extra @ $0.20/job`
+        : 'Unlimited users · 1,500 jobs/mo'
+    };
   };
 
   const jobberPlan=(team,needs)=>{
-    if(team>15)return {plan:'Contact Sales',cost:null,annual:'',users:'16+ people · verify current configuration'};
-    if(team>=11)return {plan:'Plus',cost:699,annual:'from $529/mo billed annually for 15-user configuration',users:'Up to 15 users'};
-    if(team>=6)return {plan:'Grow',cost:399,annual:'from $299/mo billed annually for 10-user configuration',users:'Up to 10 users'};
-    if(team>=2)return {plan:'Connect',cost:199,annual:'from $149/mo billed annually for 5-user configuration',users:'Up to 5 users'};
-    if(needs.includes('automation'))return {plan:'Connect',cost:139,annual:'from $99/mo billed annually',users:'1-user configuration'};
-    return {plan:'Core',cost:49,annual:'from $29/mo billed annually',users:'1 user'};
+    if(team>15)return {plan:'Contact Sales',cost:null,annual:'',users:'16+ people · contact sales'};
+    const needsConnect=team>1||needs.includes('automation')||needs.includes('scale');
+    if(!needsConnect)return {plan:'Core',cost:49,annual:'from $29/mo billed annually',users:'1 user'};
+    if(team<=1)return {plan:'Connect',cost:139,annual:'from $99/mo billed annually',users:'1-user configuration'};
+    if(team<=5)return {plan:'Connect',cost:199,annual:'from $149/mo billed annually',users:'5 users included'};
+    if(team<=10)return {plan:'Connect',cost:299,annual:'from $229/mo billed annually',users:'10 users included'};
+    return {plan:'Connect',cost:399,annual:'from $299/mo billed annually',users:'15 users included'};
   };
 
   const urablePlan=(booking,needs)=>{

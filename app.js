@@ -235,7 +235,7 @@ document.addEventListener('DOMContentLoaded',()=>{
         : Number.isFinite(p.cost)
           ? `<span class="pill overpill">$${x.gap.toFixed(0)} over budget</span>`
           : `<span class="pill">Price to verify</span>`;
-      const annual=p.annual?`<div class="small">Lower-commitment option shown above · ${p.annual}</div>`:'';
+      const annual=p.annual?`<div class="small annual-note"><strong>Annual billing:</strong> ${p.annual}</div>`:'';
       return `
         <article class="result ${i===0?'top':''}">
           <div class="result-head">

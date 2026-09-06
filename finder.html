@@ -1,45 +1,135 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Software Finder | DetailerFit</title><meta name="description" content="Match mobile detailing software to your team size, job volume, budget and priorities.">
-<link rel="stylesheet" href="styles.css"></head><body>
-<header><div class="wrap nav">
-<a class="brand" href="index.html">Detailer<b>Fit</b></a>
-<button class="menuBtn" onclick="toggleMenu()">Menu</button>
-<nav class="navlinks" id="navlinks">
-<a href="finder.html">Software Finder</a><a href="compare.html">Compare</a><a href="methodology.html">How We Rank</a><a href="about.html">About</a>
-</nav></div></header>
-<main><section class="heroMini"><div class="wrap">
-<div class="breadcrumbs"><a href="index.html">Home</a> / Software Finder</div>
-<span class="eyebrow">RULES-BASED MATCHER</span><h1>Find a practical software shortlist in 30 seconds.</h1>
-<p class="lead">This does not “predict” the perfect product. It narrows the market using your team, job volume, budget and workflow.</p>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#090d12">
+<title>Mobile Detailing Software Finder | DetailerFit</title>
+<meta name="description" content="Match mobile detailing software to team size, job volume, budget, online booking needs and device fit.">
+<link rel="stylesheet" href="styles.css">
+
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="index.html" aria-label="DetailerFit home">Detailer<b>Fit</b></a>
+    <button class="menuBtn" type="button" aria-controls="navlinks" aria-expanded="false" onclick="toggleMenu(this)">Menu</button>
+    <nav class="navlinks" id="navlinks" aria-label="Primary navigation">
+      <a href="finder.html">Software Finder</a>
+      <a href="compare.html">Compare</a>
+      <a href="methodology.html">How We Rank</a>
+      <a href="about.html">About</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<section class="heroMini"><div class="wrap">
+  <div class="breadcrumbs"><a href="index.html">Home</a> / Software Finder</div>
+  <span class="eyebrow">RULES-BASED PLAN MATCHER</span>
+  <h1>Find a practical software shortlist in about 30 seconds.</h1>
+  <p class="lead">We match the plan you should inspect first—not just the cheapest logo on a pricing page.</p>
 </div></section>
+
 <section class="section"><div class="wrap"><div class="quiz">
-<form id="finderForm">
-<div class="q"><label class="qtitle">1. How big is your team?</label><div class="options">
-<label class="opt"><input type="radio" name="team" value="solo" checked>Just me</label>
-<label class="opt"><input type="radio" name="team" value="small">2–5 people</label>
-<label class="opt"><input type="radio" name="team" value="grow">6+ people</label></div></div>
-<div class="q"><label class="qtitle">2. Jobs per month?</label><div class="options">
-<label class="opt"><input type="radio" name="jobs" value="low" checked>30 or fewer</label>
-<label class="opt"><input type="radio" name="jobs" value="mid">31–100</label>
-<label class="opt"><input type="radio" name="jobs" value="high">100+</label></div></div>
-<div class="q"><label class="qtitle">3. Comfortable software budget?</label><div class="options">
-<label class="opt"><input type="radio" name="budget" value="low" checked>Under $50/mo</label>
-<label class="opt"><input type="radio" name="budget" value="mid">$50–$100/mo</label>
-<label class="opt"><input type="radio" name="budget" value="high">$100+/mo</label></div></div>
-<div class="q"><label class="qtitle">4. What matters most?</label><div class="checks">
-<label class="ck"><input type="checkbox" name="need" value="iphone">Excellent iPhone workflow</label>
-<label class="ck"><input type="checkbox" name="need" value="detail">Detailing-specific workflow</label>
-<label class="ck"><input type="checkbox" name="need" value="auto">Automation & follow-up</label>
-<label class="ck"><input type="checkbox" name="need" value="scale">Managing a growing team</label></div></div>
-<button class="btn primary" type="submit" style="width:100%">Show My Matches</button>
-</form>
-<div class="results" id="resultsBox"><h3>Your shortlist</h3><p class="small">Matches use the methodology described on our How We Rank page.</p><div id="finderResults"></div></div>
-</div></div></section></main>
-<footer class="footer"><div class="wrap footergrid">
-<div><a class="brand" href="index.html">Detailer<b>Fit</b></a>
-<p>Independent research for mobile detailers choosing business software.</p>
-<p>Research-based unless a page is explicitly labeled hands-on tested.</p></div>
-<div><strong>Research</strong><a href="finder.html">Software Finder</a><a href="compare.html">Compare tools</a><a href="methodology.html">How we rank</a><a href="best-mobile-detailing-software.html">Buying guide</a></div>
-<div><strong>Company</strong><a href="about.html">About</a><a href="contact.html">Contact</a><a href="affiliate-disclosure.html">Affiliate disclosure</a><a href="privacy.html">Privacy</a></div>
-</div></footer><script src="app.js"></script></body></html>
+  <form id="finderForm">
+    <div class="q">
+      <span class="qtitle">1. How big is your team?</span>
+      <div class="options">
+        <label class="opt"><input type="radio" name="team" value="solo" checked>Just me</label>
+        <label class="opt"><input type="radio" name="team" value="small">2–5 people</label>
+        <label class="opt"><input type="radio" name="team" value="grow">6+ people</label>
+      </div>
+    </div>
+
+    <div class="q">
+      <span class="qtitle">2. Roughly how many new jobs per month?</span>
+      <span class="qhelp">This matters because ServiceM8 prices partly around job volume.</span>
+      <div class="options four">
+        <label class="opt"><input type="radio" name="jobs" value="low" checked>30 or fewer</label>
+        <label class="opt"><input type="radio" name="jobs" value="starter">31–50</label>
+        <label class="opt"><input type="radio" name="jobs" value="mid">51–150</label>
+        <label class="opt"><input type="radio" name="jobs" value="high">151+</label>
+      </div>
+    </div>
+
+    <div class="q">
+      <span class="qtitle">3. Comfortable software budget?</span>
+      <div class="options">
+        <label class="opt"><input type="radio" name="budget" value="low" checked>Under $50/mo</label>
+        <label class="opt"><input type="radio" name="budget" value="mid">$50–$120/mo</label>
+        <label class="opt"><input type="radio" name="budget" value="high">$120+/mo</label>
+      </div>
+    </div>
+
+    <div class="q">
+      <span class="qtitle">4. Do customers need to book themselves online right now?</span>
+      <span class="qhelp">This is different from you manually placing a job on your own calendar.</span>
+      <div class="options">
+        <label class="opt"><input type="radio" name="booking" value="no" checked>No, internal scheduling is enough</label>
+        <label class="opt"><input type="radio" name="booking" value="yes">Yes, true self-booking matters</label>
+        <label class="opt"><input type="radio" name="booking" value="no">Not sure yet</label>
+      </div>
+    </div>
+
+    <div class="q">
+      <span class="qtitle">5. What devices run the business?</span>
+      <div class="options">
+        <label class="opt"><input type="radio" name="device" value="iphone" checked>Mainly iPhone / iPad</label>
+        <label class="opt"><input type="radio" name="device" value="android">Mainly Android</label>
+        <label class="opt"><input type="radio" name="device" value="either">Mixed / no preference</label>
+      </div>
+    </div>
+
+    <div class="q">
+      <span class="qtitle">6. What else matters?</span>
+      <div class="checks">
+        <label class="ck"><input type="checkbox" name="priority" value="detail">Automotive / detailing-specific workflow</label>
+        <label class="ck"><input type="checkbox" name="priority" value="automation">Automation & follow-up</label>
+        <label class="ck"><input type="checkbox" name="priority" value="scale">Routing, dispatch & team growth</label>
+        <label class="ck"><input type="checkbox" name="priority" value="lowcost">Keep fixed software cost low</label>
+      </div>
+    </div>
+
+    <button class="btn primary block" type="submit">Show My Matches</button>
+  </form>
+
+  <div class="results" id="resultsBox" aria-live="polite">
+    <h2>Your shortlist</h2>
+    <p class="small">This is a rules-based shortlist built from published plan features and pricing. It is not a claim that one product is universally best.</p>
+    <div id="finderResults"></div>
+  </div>
+</div></div></section>
+
+<section class="section tight"><div class="wrap article">
+  <div class="note"><b>Why the finder changed:</b> customer self-booking, device fit and the plan that unlocks a feature can change the answer more than a vendor's starting price. <a href="methodology.html">See how we rank →</a></div>
+</div></section>
+</main>
+
+<footer class="footer">
+  <div class="wrap footergrid">
+    <div>
+      <a class="brand" href="index.html">Detailer<b>Fit</b></a>
+      <p>Independent research for mobile detailers choosing business software.</p>
+      <p>Research-based unless a page is explicitly labeled hands-on tested.</p>
+    </div>
+    <div>
+      <strong>Research</strong>
+      <a href="finder.html">Software Finder</a>
+      <a href="compare.html">Compare tools</a>
+      <a href="mobile-detailing-scheduling-software.html">Scheduling guide</a>
+      <a href="best-mobile-detailing-software.html">Buying guide</a>
+      <a href="methodology.html">How we rank</a>
+    </div>
+    <div>
+      <strong>Company</strong>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+      <a href="affiliate-disclosure.html">Affiliate disclosure</a>
+      <a href="privacy.html">Privacy</a>
+    </div>
+  </div>
+</footer>
+<script src="app.js"></script>
+</body>
+</html>

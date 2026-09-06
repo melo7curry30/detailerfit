@@ -1,64 +1,158 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>DetailerFit — Mobile Detailing Software Research</title><meta name="description" content="Independent research and comparison tools for mobile detailing business software.">
-<link rel="stylesheet" href="styles.css"></head><body>
-<header><div class="wrap nav">
-<a class="brand" href="index.html">Detailer<b>Fit</b></a>
-<button class="menuBtn" onclick="toggleMenu()">Menu</button>
-<nav class="navlinks" id="navlinks">
-<a href="finder.html">Software Finder</a><a href="compare.html">Compare</a><a href="methodology.html">How We Rank</a><a href="about.html">About</a>
-</nav></div></header>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#090d12">
+<title>DetailerFit — Mobile Detailing Software Research</title>
+<meta name="description" content="Independent, plan-level software research and comparison tools for mobile detailing businesses.">
+<link rel="stylesheet" href="styles.css">
+
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="index.html" aria-label="DetailerFit home">Detailer<b>Fit</b></a>
+    <button class="menuBtn" type="button" aria-controls="navlinks" aria-expanded="false" onclick="toggleMenu(this)">Menu</button>
+    <nav class="navlinks" id="navlinks" aria-label="Primary navigation">
+      <a href="finder.html">Software Finder</a>
+      <a href="compare.html">Compare</a>
+      <a href="methodology.html">How We Rank</a>
+      <a href="about.html">About</a>
+    </nav>
+  </div>
+</header>
+
 <main>
-<section class="hero"><div class="wrap">
-<span class="eyebrow">INDEPENDENT SOFTWARE RESEARCH FOR MOBILE DETAILERS</span>
-<h1>Choose software that fits the way your detailing business actually runs.</h1>
-<p class="lead">Compare pricing, workflow fit, team limits and automation without trusting a vendor’s own “#1” claim.</p>
-<div class="actions"><a class="btn primary" href="finder.html">Find My Software</a><a class="btn secondary" href="compare.html">Compare Tools</a></div>
-<div class="note" style="margin-top:22px;max-width:800px"><b>Research label:</b> Our current guides use official vendor documentation and published pricing. We do not claim hands-on use unless a page is explicitly labeled hands-on tested.</div>
-</div></section>
+<section class="hero">
+  <div class="wrap">
+    <span class="eyebrow">INDEPENDENT SOFTWARE RESEARCH FOR MOBILE DETAILERS</span>
+    <h1>Choose software that fits the way your detailing business actually runs.</h1>
+    <p class="lead">Stop comparing feature lists. Start with your bottleneck, your team size and the plan that actually contains the workflow you need.</p>
+    <div class="actions">
+      <a class="btn primary" href="finder.html">Find My Software</a>
+      <a class="btn secondary" href="compare.html">Compare All 5</a>
+    </div>
+    <div class="trustbar" aria-label="DetailerFit research principles">
+      <span class="trustitem">5 platforms tracked</span>
+      <span class="trustitem">Plan-level pricing</span>
+      <span class="trustitem">Official-source research</span>
+      <span class="trustitem">No pay-to-rank placements</span>
+    </div>
+  </div>
+</section>
 
-<section class="section"><div class="wrap">
-<h2>Start with your bottleneck, not the logo.</h2>
-<p class="sub">A one-van detailer and a six-person crew should not automatically buy the same stack.</p>
-<div class="grid3">
-<div class="card"><div class="kicker">LOW ENTRY COST</div><h3>QuoteIQ</h3><div class="price">$29.99<span class="small">/mo</span></div><p class="small">Published monthly entry price. Estimates, invoices, scheduling and online payments are included on Essentials.</p><a class="btn secondary" href="quoteiq.html">Research notes</a></div>
-<div class="card"><div class="kicker">SOLO / IPHONE-FIRST</div><h3>ServiceM8</h3><div class="price">$0<span class="small">/mo</span></div><p class="small">Free plan: 1 user and 30 jobs/month. Paid plans remove the one-user limit and raise job capacity.</p><a class="btn secondary" href="servicem8.html">Research notes</a></div>
-<div class="card"><div class="kicker">BROADER FIELD SERVICE</div><h3>Jobber</h3><div class="price">$49<span class="small">/mo monthly</span></div><p class="small">Core for one user on no-commitment monthly billing. Annual billing publishes a lower effective rate.</p><a class="btn secondary" href="jobber.html">Research notes</a></div>
-</div>
-</div></section>
+<section class="section tight">
+  <div class="wrap">
+    <h2>What are you trying to fix?</h2>
+    <p class="sub">Jump straight to the decision instead of reading ten generic reviews.</p>
+    <div class="intentgrid">
+      <a class="intent-card" href="finder.html?goal=booking">
+        <div class="icon" aria-hidden="true">↗</div>
+        <h3>I need customers to book themselves</h3>
+        <p>Compare the first plan that actually unlocks customer online booking.</p>
+        <span class="linkarrow">Start with booking →</span>
+      </a>
+      <a class="intent-card" href="finder.html?goal=budget">
+        <div class="icon" aria-hidden="true">$</div>
+        <h3>I want to stay under $50/month</h3>
+        <p>See which products remain useful before expensive plan upgrades.</p>
+        <span class="linkarrow">Start with budget →</span>
+      </a>
+      <a class="intent-card" href="finder.html?goal=iphone">
+        <div class="icon" aria-hidden="true">⌁</div>
+        <h3>I run the business from my iPhone</h3>
+        <p>Prioritize a field workflow that makes sense away from a desk.</p>
+        <span class="linkarrow">Start with mobile →</span>
+      </a>
+      <a class="intent-card" href="finder.html?goal=team">
+        <div class="icon" aria-hidden="true">＋</div>
+        <h3>I am adding a crew</h3>
+        <p>Compare user limits, routing, dispatch and team operations.</p>
+        <span class="linkarrow">Start with scale →</span>
+      </a>
+    </div>
+  </div>
+</section>
 
-<section class="section"><div class="wrap">
-<div class="grid2">
-<div class="card flat"><div class="kicker">WHAT WE SCORE</div><h3>The complete customer loop</h3><p class="small">Lead intake → estimate → booking → job-day mobile workflow → payment → review / repeat service.</p><a class="btn ghost" href="methodology.html">See the scorecard →</a></div>
-<div class="card flat"><div class="kicker">WHAT WE DON’T DO</div><h3>No fake “we tested it” claims.</h3><p class="small">Official documentation is useful evidence, but it is not the same as logging into a product. We label the difference.</p><a class="btn ghost" href="affiliate-disclosure.html">Editorial & affiliate policy →</a></div>
-</div>
-</div></section>
+<section class="section">
+  <div class="wrap">
+    <span class="eyebrow">THE PRICE THAT CHANGES THE ANSWER</span>
+    <h2 style="margin-top:14px">Starting price is not the same as booking price.</h2>
+    <p class="sub">If customer self-booking is non-negotiable, compare the first published plan that contains it.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Software</th><th>Published start</th><th>Customer online booking</th><th>What to notice</th></tr></thead>
+        <tbody>
+          <tr><td><a href="servicem8.html"><b>ServiceM8</b></a></td><td>$0/mo Free</td><td>Published across all plans</td><td>Very strong value if an Apple-first workflow fits you.</td></tr>
+          <tr><td><a href="jobber.html"><b>Jobber</b></a></td><td>$49/mo flexible<br><span class="small">$29/mo billed annually</span></td><td>Core</td><td>Online booking is available without moving to a premium tier.</td></tr>
+          <tr><td><a href="housecall-pro.html"><b>Housecall Pro</b></a></td><td>$79/mo<br><span class="small">$59/mo annual</span></td><td>Basic</td><td>Booking plus scheduling/dispatch on the entry plan.</td></tr>
+          <tr><td><a href="urable.html"><b>Urable</b></a></td><td>$70/mo Express</td><td>Pro · $110/mo</td><td>Automotive-specialist workflow with unlimited users.</td></tr>
+          <tr><td><a href="quoteiq.html"><b>QuoteIQ</b></a></td><td>$29.99/mo Essentials</td><td>Elite · $299/mo</td><td>Low-cost internal scheduling; true self-booking changes the cost comparison.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="scrollhint">On mobile, swipe the table horizontally. Pricing verified September 6, 2026.</p>
+    <div class="actions"><a class="btn secondary" href="mobile-detailing-scheduling-software.html">Read the scheduling guide</a></div>
+  </div>
+</section>
 
-<section class="section"><div class="wrap">
-<h2>High-intent research</h2>
-<p class="sub">Pages built around the exact decisions mobile detailers make before choosing software.</p>
+<section class="section">
+  <div class="wrap">
+    <h2>High-intent research</h2>
+    <p class="sub">Built around the decisions a detailer makes before spending money.</p>
+    <div class="grid3">
+      <div class="card flat interactive"><span class="badge blue">SCHEDULING</span><h3 style="margin-top:10px">Scheduling Software</h3><p class="small">Internal calendar vs true customer self-booking, route tools and team scheduling.</p><a class="btn ghost" href="mobile-detailing-scheduling-software.html">Compare scheduling →</a></div>
+      <div class="card flat interactive"><span class="badge blue">PRICING</span><h3 style="margin-top:10px">QuoteIQ Pricing</h3><p class="small">Essentials through Max, mapped to real workflow needs instead of headline price.</p><a class="btn ghost" href="quoteiq-pricing-mobile-detailing.html">See pricing guide →</a></div>
+      <div class="card flat interactive"><span class="badge gold">HEAD-TO-HEAD</span><h3 style="margin-top:10px">QuoteIQ vs Urable</h3><p class="small">Solo cost, unlimited users, booking, routing and automotive workflow.</p><a class="btn ghost" href="quoteiq-vs-urable.html">Compare →</a></div>
+      <div class="card flat interactive"><span class="badge gold">ALTERNATIVES</span><h3 style="margin-top:10px">QuoteIQ Alternatives</h3><p class="small">Five alternatives when booking, team limits or automotive specialization matter more.</p><a class="btn ghost" href="quoteiq-alternatives-mobile-detailing.html">See alternatives →</a></div>
+      <div class="card flat interactive"><span class="badge blue">SOLO</span><h3 style="margin-top:10px">Best CRM for Solo Detailers</h3><p class="small">A one-person-business comparison focused on cost, booking and admin overhead.</p><a class="btn ghost" href="best-crm-solo-mobile-detailers.html">Read solo guide →</a></div>
+      <div class="card flat interactive"><span class="badge gold">HEAD-TO-HEAD</span><h3 style="margin-top:10px">QuoteIQ vs Jobber</h3><p class="small">Contractor-focused lower-cost start vs a broader field-service platform.</p><a class="btn ghost" href="quoteiq-vs-jobber.html">Compare →</a></div>
+    </div>
+  </div>
+</section>
 
-<div class="grid3">
-<div class="card flat"><span class="badge blue">PRICING</span><h3 style="margin-top:10px">QuoteIQ Pricing</h3><p class="small">Compare Essentials, Beginner, Pro, Elite and Max by real workflow need.</p><a class="btn ghost" href="quoteiq-pricing-mobile-detailing.html">See pricing guide →</a></div>
-
-<div class="card flat"><span class="badge gold">HEAD-TO-HEAD</span><h3 style="margin-top:10px">QuoteIQ vs Urable</h3><p class="small">Compare solo cost, unlimited users, booking, routing and automotive workflow.</p><a class="btn ghost" href="quoteiq-vs-urable.html">Compare →</a></div>
-
-<div class="card flat"><span class="badge gold">ALTERNATIVES</span><h3 style="margin-top:10px">QuoteIQ Alternatives</h3><p class="small">Five options for detailers considering a different CRM or field-service stack.</p><a class="btn ghost" href="quoteiq-alternatives-mobile-detailing.html">See alternatives →</a></div>
-
-<div class="card flat"><span class="badge blue">SOLO GUIDE</span><h3 style="margin-top:10px">Best CRM for Solo Detailers</h3><p class="small">A one-person-business comparison focused on cost, booking, invoicing and growth.</p><a class="btn ghost" href="best-crm-solo-mobile-detailers.html">Read solo CRM guide →</a></div>
-
-<div class="card flat"><span class="badge gold">HEAD-TO-HEAD</span><h3 style="margin-top:10px">QuoteIQ vs Jobber</h3><p class="small">Lower-cost contractor-first stack vs a broader field-service platform.</p><a class="btn ghost" href="quoteiq-vs-jobber.html">Compare →</a></div>
-
-<div class="card flat"><span class="badge">TOOL</span><h3 style="margin-top:10px">30-second Software Finder</h3><p class="small">Team size, job volume, budget and workflow priorities.</p><a class="btn ghost" href="finder.html">Start finder →</a></div>
-</div>
-
-<div class="actions"><a class="btn secondary" href="best-mobile-detailing-software.html">Read the full buying guide</a><a class="btn secondary" href="compare.html">Open comparison table</a></div>
-</div></section>
+<section class="section">
+  <div class="wrap">
+    <h2>Why trust DetailerFit?</h2>
+    <p class="sub">The site is useful only if you can tell what is evidence and what is editorial judgment.</p>
+    <div class="grid3">
+      <div class="card flat"><div class="kicker">SOURCE FIRST</div><h3>Official pricing before opinion</h3><p class="small">We prioritize current vendor pricing, help-center documentation and product materials, and show verification dates.</p></div>
+      <div class="card flat"><div class="kicker">NO FAKE TESTING</div><h3>Research is labeled as research</h3><p class="small">We do not pretend a pricing-page review is the same thing as running a business through a product.</p></div>
+      <div class="card flat"><div class="kicker">COMMERCIAL FIREWALL</div><h3>Commission does not buy rank</h3><p class="small">Affiliate relationships are disclosed. Products without an affiliate program can still rank above products that pay.</p></div>
+    </div>
+    <div class="actions">
+      <a class="btn secondary" href="methodology.html">Read our methodology</a>
+      <a class="btn ghost" href="affiliate-disclosure.html">Affiliate policy</a>
+    </div>
+  </div>
+</section>
 </main>
-<footer class="footer"><div class="wrap footergrid">
-<div><a class="brand" href="index.html">Detailer<b>Fit</b></a>
-<p>Independent research for mobile detailers choosing business software.</p>
-<p>Research-based unless a page is explicitly labeled hands-on tested.</p></div>
-<div><strong>Research</strong><a href="finder.html">Software Finder</a><a href="compare.html">Compare tools</a><a href="methodology.html">How we rank</a><a href="best-mobile-detailing-software.html">Buying guide</a></div>
-<div><strong>Company</strong><a href="about.html">About</a><a href="contact.html">Contact</a><a href="affiliate-disclosure.html">Affiliate disclosure</a><a href="privacy.html">Privacy</a></div>
-</div></footer><script src="app.js"></script></body></html>
+
+<footer class="footer">
+  <div class="wrap footergrid">
+    <div>
+      <a class="brand" href="index.html">Detailer<b>Fit</b></a>
+      <p>Independent research for mobile detailers choosing business software.</p>
+      <p>Research-based unless a page is explicitly labeled hands-on tested.</p>
+    </div>
+    <div>
+      <strong>Research</strong>
+      <a href="finder.html">Software Finder</a>
+      <a href="compare.html">Compare tools</a>
+      <a href="mobile-detailing-scheduling-software.html">Scheduling guide</a>
+      <a href="best-mobile-detailing-software.html">Buying guide</a>
+      <a href="methodology.html">How we rank</a>
+    </div>
+    <div>
+      <strong>Company</strong>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+      <a href="affiliate-disclosure.html">Affiliate disclosure</a>
+      <a href="privacy.html">Privacy</a>
+    </div>
+  </div>
+</footer>
+<script src="app.js"></script>
+</body>
+</html>

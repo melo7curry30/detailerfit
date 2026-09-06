@@ -1,27 +1,82 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>About DetailerFit</title><meta name="description" content="About DetailerFit, an independent research project for mobile detailing software.">
-<link rel="stylesheet" href="styles.css"></head><body>
-<header><div class="wrap nav">
-<a class="brand" href="index.html">Detailer<b>Fit</b></a>
-<button class="menuBtn" onclick="toggleMenu()">Menu</button>
-<nav class="navlinks" id="navlinks">
-<a href="finder.html">Software Finder</a><a href="compare.html">Compare</a><a href="methodology.html">How We Rank</a><a href="about.html">About</a>
-</nav></div></header>
-<main><section class="heroMini"><div class="wrap">
-<div class="breadcrumbs"><a href="index.html">Home</a> / About</div>
-<span class="eyebrow">ABOUT DETAILERFIT</span><h1>Software research for operators who would rather finish cars than compare pricing pages.</h1>
-<p class="lead">DetailerFit is an independent research project focused first on solo mobile detailers and small detailing crews in the United States.</p>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#090d12">
+<title>About DetailerFit | Independent Software Research</title>
+<meta name="description" content="About DetailerFit and its independent, plan-level software research process for mobile detailing businesses.">
+<link rel="stylesheet" href="styles.css">
+
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="index.html" aria-label="DetailerFit home">Detailer<b>Fit</b></a>
+    <button class="menuBtn" type="button" aria-controls="navlinks" aria-expanded="false" onclick="toggleMenu(this)">Menu</button>
+    <nav class="navlinks" id="navlinks" aria-label="Primary navigation">
+      <a href="finder.html">Software Finder</a>
+      <a href="compare.html">Compare</a>
+      <a href="methodology.html">How We Rank</a>
+      <a href="about.html">About</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<section class="heroMini"><div class="wrap">
+  <div class="breadcrumbs"><a href="index.html">Home</a> / About</div>
+  <span class="eyebrow">ABOUT DETAILERFIT</span>
+  <h1>Software research for operators who would rather finish cars than compare pricing pages.</h1>
+  <p class="lead">DetailerFit is an independent research project focused first on solo mobile detailers and small detailing crews in the United States.</p>
 </div></section>
 <section class="section"><div class="wrap article">
-<h2>Why this site exists</h2><p>Detailing software is split between detailing-specific platforms and broad field-service products. The useful question is rarely “which product has the most features?” It is “which product removes the most friction from my actual week at a price I can justify?”</p>
-<h2>What we publish</h2><ul class="list"><li>Current pricing and plan-limit research</li><li>Workflow-based comparisons</li><li>Head-to-head decision guides</li><li>A rules-based software finder</li><li>Clear separation between research and hands-on testing</li></ul>
-<h2>Editorial promise</h2><p>We will not invent firsthand experience, customer results, or product testing. When we rely on a vendor’s official information, we say so. When we later test a product directly, we will label the test and describe the workflow used.</p>
-</div></section></main>
-<footer class="footer"><div class="wrap footergrid">
-<div><a class="brand" href="index.html">Detailer<b>Fit</b></a>
-<p>Independent research for mobile detailers choosing business software.</p>
-<p>Research-based unless a page is explicitly labeled hands-on tested.</p></div>
-<div><strong>Research</strong><a href="finder.html">Software Finder</a><a href="compare.html">Compare tools</a><a href="methodology.html">How we rank</a><a href="best-mobile-detailing-software.html">Buying guide</a></div>
-<div><strong>Company</strong><a href="about.html">About</a><a href="contact.html">Contact</a><a href="affiliate-disclosure.html">Affiliate disclosure</a><a href="privacy.html">Privacy</a></div>
-</div></footer><script src="app.js"></script></body></html>
+  <h2>Why this site exists</h2>
+  <p>Detailing software is split between automotive-specialist platforms and broad field-service products. The useful question is rarely “which product has the most features?” It is “which plan removes the most friction from my actual week at a cost I can justify?”</p>
+
+  <h2>What makes DetailerFit different</h2>
+  <ul class="list">
+    <li><b>Plan-level comparisons:</b> we look at the first tier that contains the workflow you need, not only the advertised starting price.</li>
+    <li><b>Bottleneck-first decisions:</b> booking, routing, team size, device fit and job volume can change the recommendation.</li>
+    <li><b>Research labels:</b> we do not present vendor-document research as hands-on testing.</li>
+    <li><b>Commercial separation:</b> affiliate commissions do not buy ranking positions.</li>
+    <li><b>Corrections are welcome:</b> vendors and readers can send current official documentation when something changes.</li>
+  </ul>
+
+  <h2>What we publish</h2>
+  <p>Current pricing and plan-limit research, workflow comparisons, head-to-head decision guides and a rules-based Software Finder.</p>
+
+  <h2>What we do not claim</h2>
+  <p>We do not invent customer results, personal product usage or “tested” labels. When hands-on testing is added later, the test workflow and date will be stated explicitly.</p>
+
+  <div class="actions"><a class="btn primary" href="finder.html">Use the Software Finder</a><a class="btn secondary" href="methodology.html">Read Methodology</a></div>
+</div></section>
+</main>
+
+<footer class="footer">
+  <div class="wrap footergrid">
+    <div>
+      <a class="brand" href="index.html">Detailer<b>Fit</b></a>
+      <p>Independent research for mobile detailers choosing business software.</p>
+      <p>Research-based unless a page is explicitly labeled hands-on tested.</p>
+    </div>
+    <div>
+      <strong>Research</strong>
+      <a href="finder.html">Software Finder</a>
+      <a href="compare.html">Compare tools</a>
+      <a href="mobile-detailing-scheduling-software.html">Scheduling guide</a>
+      <a href="best-mobile-detailing-software.html">Buying guide</a>
+      <a href="methodology.html">How we rank</a>
+    </div>
+    <div>
+      <strong>Company</strong>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+      <a href="affiliate-disclosure.html">Affiliate disclosure</a>
+      <a href="privacy.html">Privacy</a>
+    </div>
+  </div>
+</footer>
+<script src="app.js"></script>
+</body>
+</html>

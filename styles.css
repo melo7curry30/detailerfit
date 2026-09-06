@@ -266,3 +266,68 @@ hr{border:0;border-top:1px solid var(--line);margin:35px 0}
   .summarygrid{grid-template-columns:repeat(3,1fr)}
   .quickpickgrid{grid-template-columns:1fr 1fr}
 }
+
+
+/* ===== Real-plan cost calculator ===== */
+.calculator-shell{max-width:900px;margin:auto;background:linear-gradient(180deg,#111a24,#0d141b);border:1px solid var(--line);border-radius:20px;padding:20px}
+.calc-input-grid,.calc-feature-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.calc-fieldset{margin:0;border:1px solid var(--line);border-radius:15px;background:#0f171f;padding:14px}
+.calc-fieldset legend{font-weight:850;padding:0 5px}
+.calc-fieldset p{font-size:12px;color:var(--muted);margin:2px 0 10px}
+.options.two{grid-template-columns:1fr 1fr}
+.calc-results-top{display:grid;grid-template-columns:1fr 360px;gap:18px;align-items:end;margin-bottom:16px}
+.calc-answer{border:1px solid #2e735d;background:linear-gradient(180deg,#10251d,#0e1d18);border-radius:16px;padding:15px}
+.calc-answer span{display:block;font-size:9px;color:var(--accent);font-weight:900;letter-spacing:.4px}
+.calc-answer strong{display:block;font-size:18px;margin-top:5px}
+.calc-answer b{display:block;font-size:28px;line-height:1.1;color:var(--accent);margin-top:5px}
+.calc-answer small{color:var(--muted)}
+.calculator-note{margin:14px 0 16px}
+.cost-results{display:grid;gap:11px}
+.cost-result{border:1px solid var(--line);background:linear-gradient(180deg,#111a23,#0d141b);border-radius:18px;padding:17px}
+.cost-result.best{border-color:#367761;background:linear-gradient(180deg,#10221c,#0d1717)}
+.cost-result-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.cost-result-head h2{font-size:25px;margin:3px 0 0}
+.cost-result-head p{margin:1px 0 0;color:var(--muted);font-size:13px}
+.cost-delta{border:1px solid var(--line);background:#141d26;border-radius:999px;padding:5px 8px;font-size:10px;color:var(--muted);white-space:nowrap}
+.cost-numbers{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:13px 0}
+.cost-numbers>div{border:1px solid var(--line);background:#0f171f;border-radius:13px;padding:11px}
+.cost-numbers span{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;font-weight:850}
+.cost-numbers b{display:block;font-size:17px;margin-top:3px}
+.cost-numbers small{display:block;color:var(--muted);font-size:10px;margin-top:2px}
+.cost-capacity{font-size:12px;color:#dce5ec;margin:8px 0}
+.cost-why{font-size:13px;color:#c8d2dc;margin:8px 0 10px}
+.calculator-page .results-section[hidden]{display:none}
+
+@media(max-width:800px){
+  .calculator-page .heroMini{padding-bottom:10px}
+  .calculator-page .breadcrumbs{display:none}
+  .calculator-page .heroMini h1{font-size:30px}
+  .calculator-input-section{padding-top:16px}
+  .calculator-shell{padding:14px}
+  .calc-input-grid,.calc-feature-grid{grid-template-columns:1fr;gap:8px}
+  .calc-fieldset{padding:11px}
+  .calc-results-top{grid-template-columns:1fr;gap:10px}
+  .calc-answer{padding:12px}
+  .calc-answer strong{font-size:16px}
+  .calc-answer b{font-size:24px}
+  .cost-result{padding:14px}
+  .cost-result-head{display:block}
+  .cost-delta{display:inline-block;margin-top:7px}
+  .cost-numbers{grid-template-columns:1fr 1fr;gap:6px}
+  .cost-numbers>div{padding:9px}
+  .cost-numbers b{font-size:15px}
+}
+@media(max-width:430px){
+  .cost-numbers{grid-template-columns:1fr}
+}
+
+.calculator-home-card{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center;border-color:#315846;background:linear-gradient(135deg,#10231c,#0f1720)}
+.calculator-home-card h2{margin-bottom:7px}
+.calculator-home-card .sub{margin-bottom:0;max-width:760px}
+.calculator-home-card .actions{margin-top:0}
+@media(max-width:800px){
+  .calculator-home-card{grid-template-columns:1fr;padding:16px}
+  .calculator-home-card h2{font-size:25px}
+  .calculator-home-card .actions{margin-top:4px}
+  .calculator-home-card .btn{width:100%}
+}

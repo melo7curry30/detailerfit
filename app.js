@@ -39,6 +39,19 @@ document.addEventListener('DOMContentLoaded',()=>{
   }
   if(nav&&!nav.hasAttribute('aria-label'))nav.setAttribute('aria-label','Primary navigation');
 
+  // Keep the Research footer consistent on older pages without editing every footer by hand.
+  document.querySelectorAll('.footergrid > div').forEach(col=>{
+    const heading=col.querySelector('strong');
+    if(!heading||heading.textContent.trim()!=='Research')return;
+    if(col.querySelector('a[href="software-cost-calculator.html"]'))return;
+    const finder=col.querySelector('a[href="finder.html"]');
+    if(!finder)return;
+    const link=document.createElement('a');
+    link.href='software-cost-calculator.html';
+    link.textContent='Cost calculator';
+    finder.insertAdjacentElement('afterend',link);
+  });
+
   const form=document.getElementById('finderForm');
   if(!form)return;
 

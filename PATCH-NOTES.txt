@@ -1,0 +1,11 @@
+DetailerFit Foundation Patch v1 — 2026-09-08
+
+- Add canonical URLs to all 13 previously missing indexable pages.
+- Add noindex,follow to 404.html.
+- Use conservative Jobber seat pricing when official pricing/help-center sources conflict; teams above five are marked for verification.
+- Restore shared DetailerFit header/nav/footer/skip-link/app.js shell on urable-vs-mobile-tech-rx.html.
+- Link Mobile Tech RX vs Jobber from Home and Compare hubs.
+- Replace old Urable vs Jobber redirect targets with the canonical URL in patched pages.
+- Respect prefers-reduced-motion for Finder and Cost Calculator result scrolling.
+
+Upload/overwrite all included files in the GitHub repository root, then commit.

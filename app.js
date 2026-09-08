@@ -31,6 +31,9 @@ document.addEventListener('keydown',(e)=>{
 });
 
 document.addEventListener('DOMContentLoaded',()=>{
+  const reducedMotion=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  const resultScrollBehavior=reducedMotion?'auto':'smooth';
+
   // Upgrade older pages that still use the original header markup.
   const menuBtn=document.querySelector('.menuBtn');
   const nav=document.getElementById('navlinks');
@@ -90,7 +93,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     "Jobber":{
       s:0,url:"jobber.html",
       why:"A mature general field-service workflow with online booking on Core and stronger automation, routing and team tools above it.",
-      baseWatch:"Jobber is not detailing-specific. Current pricing varies by team-size configuration; Core is one user, while Connect is sold in 1 / 5 / 10 / 15-user configurations.",
+      baseWatch:"Jobber is not detailing-specific. Core is one user and DetailerFit uses the published 1- and 5-user Connect configurations. Jobber's pricing page also displays larger team configurations, but current Help Center documentation differs; teams above five should verify the eligible plan and seat configuration directly.",
       tags:["iOS + Android","General field service"]
     },
     "Urable":{
@@ -140,13 +143,11 @@ document.addEventListener('DOMContentLoaded',()=>{
   };
 
   const jobberPlan=(team,needs)=>{
-    if(team>15)return {plan:'Contact Sales',cost:null,annual:'',users:'16+ people · contact sales'};
     const needsConnect=team>1||needs.includes('automation')||needs.includes('scale');
     if(!needsConnect)return {plan:'Core',cost:49,annual:'from $29/mo billed annually',users:'1 user'};
     if(team<=1)return {plan:'Connect',cost:139,annual:'from $99/mo billed annually',users:'1-user configuration'};
     if(team<=5)return {plan:'Connect',cost:199,annual:'from $149/mo billed annually',users:'5 users included'};
-    if(team<=10)return {plan:'Connect',cost:299,annual:'from $229/mo billed annually',users:'10 users included'};
-    return {plan:'Connect',cost:399,annual:'from $299/mo billed annually',users:'15 users included'};
+    return {plan:'Verify with Jobber',cost:null,annual:'',users:`${team} users · seat configuration to verify`};
   };
 
   const urablePlan=(booking,needs)=>{
@@ -251,7 +252,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       budgetMessage.innerHTML=`<div class="warning"><b>No exact budget fit found.</b> Your stated requirements push the first known matching configurations above $${budget.toFixed(0)}/month. The ranking below starts with the closest published price match; consider changing a requirement before buying.${firstKnown?` Closest known monthly configuration: ${firstKnown.name} ${firstKnown.plan.plan} at about $${firstKnown.plan.cost.toFixed(2).replace('.00','')}/mo.`:''}</div>`;
     }
 
-    const money=(v)=>Number.isFinite(v)?`$${v.toFixed(2).replace('.00','')}/mo`:'Contact sales';
+    const money=(v)=>Number.isFinite(v)?`$${v.toFixed(2).replace('.00','')}/mo`:'Price to verify';
 
     document.getElementById('finderResults').innerHTML=ranked.map((x,i)=>{
       const p=x.plan;
@@ -285,7 +286,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
     const box=document.getElementById('resultsBox');
     box.style.display='block';
-    box.scrollIntoView({behavior:'smooth',block:'start'});
+    box.scrollIntoView({behavior:resultScrollBehavior,block:'start'});
   });
 });
 

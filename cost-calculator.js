@@ -3,9 +3,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('costCalcForm');
   if (!form) return;
 
+  const reducedMotion=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  const resultScrollBehavior=reducedMotion?'auto':'smooth';
+
   const money = (n) => Number.isFinite(n)
     ? `$${n.toFixed(2).replace(/\.00$/, '')}`
-    : 'Contact sales';
+    : 'Price to verify';
 
   const total12 = (n) => Number.isFinite(n) ? money(n * 12) : '—';
 
@@ -67,13 +70,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const jobber = (team, selfBooking, routeOpt) => {
     let p;
-    if (team > 15) {
+
+    if (team > 5) {
+      const reasons=[];
+      if (team > 1) reasons.push(`${team} users exceed the five-user Connect configuration DetailerFit can currently treat as settled`);
+      if (routeOpt) reasons.push('route optimization is published on Connect, Grow, and Plus');
+      if (selfBooking) reasons.push('online booking is already available on Core');
       return {
-        name:'Jobber', url:'jobber.html', plan:'Contact Sales', monthly:null,
+        name:'Jobber', url:'jobber.html', plan:'Verify team configuration', monthly:null,
         annualMonthly:null, annualTotal:null, complete:false,
-        capacity:'16+ users · contact sales',
-        why:'Jobber publishes custom pricing for teams of 16 or more.',
-        watch:'A live quote is required, so DetailerFit does not guess the monthly total.'
+        capacity:`${team} users · verify current eligible plan and seat configuration`,
+        why:reasons.join('; ') + '.',
+        watch:'Jobber’s current pricing page displays larger team configurations, while current Help Center documentation describes Connect as supporting up to five users. DetailerFit does not guess the exact plan or monthly total for teams above five until those official sources are aligned.'
       };
     }
 
@@ -82,12 +90,8 @@ document.addEventListener('DOMContentLoaded', () => {
       p={plan:'Core',monthly:49,annualMonthly:29,capacity:'1 user'};
     } else if (team <= 1) {
       p={plan:'Connect',monthly:139,annualMonthly:99,capacity:'1-user configuration'};
-    } else if (team <= 5) {
-      p={plan:'Connect',monthly:199,annualMonthly:149,capacity:'5 users included'};
-    } else if (team <= 10) {
-      p={plan:'Connect',monthly:299,annualMonthly:229,capacity:'10 users included'};
     } else {
-      p={plan:'Connect',monthly:399,annualMonthly:299,capacity:'15 users included'};
+      p={plan:'Connect',monthly:199,annualMonthly:149,capacity:'5 users included'};
     }
 
     const reasons=[];
@@ -99,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
       annualMonthly:p.annualMonthly, annualTotal:p.annualMonthly*12, complete:true,
       capacity:p.capacity,
       why: reasons.length ? reasons.join('; ') + '.' : 'Core is the lowest published no-commitment configuration for one user.',
-      watch:'Current Jobber pricing varies by plan and team-size configuration. This calculator uses the lowest published configuration that meets the selected requirements.'
+      watch:'For one to five users, this calculator uses the current published Core/Connect configurations. Teams above five are marked for verification because Jobber’s pricing page and Help Center are not perfectly aligned.'
     };
   };
 
@@ -202,7 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ${delta}
           </div>
           <div class="cost-numbers">
-            <div><span>Flexible monthly</span><b>${Number.isFinite(r.monthly)?money(r.monthly)+'/mo':'Contact sales'}</b><small>${monthlyTotal}${Number.isFinite(r.monthly)?' over 12 months':''}</small></div>
+            <div><span>Flexible monthly</span><b>${Number.isFinite(r.monthly)?money(r.monthly)+'/mo':'Price to verify'}</b><small>${monthlyTotal}${Number.isFinite(r.monthly)?' over 12 months':''}</small></div>
             ${annualBlock}
           </div>
           <div class="cost-capacity"><b>Capacity:</b> ${r.capacity}</div>
@@ -227,7 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
   form.addEventListener('submit', (e)=>{
     e.preventDefault();
     calculate();
-    document.getElementById('resultsSection').scrollIntoView({behavior:'smooth',block:'start'});
+    document.getElementById('resultsSection').scrollIntoView({behavior:resultScrollBehavior,block:'start'});
   });
 
   calculate();

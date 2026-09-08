@@ -57,24 +57,6 @@ document.addEventListener('DOMContentLoaded',()=>{
     finder.insertAdjacentElement('afterend',link);
   });
 
-  // Strengthen the flagship article's Mobile Tech RX path without changing its ranking or article copy.
-  const currentPage=location.pathname.split('/').pop() || 'index.html';
-  if(currentPage==='best-auto-detailing-software-2026.html'){
-    const section=document.querySelector('#section-6')?.closest('section');
-    if(section&&!section.querySelector('.mtrx-research-links')){
-      const vendorActions=section.querySelector('.actions');
-      const links=document.createElement('div');
-      links.className='actions mtrx-research-links';
-      links.innerHTML=`
-        <a class="btn secondary" href="mobile-tech-rx-review-auto-detailers.html">Read Mobile Tech RX Review</a>
-        <a class="btn secondary" href="mobile-tech-rx-pricing-auto-detailers.html">Compare MTRX Plans</a>
-        <a class="btn secondary" href="mobile-tech-rx-alternatives-auto-detailers.html">See MTRX Alternatives</a>
-        <a class="btn secondary" href="mobile-tech-rx-vs-jobber-auto-detailing.html">MTRX vs Jobber</a>`;
-      if(vendorActions)vendorActions.insertAdjacentElement('beforebegin',links);
-      else section.appendChild(links);
-    }
-  }
-
   const form=document.getElementById('finderForm');
   if(!form)return;
 
@@ -200,7 +182,7 @@ document.addEventListener('DOMContentLoaded',()=>{
         ? 'Getting Started includes one service module; Detail is one of the published module choices.'
         : tier==='Standard'
           ? 'Standard is the first tier inspected here when broader customer/accounting/admin tools matter.'
-          : 'Pro is the first tier inspected here when workflow management, time tracking and checklists matter.'
+          : 'Pro is the first tier inspected here when workflow management, time tracking and checklists matter. Route optimization is not treated as confirmed.'
     };
   };
 
@@ -309,7 +291,11 @@ document.addEventListener('DOMContentLoaded',()=>{
       tools.QuoteIQ.s+=5;tools.Jobber.s+=5;tools["Housecall Pro"].s+=3;tools.Urable.s+=3;tools.ServiceM8.s+=3;tools["Mobile Tech RX"].s+=2;
     }
     if(needs.includes('scale')){
-      tools.Urable.s+=6;tools.Jobber.s+=6;tools["Housecall Pro"].s+=5;tools.ServiceM8.s+=5;tools["Mobile Tech RX"].s+=4;tools.QuoteIQ.s+=3;
+      tools.Urable.s+=6;tools.Jobber.s+=6;tools["Housecall Pro"].s+=5;tools.ServiceM8.s+=5;tools.QuoteIQ.s+=3;
+      // Mobile Tech RX has strong team/workflow tools on Pro, but DetailerFit has not
+      // established equivalent route optimization from the official sources reviewed.
+      // Treat a routing/dispatch requirement conservatively rather than rewarding it here.
+      tools["Mobile Tech RX"].s-=6;
     }
 
     const entries=Object.entries(tools).map(([name,t])=>{

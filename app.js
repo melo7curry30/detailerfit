@@ -93,25 +93,53 @@ document.addEventListener('DOMContentLoaded',()=>{
   }
 
   // Keep vendor CTA treatment visually consistent on the ceramic-coating guide.
+  // Each CTA is inserted at the end of its own product block, not at the end of the whole article.
   // QuoteIQ and Mobile Tech RX remain explicitly marked as sponsored affiliate links.
   if(pageName==='best-software-ceramic-coating-business.html'){
     const vendorCtas={
-      'section-3':{label:'Check Urable Pricing',url:'https://urable.com/pricing/',vendor:'Urable',rel:'noopener'},
-      'section-4':{label:'Check OrbisX Pricing',url:'https://orbisx.com/pricing/',vendor:'OrbisX',rel:'noopener'},
-      'section-5':{label:'Check Mobile Tech RX Pricing',url:'https://www.mobiletechrx.com/?_by=detailerfit-5e824c',vendor:'Mobile Tech RX',rel:'sponsored noopener'},
-      'section-6':{label:'Start QuoteIQ Trial',url:'https://admin-quoteiq.web.app/register?via=ryo',vendor:'QuoteIQ',rel:'sponsored noopener'},
-      'section-7':{label:'Check Jobber Pricing',url:'https://www.getjobber.com/pricing/',vendor:'Jobber',rel:'noopener'},
-      'section-8':{label:'Check Housecall Pro Pricing',url:'https://www.housecallpro.com/pricing/',vendor:'Housecall Pro',rel:'noopener'}
+      'section-3':{label:'Check Urable Pricing',url:'https://urable.com/pricing/',vendor:'Urable',rel:'noopener',match:'urable.com/pricing'},
+      'section-4':{label:'Check OrbisX Pricing',url:'https://orbisx.com/pricing/',vendor:'OrbisX',rel:'noopener',match:'orbisx.com/pricing'},
+      'section-5':{label:'Check Mobile Tech RX Pricing',url:'https://www.mobiletechrx.com/?_by=detailerfit-5e824c',vendor:'Mobile Tech RX',rel:'sponsored noopener',match:'mobiletechrx.com/?_by=detailerfit-5e824c'},
+      'section-6':{label:'Start QuoteIQ Trial',url:'https://admin-quoteiq.web.app/register?via=ryo',vendor:'QuoteIQ',rel:'sponsored noopener',match:'admin-quoteiq.web.app/register?via=ryo'},
+      'section-7':{label:'Check Jobber Pricing',url:'https://www.getjobber.com/pricing/',vendor:'Jobber',rel:'noopener',match:'getjobber.com/pricing'},
+      'section-8':{label:'Check Housecall Pro Pricing',url:'https://www.housecallpro.com/pricing/',vendor:'Housecall Pro',rel:'noopener',match:'housecallpro.com/pricing'}
     };
+
     Object.entries(vendorCtas).forEach(([id,x])=>{
       const heading=document.getElementById(id);
-      const section=heading?.closest('section');
-      if(!section||section.querySelector(`.revenue-vendor-actions[data-section="${id}"]`))return;
+      const parent=heading?.parentElement;
+      if(!heading||!parent)return;
+
+      let node=heading.nextElementSibling;
+      let insertBefore=null;
+      let existingLink=null;
+
+      while(node){
+        if(node.tagName==='H2'){
+          insertBefore=node;
+          break;
+        }
+        if(!existingLink){
+          if(node.matches?.(`a[href*="${x.match}"]`))existingLink=node;
+          else existingLink=node.querySelector?.(`a[href*="${x.match}"]`)||null;
+        }
+        node=node.nextElementSibling;
+      }
+
+      if(existingLink){
+        existingLink.classList.add('btn','primary');
+        existingLink.dataset.vendor=x.vendor;
+        existingLink.rel=x.rel;
+        return;
+      }
+
       const actions=document.createElement('div');
       actions.className='actions revenue-vendor-actions';
       actions.dataset.section=id;
       actions.innerHTML=`<a class="btn primary" data-vendor="${x.vendor}" href="${x.url}" rel="${x.rel}">${x.label}</a>`;
-      section.appendChild(actions);
+
+      if(insertBefore)parent.insertBefore(actions,insertBefore);
+      else parent.appendChild(actions);
     });
   }
 

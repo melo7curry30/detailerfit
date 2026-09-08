@@ -63,7 +63,7 @@
 </form>
 </div>
 </div></section>
-<section class="section results-section" id="resultsSection">
+<section class="section results-section" id="resultsSection" hidden>
 <div class="wrap">
 <div class="calc-results-top">
 <div>
@@ -71,12 +71,12 @@
 <h2>First plan that matches your requirements</h2>
 <p class="small" id="requirementSummary"></p>
 </div>
-<div id="calcHeadline"></div>
+<div id="calcHeadline" aria-live="polite"></div>
 </div>
 <div class="note calculator-note">
 <b>How to read this:</b> Flexible monthly prices are used as the main comparison. Annual-billing figures are shown where DetailerFit has a current published figure. Taxes, payment-processing fees and optional add-ons are excluded. If a required add-on or seat configuration is not clear from current official documentation, the result is marked as incomplete rather than guessed.
     </div>
-<div class="cost-results" id="costResults"></div>
+<div class="cost-results" id="costResults" aria-live="polite"></div>
 </div>
 </section>
 <section class="section"><div class="wrap article">

@@ -12,6 +12,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const total12 = (n) => Number.isFinite(n) ? money(n * 12) : '—';
 
+  const vendorMap = {
+    'QuoteIQ': {url:'https://admin-quoteiq.web.app/register?via=ryo', rel:'sponsored noopener'},
+    'Mobile Tech RX': {url:'https://www.mobiletechrx.com/?_by=detailerfit-5e824c', rel:'sponsored noopener'},
+    'ServiceM8': {url:'https://www.servicem8.com/us/pricing', rel:'noopener'},
+    'Jobber': {url:'https://www.getjobber.com/pricing/', rel:'noopener'},
+    'Urable': {url:'https://urable.com/pricing/', rel:'noopener'},
+    'Housecall Pro': {url:'https://www.housecallpro.com/pricing/', rel:'noopener'}
+  };
+
   const quoteIQ = (team, selfBooking, routeOpt) => {
     const tiers = [
       {plan:'Essentials', monthly:29.99, annualMonthly:25.00, annualTotal:299.99, users:'1 user'},
@@ -124,6 +133,44 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   };
 
+  const mobileTechRX = (team, selfBooking, routeOpt) => {
+    if (team > 10) {
+      return {
+        name:'Mobile Tech RX', url:'mobile-tech-rx-pricing-auto-detailers.html',
+        plan:'Custom pricing', monthly:null, annualMonthly:null, annualTotal:null,
+        complete:false, capacity:`${team} users · custom pricing`,
+        why:'Mobile Tech RX directs teams above 10 people to custom pricing.',
+        watch:'The official pricing page does not publish an exact subscription total above 10 people, so DetailerFit does not guess it.'
+      };
+    }
+
+    if (selfBooking || routeOpt) {
+      const reasons=[];
+      if (selfBooking) reasons.push('native customer-facing self-booking is not clearly established in the official sources reviewed');
+      if (routeOpt) reasons.push('route optimization is not treated as confirmed');
+      return {
+        name:'Mobile Tech RX', url:'mobile-tech-rx-pricing-auto-detailers.html',
+        plan:'Verify required workflow', monthly:null, annualMonthly:null, annualTotal:null,
+        complete:false,
+        capacity:`1 admin + ${Math.max(0,team-1)} additional user${team===2?'':'s'}`,
+        why:reasons.join('; ') + '.',
+        watch:'Mobile Tech RX publishes internal scheduling, but DetailerFit does not treat the required self-booking or route-optimization workflow as confirmed. Verify directly before buying.'
+      };
+    }
+
+    const additional=Math.max(0,team-1);
+    const monthly=39+(additional*15);
+    const annualTotal=429+(additional*165);
+    return {
+      name:'Mobile Tech RX', url:'mobile-tech-rx-pricing-auto-detailers.html',
+      plan:'Getting Started', monthly,
+      annualMonthly:annualTotal/12, annualTotal, complete:true,
+      capacity:`1 admin + ${additional} additional user${additional===1?'':'s'}`,
+      why:'Getting Started is the lowest published Mobile Tech RX plan and includes the Detail service-module option plus internal scheduling. No unverified self-booking or route-optimization requirement was selected.',
+      watch:'Getting Started includes one service module. If you need broader accounting, customer or workflow-management tools, compare Standard and Pro rather than assuming the entry plan is sufficient.'
+    };
+  };
+
   const housecall = (team, selfBooking, routeOpt) => {
     const make = (plan, baseMonthly, baseAnnual, included, extraMonthly, route) => {
       const extra = Math.max(0, team - included);
@@ -169,6 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const results = [
       quoteIQ(team,selfBooking,routeOpt),
+      mobileTechRX(team,selfBooking,routeOpt),
       serviceM8(team,jobs,selfBooking,routeOpt),
       jobber(team,selfBooking,routeOpt),
       urable(team,selfBooking,routeOpt),
@@ -212,7 +260,10 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="cost-capacity"><b>Capacity:</b> ${r.capacity}</div>
           <p class="cost-why"><b>Why this plan:</b> ${r.why}</p>
           <div class="${r.complete?'note':'warning'}"><b>${r.complete?'Verify before buying':'Cost not fully known'}:</b> ${r.watch}</div>
-          <div class="actions"><a class="btn secondary" href="${r.url}">See ${r.name} research</a></div>
+          <div class="actions">
+            <a class="btn secondary" href="${r.url}">See ${r.name} research</a>
+            <a class="btn primary" data-vendor="${r.name}" href="${vendorMap[r.name].url}" rel="${vendorMap[r.name].rel}">Visit ${r.name}</a>
+          </div>
         </article>`;
     }).join('');
 

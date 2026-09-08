@@ -57,6 +57,64 @@ document.addEventListener('DOMContentLoaded',()=>{
     finder.insertAdjacentElement('afterend',link);
   });
 
+  // Revenue Acceleration v4: add clear decision exits to high-intent comparisons
+  // that previously ended without a strong next step.
+  const pageName=location.pathname.split('/').pop() || 'index.html';
+  const decisionExits={
+    'jobber-vs-housecall-pro-auto-detailing.html':[
+      {label:'Check Jobber Pricing',url:'https://www.getjobber.com/pricing/',vendor:'Jobber',rel:'noopener'},
+      {label:'Check Housecall Pro Pricing',url:'https://www.housecallpro.com/pricing/',vendor:'Housecall Pro',rel:'noopener'}
+    ],
+    'orbisx-vs-jobber-auto-detailing.html':[
+      {label:'Check OrbisX Pricing',url:'https://orbisx.com/pricing/',vendor:'OrbisX',rel:'noopener'},
+      {label:'Check Jobber Pricing',url:'https://www.getjobber.com/pricing/',vendor:'Jobber',rel:'noopener'}
+    ],
+    'urable-vs-housecall-pro.html':[
+      {label:'Check Urable Pricing',url:'https://urable.com/pricing/',vendor:'Urable',rel:'noopener'},
+      {label:'Check Housecall Pro Pricing',url:'https://www.housecallpro.com/pricing/',vendor:'Housecall Pro',rel:'noopener'}
+    ],
+    'urable-vs-orbisx.html':[
+      {label:'Check Urable Pricing',url:'https://urable.com/pricing/',vendor:'Urable',rel:'noopener'},
+      {label:'Check OrbisX Pricing',url:'https://orbisx.com/pricing/',vendor:'OrbisX',rel:'noopener'}
+    ]
+  };
+  if(decisionExits[pageName]&&!document.querySelector('.revenue-decision-cta')){
+    const article=document.querySelector('main article, main .article');
+    if(article){
+      const block=document.createElement('div');
+      block.className='callout revenue-decision-cta';
+      block.innerHTML=`<div><h3>Ready to narrow the decision?</h3><p>Check current vendor terms, or use DetailerFit's tools if you still need to compare workflow and real plan cost.</p><div class="actions">${
+        decisionExits[pageName].map(x=>`<a class="btn primary" data-vendor="${x.vendor}" href="${x.url}" rel="${x.rel}">${x.label}</a>`).join('')
+      }<a class="btn secondary" href="finder.html">Use the Software Finder</a><a class="btn secondary" href="software-cost-calculator.html">Calculate Real Plan Cost</a></div></div>`;
+      const editorialFooter=article.querySelector(':scope > footer')||article.querySelector('footer');
+      if(editorialFooter)editorialFooter.insertAdjacentElement('beforebegin',block);
+      else article.appendChild(block);
+    }
+  }
+
+  // Keep vendor CTA treatment visually consistent on the ceramic-coating guide.
+  // QuoteIQ and Mobile Tech RX remain explicitly marked as sponsored affiliate links.
+  if(pageName==='best-software-ceramic-coating-business.html'){
+    const vendorCtas={
+      'section-3':{label:'Check Urable Pricing',url:'https://urable.com/pricing/',vendor:'Urable',rel:'noopener'},
+      'section-4':{label:'Check OrbisX Pricing',url:'https://orbisx.com/pricing/',vendor:'OrbisX',rel:'noopener'},
+      'section-5':{label:'Check Mobile Tech RX Pricing',url:'https://www.mobiletechrx.com/?_by=detailerfit-5e824c',vendor:'Mobile Tech RX',rel:'sponsored noopener'},
+      'section-6':{label:'Start QuoteIQ Trial',url:'https://admin-quoteiq.web.app/register?via=ryo',vendor:'QuoteIQ',rel:'sponsored noopener'},
+      'section-7':{label:'Check Jobber Pricing',url:'https://www.getjobber.com/pricing/',vendor:'Jobber',rel:'noopener'},
+      'section-8':{label:'Check Housecall Pro Pricing',url:'https://www.housecallpro.com/pricing/',vendor:'Housecall Pro',rel:'noopener'}
+    };
+    Object.entries(vendorCtas).forEach(([id,x])=>{
+      const heading=document.getElementById(id);
+      const section=heading?.closest('section');
+      if(!section||section.querySelector(`.revenue-vendor-actions[data-section="${id}"]`))return;
+      const actions=document.createElement('div');
+      actions.className='actions revenue-vendor-actions';
+      actions.dataset.section=id;
+      actions.innerHTML=`<a class="btn primary" data-vendor="${x.vendor}" href="${x.url}" rel="${x.rel}">${x.label}</a>`;
+      section.appendChild(actions);
+    });
+  }
+
   const form=document.getElementById('finderForm');
   if(!form)return;
 

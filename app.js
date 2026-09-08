@@ -4,7 +4,7 @@ function toggleMenu(btn){
   if(!nav)return;
   const button=btn||document.querySelector('.menuBtn');
   const open=nav.classList.toggle('open');
-  if(button)button.setAttribute('aria-expanded',String(open));
+  if(button){button.setAttribute('aria-expanded',String(open));button.textContent=open?'Close':'Menu';}
 }
 
 document.addEventListener('click',(e)=>{
@@ -14,6 +14,7 @@ document.addEventListener('click',(e)=>{
   if(!nav.contains(e.target)&&!btn.contains(e.target)){
     nav.classList.remove('open');
     btn.setAttribute('aria-expanded','false');
+    btn.textContent='Menu';
   }
 });
 
@@ -24,6 +25,7 @@ document.addEventListener('keydown',(e)=>{
   if(nav?.classList.contains('open')){
     nav.classList.remove('open');
     btn?.setAttribute('aria-expanded','false');
+    if(btn)btn.textContent='Menu';
     btn?.focus();
   }
 });
@@ -285,4 +287,18 @@ document.addEventListener('DOMContentLoaded',()=>{
     box.style.display='block';
     box.scrollIntoView({behavior:'smooth',block:'start'});
   });
+});
+
+// The menu is a non-modal disclosure; close it when keyboard focus leaves the header.
+document.querySelector('.site-header')?.addEventListener('focusout', (event) => {
+  const header=event.currentTarget;
+  if(event.relatedTarget && !header.contains(event.relatedTarget)){
+    document.getElementById('navlinks')?.classList.remove('open');
+    const button=header.querySelector('.menuBtn');
+    if(button){button.setAttribute('aria-expanded','false');button.textContent='Menu';}
+  }
+});
+const currentPage=location.pathname.split('/').pop() || 'index.html';
+document.querySelectorAll('.navlinks a').forEach(link=>{
+  if(link.getAttribute('href')===currentPage)link.setAttribute('aria-current','page');
 });

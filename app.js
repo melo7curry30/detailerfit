@@ -57,6 +57,24 @@ document.addEventListener('DOMContentLoaded',()=>{
     finder.insertAdjacentElement('afterend',link);
   });
 
+  // Strengthen the flagship article's Mobile Tech RX path without changing its ranking or article copy.
+  const currentPage=location.pathname.split('/').pop() || 'index.html';
+  if(currentPage==='best-auto-detailing-software-2026.html'){
+    const section=document.querySelector('#section-6')?.closest('section');
+    if(section&&!section.querySelector('.mtrx-research-links')){
+      const vendorActions=section.querySelector('.actions');
+      const links=document.createElement('div');
+      links.className='actions mtrx-research-links';
+      links.innerHTML=`
+        <a class="btn secondary" href="mobile-tech-rx-review-auto-detailers.html">Read Mobile Tech RX Review</a>
+        <a class="btn secondary" href="mobile-tech-rx-pricing-auto-detailers.html">Compare MTRX Plans</a>
+        <a class="btn secondary" href="mobile-tech-rx-alternatives-auto-detailers.html">See MTRX Alternatives</a>
+        <a class="btn secondary" href="mobile-tech-rx-vs-jobber-auto-detailing.html">MTRX vs Jobber</a>`;
+      if(vendorActions)vendorActions.insertAdjacentElement('beforebegin',links);
+      else section.appendChild(links);
+    }
+  }
+
   const form=document.getElementById('finderForm');
   if(!form)return;
 
@@ -79,31 +97,55 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   const tools={
     "QuoteIQ":{
-      s:0,url:"quoteiq.html",
+      s:0,
+      url:"quoteiq.html",
+      vendorUrl:"https://admin-quoteiq.web.app/register?via=ryo",
+      vendorRel:"sponsored noopener",
       why:"Strong detailing-oriented quoting, invoicing and internal scheduling at a low entry price, with deeper communications and operations on higher tiers.",
       baseWatch:"Customer self-booking uses InstaSchedule and starts on Elite. Seat limits are 1 / 2 / 4 / 10 / unlimited across the five plans.",
       tags:["Web + iOS + Android","Detailing-friendly"]
     },
+    "Mobile Tech RX":{
+      s:0,
+      url:"mobile-tech-rx-review-auto-detailers.html",
+      vendorUrl:"https://www.mobiletechrx.com/?_by=detailerfit-5e824c",
+      vendorRel:"sponsored noopener",
+      why:"A vehicle-first automotive workflow built around VIN scanning, estimating, before/after documentation, customer records and structured job operations.",
+      baseWatch:"Official sources reviewed clearly publish internal scheduling. They did not clearly establish an equivalent native customer-facing self-booking flow, so verify that workflow directly if it is required. Route optimization is not treated as confirmed here.",
+      tags:["Vehicle-first","VIN + estimating"]
+    },
     "ServiceM8":{
-      s:0,url:"servicem8.html",
+      s:0,
+      url:"servicem8.html",
+      vendorUrl:"https://www.servicem8.com/us/pricing",
+      vendorRel:"noopener",
       why:"Excellent entry economics, online booking on all published plans and unlimited users on paid plans.",
       baseWatch:"ServiceM8 is explicitly Apple-first. Android field staff use ServiceM8 Lite rather than the full iPhone/iPad field experience. Premium Plus includes 1,500 jobs; additional jobs are published at $0.20 each.",
       tags:["Apple-first","Unlimited users on paid plans"]
     },
     "Jobber":{
-      s:0,url:"jobber.html",
+      s:0,
+      url:"jobber.html",
+      vendorUrl:"https://www.getjobber.com/pricing/",
+      vendorRel:"noopener",
       why:"A mature general field-service workflow with online booking on Core and stronger automation, routing and team tools above it.",
       baseWatch:"Jobber is not detailing-specific. Core is one user and DetailerFit uses the published 1- and 5-user Connect configurations. Jobber's pricing page also displays larger team configurations, but current Help Center documentation differs; teams above five should verify the eligible plan and seat configuration directly.",
       tags:["iOS + Android","General field service"]
     },
     "Urable":{
-      s:0,url:"urable.html",
-      why:"The strongest automotive-specialist fit in this five-product set, with unlimited users on every published plan.",
+      s:0,
+      url:"urable.html",
+      vendorUrl:"https://urable.com/pricing/",
+      vendorRel:"noopener",
+      why:"A strong automotive-specialist fit in the six-product Finder, with unlimited users on every published plan.",
       baseWatch:"Express has internal scheduling; customer online booking starts on Pro at $110/month.",
       tags:["Web + iOS + Android","Unlimited users"]
     },
     "Housecall Pro":{
-      s:0,url:"housecall-pro.html",
+      s:0,
+      url:"housecall-pro.html",
+      vendorUrl:"https://www.housecallpro.com/pricing/",
+      vendorRel:"noopener",
       why:"A broad field-service platform with online booking and scheduling/dispatch on Basic, then stronger routing and team controls above it.",
       baseWatch:"It is built for general home-service operations rather than vehicle-care businesses. Teams above eight users can add users to Max at an extra published per-user cost.",
       tags:["iOS + Android","Dispatch-focused"]
@@ -123,6 +165,43 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(needs.includes('automation'))featureIndex=Math.max(featureIndex,2);
     if(booking==='yes'||needs.includes('scale'))featureIndex=Math.max(featureIndex,3);
     return tiers[Math.max(seatIndex,featureIndex)];
+  };
+
+  const mobileTechRxPlan=(team,needs)=>{
+    if(team>10)return {
+      plan:'Custom pricing',
+      cost:null,
+      annual:'',
+      users:`${team} users · custom pricing`,
+      note:'Mobile Tech RX directs teams above 10 people to custom pricing.'
+    };
+
+    let tier='Getting Started';
+    let base=39, extra=15, annualBase=429, annualExtra=165;
+
+    if(needs.includes('scale')){
+      tier='Pro'; base=199; extra=29; annualBase=2189; annualExtra=319;
+    }else if(needs.includes('automation')){
+      tier='Standard'; base=99; extra=29; annualBase=1089; annualExtra=319;
+    }
+
+    const additional=Math.max(0,team-1);
+    const cost=base+(additional*extra);
+    const annualTotal=annualBase+(additional*annualExtra);
+    const annualEffective=annualTotal/12;
+    const annual=`$${annualEffective.toFixed(2).replace('.00','')}/mo effective · $${annualTotal.toFixed(0)}/year`;
+
+    return {
+      plan:tier,
+      cost,
+      annual,
+      users:`1 admin + ${additional} additional user${additional===1?'':'s'}`,
+      note:tier==='Getting Started'
+        ? 'Getting Started includes one service module; Detail is one of the published module choices.'
+        : tier==='Standard'
+          ? 'Standard is the first tier inspected here when broader customer/accounting/admin tools matter.'
+          : 'Pro is the first tier inspected here when workflow management, time tracking and checklists matter.'
+    };
   };
 
   const serviceM8Plan=(team,jobs)=>{
@@ -169,6 +248,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   const planFor=(name,team,jobs,booking,needs)=>{
     if(name==='QuoteIQ')return quoteIqPlan(team,booking,needs);
+    if(name==='Mobile Tech RX')return mobileTechRxPlan(team,needs);
     if(name==='ServiceM8')return serviceM8Plan(team,jobs);
     if(name==='Jobber')return jobberPlan(team,needs);
     if(name==='Urable')return urablePlan(booking,needs);
@@ -188,40 +268,49 @@ document.addEventListener('DOMContentLoaded',()=>{
     const needs=d.getAll('priority');
 
     if(team===1){
-      tools.ServiceM8.s+=6;tools.QuoteIQ.s+=5;tools.Jobber.s+=4;tools.Urable.s+=2;tools["Housecall Pro"].s+=2;
+      tools.ServiceM8.s+=6;tools.QuoteIQ.s+=5;tools["Mobile Tech RX"].s+=4;tools.Jobber.s+=4;tools.Urable.s+=2;tools["Housecall Pro"].s+=2;
     }else if(team<=5){
-      tools.Urable.s+=6;tools.ServiceM8.s+=5;tools.Jobber.s+=5;tools["Housecall Pro"].s+=4;tools.QuoteIQ.s+=4;
+      tools.Urable.s+=6;tools["Mobile Tech RX"].s+=5;tools.ServiceM8.s+=5;tools.Jobber.s+=5;tools["Housecall Pro"].s+=4;tools.QuoteIQ.s+=4;
     }else{
-      tools.Urable.s+=7;tools.Jobber.s+=6;tools.ServiceM8.s+=6;tools["Housecall Pro"].s+=5;tools.QuoteIQ.s+=3;
+      tools.Urable.s+=7;tools.Jobber.s+=6;tools.ServiceM8.s+=6;tools["Housecall Pro"].s+=5;tools["Mobile Tech RX"].s+=4;tools.QuoteIQ.s+=3;
     }
 
     if(jobs<=30){
-      tools.ServiceM8.s+=6;tools.QuoteIQ.s+=5;tools.Jobber.s+=3;
+      tools.ServiceM8.s+=6;tools.QuoteIQ.s+=5;tools["Mobile Tech RX"].s+=3;tools.Jobber.s+=3;
     }else if(jobs<=50){
-      tools.ServiceM8.s+=6;tools.QuoteIQ.s+=4;tools.Jobber.s+=3;tools.Urable.s+=2;
+      tools.ServiceM8.s+=6;tools.QuoteIQ.s+=4;tools["Mobile Tech RX"].s+=4;tools.Jobber.s+=3;tools.Urable.s+=2;
     }else if(jobs<=150){
-      tools.ServiceM8.s+=5;tools.Urable.s+=4;tools.QuoteIQ.s+=4;tools.Jobber.s+=4;tools["Housecall Pro"].s+=3;
+      tools.ServiceM8.s+=5;tools.Urable.s+=4;tools["Mobile Tech RX"].s+=4;tools.QuoteIQ.s+=4;tools.Jobber.s+=4;tools["Housecall Pro"].s+=3;
     }else{
-      tools.Jobber.s+=6;tools["Housecall Pro"].s+=6;tools.Urable.s+=5;tools.ServiceM8.s+=3;tools.QuoteIQ.s+=3;
+      tools.Jobber.s+=6;tools["Housecall Pro"].s+=6;tools.Urable.s+=5;tools["Mobile Tech RX"].s+=4;tools.ServiceM8.s+=3;tools.QuoteIQ.s+=3;
     }
 
     if(booking==='yes'){
-      tools.Jobber.s+=7;tools.ServiceM8.s+=7;tools["Housecall Pro"].s+=6;tools.Urable.s+=5;tools.QuoteIQ.s+=1;
+      tools.Jobber.s+=7;tools.ServiceM8.s+=7;tools["Housecall Pro"].s+=6;tools.Urable.s+=5;tools.QuoteIQ.s+=1;tools["Mobile Tech RX"].s-=5;
     }else if(booking==='no'){
-      tools.QuoteIQ.s+=4;tools.ServiceM8.s+=3;
+      tools.QuoteIQ.s+=4;tools.ServiceM8.s+=3;tools["Mobile Tech RX"].s+=3;
     }
 
     if(device==='iphone'){
-      tools.ServiceM8.s+=7;tools.QuoteIQ.s+=3;tools.Jobber.s+=3;tools.Urable.s+=3;tools["Housecall Pro"].s+=3;
+      tools.ServiceM8.s+=7;tools.QuoteIQ.s+=3;tools["Mobile Tech RX"].s+=3;tools.Jobber.s+=3;tools.Urable.s+=3;tools["Housecall Pro"].s+=3;
     }else if(device==='android'){
-      tools.ServiceM8.s-=7;tools.QuoteIQ.s+=4;tools.Jobber.s+=4;tools.Urable.s+=4;tools["Housecall Pro"].s+=4;
+      tools.ServiceM8.s-=7;tools.QuoteIQ.s+=4;tools["Mobile Tech RX"].s+=3;tools.Jobber.s+=4;tools.Urable.s+=4;tools["Housecall Pro"].s+=4;
     }else{
       Object.values(tools).forEach(x=>x.s+=2);
     }
 
-    if(needs.includes('detail')){tools.Urable.s+=7;tools.QuoteIQ.s+=6}
-    if(needs.includes('automation')){tools.QuoteIQ.s+=5;tools.Jobber.s+=5;tools["Housecall Pro"].s+=3;tools.Urable.s+=3;tools.ServiceM8.s+=3}
-    if(needs.includes('scale')){tools.Urable.s+=6;tools.Jobber.s+=6;tools["Housecall Pro"].s+=5;tools.ServiceM8.s+=5;tools.QuoteIQ.s+=3}
+    if(needs.includes('detail')){
+      tools["Mobile Tech RX"].s+=8;tools.Urable.s+=7;tools.QuoteIQ.s+=6;
+    }
+    if(needs.includes('vehicle')){
+      tools["Mobile Tech RX"].s+=10;tools.Urable.s+=4;tools.QuoteIQ.s+=2;
+    }
+    if(needs.includes('automation')){
+      tools.QuoteIQ.s+=5;tools.Jobber.s+=5;tools["Housecall Pro"].s+=3;tools.Urable.s+=3;tools.ServiceM8.s+=3;tools["Mobile Tech RX"].s+=2;
+    }
+    if(needs.includes('scale')){
+      tools.Urable.s+=6;tools.Jobber.s+=6;tools["Housecall Pro"].s+=5;tools.ServiceM8.s+=5;tools["Mobile Tech RX"].s+=4;tools.QuoteIQ.s+=3;
+    }
 
     const entries=Object.entries(tools).map(([name,t])=>{
       const p=planFor(name,team,jobs,booking,needs);
@@ -262,6 +351,8 @@ document.addEventListener('DOMContentLoaded',()=>{
           ? `<span class="pill overpill">$${x.gap.toFixed(0)} over budget</span>`
           : `<span class="pill">Price to verify</span>`;
       const annual=p.annual?`<div class="small annual-note"><strong>Annual billing:</strong> ${p.annual}</div>`:'';
+      const planNote=p.note?`<div class="small"><strong>Plan note:</strong> ${p.note}</div>`:'';
+      const vendorRel=x.vendorRel||'noopener';
       return `
         <article class="result ${i===0?'top':''}">
           <div class="result-head">
@@ -274,12 +365,14 @@ document.addEventListener('DOMContentLoaded',()=>{
           <div class="result-plan"><strong>Plan to inspect first:</strong> ${p.plan} · ${money(p.cost)}</div>
           ${annual}
           <div class="small"><strong>Capacity:</strong> ${p.users}</div>
+          ${planNote}
           <p class="small">${x.why}</p>
           <div class="result-tags">${x.tags.map(tag=>`<span class="result-tag">${tag}</span>`).join('')}</div>
           <div class="result-watch"><strong>Verify before buying:</strong> ${x.baseWatch}</div>
           <div class="actions">
             <a class="btn secondary" href="${x.url}">See research notes</a>
-            ${i===0?'<a class="btn ghost" href="compare.html">Compare all 5</a>':''}
+            <a class="btn primary" data-vendor="${x.name}" href="${x.vendorUrl}" rel="${vendorRel}">Visit ${x.name}</a>
+            ${i===0?'<a class="btn ghost" href="compare.html">Open comparison hub</a>':''}
           </div>
         </article>`;
     }).join('');

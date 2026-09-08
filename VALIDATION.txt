@@ -1,0 +1,90 @@
+DetailerFit final patch validation — 2026-09-08
+
+All 10 HTML files: exactly one H1, one canonical, OG title, and Twitter card.
+Reviews: CollectionPage schema and consistent H2 product-card headings.
+Best Auto Detailing Software: equal-weight CTA buttons for all 6 vendors + Official Sources.
+QuoteIQ Alternatives: balanced final CTA hierarchy.
+OrbisX Review: redundant research disclosure removed.
+
+[
+  {
+    "file": "about.html",
+    "h1": 1,
+    "canonical": 1,
+    "og_title": 1,
+    "twitter_card": 1,
+    "affiliate_sponsored": 0
+  },
+  {
+    "file": "best-auto-detailing-software-2026.html",
+    "h1": 1,
+    "canonical": 1,
+    "og_title": 1,
+    "twitter_card": 1,
+    "affiliate_sponsored": 1
+  },
+  {
+    "file": "contact.html",
+    "h1": 1,
+    "canonical": 1,
+    "og_title": 1,
+    "twitter_card": 1,
+    "affiliate_sponsored": 0
+  },
+  {
+    "file": "guides.html",
+    "h1": 1,
+    "canonical": 1,
+    "og_title": 1,
+    "twitter_card": 1,
+    "affiliate_sponsored": 0
+  },
+  {
+    "file": "orbisx-review-auto-detailers.html",
+    "h1": 1,
+    "canonical": 1,
+    "og_title": 1,
+    "twitter_card": 1,
+    "affiliate_sponsored": 0
+  },
+  {
+    "file": "quoteiq-alternatives-mobile-detailing.html",
+    "h1": 1,
+    "canonical": 1,
+    "og_title": 1,
+    "twitter_card": 1,
+    "affiliate_sponsored": 2
+  },
+  {
+    "file": "quoteiq-vs-servicem8-mobile-detailers.html",
+    "h1": 1,
+    "canonical": 1,
+    "og_title": 1,
+    "twitter_card": 1,
+    "affiliate_sponsored": 1
+  },
+  {
+    "file": "reviews.html",
+    "h1": 1,
+    "canonical": 1,
+    "og_title": 1,
+    "twitter_card": 1,
+    "affiliate_sponsored": 2
+  },
+  {
+    "file": "urable-vs-jobber.html",
+    "h1": 1,
+    "canonical": 1,
+    "og_title": 1,
+    "twitter_card": 1,
+    "affiliate_sponsored": 0
+  },
+  {
+    "file": "urable-vs-servicem8-mobile-detailers.html",
+    "h1": 1,
+    "canonical": 1,
+    "og_title": 1,
+    "twitter_card": 1,
+    "affiliate_sponsored": 0
+  }
+]

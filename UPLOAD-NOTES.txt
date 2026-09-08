@@ -1,0 +1,17 @@
+Upload these files to the repository root, replacing the files with the same names.
+
+Finalized files:
+- about.html
+- best-auto-detailing-software-2026.html
+- contact.html
+- guides.html
+- orbisx-review-auto-detailers.html
+- quoteiq-alternatives-mobile-detailing.html
+- quoteiq-vs-servicem8-mobile-detailers.html
+- reviews.html
+- urable-vs-jobber.html
+- urable-vs-servicem8-mobile-detailers.html
+
+No changes are required to styles.css or app.js for this patch. The current repository versions already include reduced-motion handling, button/card hover states, aria-expanded menu state updates, outside-click close, and Escape-key close.
+
+GitHub connector write access returned HTTP 403, so this package was not pushed automatically.

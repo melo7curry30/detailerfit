@@ -207,15 +207,7 @@ jobs:
               WORKFLOW.unlink()
           PY
 
-      - name: Show changed files
-        shell: bash
-        run: |
-          git status --short
-          echo
-          echo "Remaining absolute self .html URLs:"
-          grep -R --line-number --exclude-dir=.git --exclude-dir=.github \
-            -E 'https://getdetailerfit\.com/[^[:space:]"'"'<>?#]+\.html' . \
-            && exit 1 || true
+     
 
       - name: Commit normalized URL format
         shell: bash

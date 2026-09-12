@@ -3,7 +3,7 @@ name: DetailerFit Extensionless URL SEO Fix
 on:
   push:
     paths:
-      - ".github/workflows/detailerfit-extensionless-seo.yml"
+      - ".github/workflows/detailerfit-seo-repair.yml"
   workflow_dispatch:
 
 permissions:
@@ -28,7 +28,7 @@ jobs:
 
           ROOT = Path('.')
           DOMAIN = 'https://getdetailerfit.com'
-          WORKFLOW = Path('.github/workflows/detailerfit-extensionless-seo.yml')
+          WORKFLOW = Path('.github/workflows/detailerfit-seo…repair.yml')
           text_suffixes = {'.html', '.xml', '.txt', '.md', '.css', '.js', '.json', '.webmanifest'}
 
           def is_google_verification(path: Path) -> bool:

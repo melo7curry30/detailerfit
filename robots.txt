@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://detailerfit-git.carmelo7kobe24.workers.dev/sitemap.xml
+Sitemap: https://getdetailerfit.com/sitemap.xml

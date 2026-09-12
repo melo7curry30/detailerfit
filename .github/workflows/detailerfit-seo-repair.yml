@@ -1,0 +1,483 @@
+name: DetailerFit One-Time SEO Repair
+
+on:
+  push:
+    paths:
+      - ".github/workflows/detailerfit-seo-repair.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Repair canonical URLs, duplicates, sitemap and robots
+        shell: bash
+        run: |
+          python <<'PY'
+          from pathlib import Path
+          import os
+          import re
+          import shutil
+          from urllib.parse import urlsplit
+
+          ROOT = Path(".")
+          DOMAIN = "https://getdetailerfit.com"
+          OLD_DOMAIN = "https://detailerfit-git.carmelo7kobe24.workers.dev"
+          OLD_DOMAIN_HTTP = "http://detailerfit-git.carmelo7kobe24.workers.dev"
+
+          promotions = [
+              (
+                  Path("best-ai-receptionists-auto-detailing-updated.html"),
+                  Path("best-ai-receptionists-auto-detailing.html"),
+              ),
+              (
+                  Path("best-ai-software-auto-detailing-linked.html"),
+                  Path("best-ai-software-auto-detailing.html"),
+              ),
+              (
+                  Path("best-software-ppf-business-omniplot-linked.html"),
+                  Path("best-software-ppf-business.html"),
+              ),
+          ]
+
+          promoted = []
+          for src, dst in promotions:
+              if src.exists():
+                  shutil.copy2(src, dst)
+                  promoted.append(f"{src} -> {dst}")
+
+          duplicate_redirects = {
+              "/best-ai-receptionists-auto-detailing-updated.html":
+                  "/best-ai-receptionists-auto-detailing.html",
+              "/best-ai-software-auto-detailing-linked.html":
+                  "/best-ai-software-auto-detailing.html",
+              "/best-ai-software-auto-detailing-updated.html":
+                  "/best-ai-software-auto-detailing.html",
+              "/best-software-ppf-business-omniplot-linked.html":
+                  "/best-software-ppf-business.html",
+              "/urable-vs-jobber-mobile-detailers.html":
+                  "/urable-vs-jobber.html",
+          }
+
+          for source_url in duplicate_redirects:
+              file_path = Path(source_url.lstrip("/"))
+              if file_path.exists():
+                  file_path.unlink()
+
+          text_suffixes = {
+              ".html", ".xml", ".txt", ".md", ".css", ".js",
+              ".json", ".webmanifest"
+          }
+
+          replaced_refs = 0
+          for path in ROOT.rglob("*"):
+              if not path.is_file():
+                  continue
+              if ".git" in path.parts:
+                  continue
+              if path.suffix.lower() not in text_suffixes and path.name not in {"_redirects", "_headers"}:
+                  continue
+
+              try:
+                  text = path.read_text(encoding="utf-8")
+              except UnicodeDecodeError:
+                  continue
+
+              original = text
+              text = text.replace(OLD_DOMAIN, DOMAIN)
+              text = text.replace(OLD_DOMAIN_HTTP, DOMAIN)
+              text = text.replace("http://getdetailerfit.com", DOMAIN)
+
+              if text != original:
+                  replaced_refs += original.count(OLD_DOMAIN)
+                  replaced_refs += original.count(OLD_DOMAIN_HTTP)
+                  replaced_refs += original.count("http://getdetailerfit.com")
+                  path.write_text(text, encoding="utf-8")
+
+          canonical_re = re.compile(
+              r'<link\b(?=[^>]*\brel\s*=\s*["\']canonical["\'])[^>]*>\s*',
+              re.I,
+          )
+
+          og_url_re = re.compile(
+              r'<meta\b(?=[^>]*\bproperty\s*=\s*["\']og:url["\'])[^>]*>\s*',
+              re.I,
+          )
+
+          robots_meta_re = re.compile(
+              r'<meta\b(?=[^>]*\bname\s*=\s*["\']robots["\'])[^>]*>\s*',
+              re.I,
+          )
+
+          def is_google_verification(path: Path) -> bool:
+              return bool(re.fullmatch(r"google[a-zA-Z0-9_-]+\.html", path.name))
+
+          def canonical_url(path: Path) -> str:
+              rel = path.relative_to(ROOT).as_posix()
+              if rel == "index.html":
+                  return DOMAIN + "/"
+              return DOMAIN + "/" + rel
+
+          indexable_html = []
+          normalized_html = 0
+
+          for path in sorted(ROOT.rglob("*.html")):
+              if ".git" in path.parts or ".github" in path.parts:
+                  continue
+
+              if is_google_verification(path):
+                  continue
+
+              text = path.read_text(encoding="utf-8", errors="strict")
+
+              if path.name == "404.html":
+                  text = canonical_re.sub("", text)
+                  text = og_url_re.sub("", text)
+                  text = robots_meta_re.sub("", text)
+
+                  marker = '<meta name="robots" content="noindex,follow">\n'
+
+                  if "</head>" in text.lower():
+                      pos = text.lower().find("</head>")
+                      text = text[:pos] + marker + text[pos:]
+
+                  path.write_text(text, encoding="utf-8")
+                  continue
+
+              url = canonical_url(path)
+              indexable_html.append(path)
+
+              text = canonical_re.sub("", text)
+              text = og_url_re.sub("", text)
+
+              seo_tags = (
+                  f'<link rel="canonical" href="{url}">\n'
+                  f'<meta property="og:url" content="{url}">\n'
+              )
+
+              lower = text.lower()
+              head_close = lower.find("</head>")
+
+              if head_close == -1:
+                  raise RuntimeError(f"{path}: missing </head>")
+
+              text = text[:head_close] + seo_tags + text[head_close:]
+              path.write_text(text, encoding="utf-8")
+              normalized_html += 1
+
+          redirects_path = Path("_redirects")
+          existing_rules = []
+
+          if redirects_path.exists():
+              for line in redirects_path.read_text(encoding="utf-8").splitlines():
+                  stripped = line.strip()
+
+                  if stripped and not stripped.startswith("#"):
+                      existing_rules.append(stripped)
+
+          wanted_rules = list(existing_rules)
+
+          for src, dst in duplicate_redirects.items():
+              rule = f"{src} {dst} 301"
+
+              if rule not in wanted_rules:
+                  wanted_rules.append(rule)
+
+          redirects_path.write_text(
+              "# DetailerFit permanent redirects\n"
+              + "\n".join(wanted_rules)
+              + "\n",
+              encoding="utf-8",
+          )
+
+          sitemap_urls = []
+
+          for path in indexable_html:
+              sitemap_urls.append(canonical_url(path))
+
+          sitemap_urls = sorted(
+              set(sitemap_urls),
+              key=lambda u: (u != DOMAIN + "/", u),
+          )
+
+          xml_lines = [
+              '<?xml version="1.0" encoding="UTF-8"?>',
+              '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+          ]
+
+          for url in sitemap_urls:
+              xml_lines.extend([
+                  "  <url>",
+                  f"    <loc>{url}</loc>",
+                  "  </url>",
+              ])
+
+          xml_lines.append("</urlset>")
+
+          Path("sitemap.xml").write_text(
+              "\n".join(xml_lines) + "\n",
+              encoding="utf-8",
+          )
+
+          Path("robots.txt").write_text(
+              "User-agent: *\n"
+              "Allow: /\n\n"
+              f"Sitemap: {DOMAIN}/sitemap.xml\n",
+              encoding="utf-8",
+          )
+
+          href_re = re.compile(
+              r'href\s*=\s*["\']([^"\']+)["\']',
+              re.I
+          )
+
+          broken_local_links = set()
+
+          for page in indexable_html:
+              text = page.read_text(encoding="utf-8")
+
+              for href in href_re.findall(text):
+                  href = href.strip()
+
+                  if (
+                      not href
+                      or href.startswith((
+                          "#",
+                          "mailto:",
+                          "tel:",
+                          "javascript:",
+                          "data:"
+                      ))
+                  ):
+                      continue
+
+                  parsed = urlsplit(href)
+
+                  if parsed.scheme in {"http", "https"} or parsed.netloc:
+                      continue
+
+                  target = parsed.path
+
+                  if not target:
+                      continue
+
+                  if target.startswith("/"):
+                      candidate = ROOT / target.lstrip("/")
+                  else:
+                      candidate = page.parent / target
+
+                  if target.endswith("/"):
+                      candidate = candidate / "index.html"
+
+                  if (
+                      candidate.suffix.lower() in {".html", ""}
+                      and not candidate.exists()
+                  ):
+                      redirect_source = "/" + candidate.relative_to(ROOT).as_posix()
+
+                      if redirect_source not in duplicate_redirects:
+                          broken_local_links.add(
+                              f"{page.as_posix()} -> {href}"
+                          )
+
+          errors = []
+
+          legacy_needles = [
+              "detailerfit-git.carmelo7kobe24.workers.dev",
+              "http://getdetailerfit.com",
+          ]
+
+          for path in ROOT.rglob("*"):
+              if not path.is_file() or ".git" in path.parts:
+                  continue
+
+              if (
+                  path.suffix.lower() not in text_suffixes
+                  and path.name not in {"_redirects", "_headers"}
+              ):
+                  continue
+
+              try:
+                  text = path.read_text(encoding="utf-8")
+              except UnicodeDecodeError:
+                  continue
+
+              for needle in legacy_needles:
+                  if needle in text:
+                      errors.append(
+                          f"{path}: legacy URL remains: {needle}"
+                      )
+
+          canonical_extract_re = re.compile(
+              r'<link\b(?=[^>]*\brel\s*=\s*["\']canonical["\'])'
+              r'(?=[^>]*\bhref\s*=\s*["\']([^"\']+)["\'])[^>]*>',
+              re.I,
+          )
+
+          og_extract_re = re.compile(
+              r'<meta\b(?=[^>]*\bproperty\s*=\s*["\']og:url["\'])'
+              r'(?=[^>]*\bcontent\s*=\s*["\']([^"\']+)["\'])[^>]*>',
+              re.I,
+          )
+
+          for path in indexable_html:
+              text = path.read_text(encoding="utf-8")
+              expected = canonical_url(path)
+
+              canonicals = canonical_extract_re.findall(text)
+              og_urls = og_extract_re.findall(text)
+
+              if canonicals != [expected]:
+                  errors.append(
+                      f"{path}: canonical mismatch: {canonicals!r}, expected {expected}"
+                  )
+
+              if og_urls != [expected]:
+                  errors.append(
+                      f"{path}: og:url mismatch: {og_urls!r}, expected {expected}"
+                  )
+
+          sitemap_text = Path("sitemap.xml").read_text(
+              encoding="utf-8"
+          )
+
+          locs = re.findall(
+              r"<loc>(.*?)</loc>",
+              sitemap_text
+          )
+
+          if locs != sitemap_urls:
+              errors.append(
+                  "sitemap.xml URLs do not exactly match canonical HTML pages"
+              )
+
+          if any(
+              "workers.dev" in u or u.startswith("http://")
+              for u in locs
+          ):
+              errors.append(
+                  "sitemap.xml still contains non-canonical hosts"
+              )
+
+          expected_robots = (
+              "User-agent: *\n"
+              "Allow: /\n\n"
+              f"Sitemap: {DOMAIN}/sitemap.xml\n"
+          )
+
+          if (
+              Path("robots.txt").read_text(encoding="utf-8")
+              != expected_robots
+          ):
+              errors.append(
+                  "robots.txt is not canonical"
+              )
+
+          for src in duplicate_redirects:
+              if Path(src.lstrip("/")).exists():
+                  errors.append(
+                      f"duplicate file still exists: {src}"
+                  )
+
+          if errors:
+              print("\nVALIDATION FAILED:")
+
+              for error in errors:
+                  print(" -", error)
+
+              raise SystemExit(1)
+
+          summary = [
+              "# DetailerFit SEO Repair",
+              "",
+              f"- Promoted latest article versions: {len(promoted)}",
+              f"- Legacy domain references replaced: {replaced_refs}",
+              f"- HTML pages normalized: {normalized_html}",
+              f"- Canonical URLs in sitemap: {len(sitemap_urls)}",
+              f"- Permanent duplicate redirects: {len(duplicate_redirects)}",
+              f"- Broken local-link warnings: {len(broken_local_links)}",
+              "",
+          ]
+
+          if promoted:
+              summary.append("## Promoted files")
+              summary.extend(
+                  f"- `{item}`"
+                  for item in promoted
+              )
+              summary.append("")
+
+          if broken_local_links:
+              summary.append("## Local-link warnings")
+              summary.extend(
+                  f"- `{item}`"
+                  for item in sorted(broken_local_links)
+              )
+              summary.append("")
+
+          summary.append(
+              "Canonical/indexing validation passed."
+          )
+
+          summary_path = os.environ.get(
+              "GITHUB_STEP_SUMMARY"
+          )
+
+          if summary_path:
+              with open(
+                  summary_path,
+                  "a",
+                  encoding="utf-8"
+              ) as fh:
+                  fh.write(
+                      "\n".join(summary) + "\n"
+                  )
+
+          print(
+              "\n".join(summary)
+          )
+
+          workflow_path = Path(
+              ".github/workflows/detailerfit-seo-repair.yml"
+          )
+
+          if workflow_path.exists():
+              workflow_path.unlink()
+
+          PY
+
+      - name: Show changed files
+        run: |
+          git status --short
+          echo
+          echo "Remaining legacy host references:"
+          grep -R --line-number \
+            --exclude-dir=.git \
+            --exclude='*.zip' \
+            'detailerfit-git.carmelo7kobe24.workers.dev\|http://getdetailerfit.com' . \
+            && exit 1 || true
+
+      - name: Commit repaired site
+        shell: bash
+        run: |
+          git config user.name "DetailerFit SEO Repair"
+          git config user.email "actions@users.noreply.github.com"
+
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo "No changes were necessary."
+            exit 0
+          fi
+
+          git commit -m "Fix canonical URLs, sitemap, robots and duplicate SEO pages"
+          git push

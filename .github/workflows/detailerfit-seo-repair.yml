@@ -1,0 +1,231 @@
+name: DetailerFit Extensionless URL SEO Fix
+
+on:
+  push:
+    paths:
+      - ".github/workflows/detailerfit-extensionless-seo.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  normalize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Normalize public URLs to Cloudflare extensionless format
+        shell: bash
+        run: |
+          python <<'PY'
+          from pathlib import Path
+          import re
+          from urllib.parse import urlsplit, urlunsplit
+
+          ROOT = Path('.')
+          DOMAIN = 'https://getdetailerfit.com'
+          WORKFLOW = Path('.github/workflows/detailerfit-extensionless-seo.yml')
+          text_suffixes = {'.html', '.xml', '.txt', '.md', '.css', '.js', '.json', '.webmanifest'}
+
+          def is_google_verification(path: Path) -> bool:
+              return bool(re.fullmatch(r'google[a-zA-Z0-9_-]+\.html', path.name))
+
+          def public_url(path: Path) -> str:
+              rel = path.relative_to(ROOT).as_posix()
+              if rel == 'index.html':
+                  return DOMAIN + '/'
+              return DOMAIN + '/' + rel[:-5]
+
+          own_html_re = re.compile(r'https://getdetailerfit\.com/([^\s\"\'<>?#]+)\.html', re.I)
+
+          def replace_own_html(match: re.Match) -> str:
+              stem = match.group(1)
+              return DOMAIN + '/' if stem == 'index' else DOMAIN + '/' + stem
+
+          href_re = re.compile(r'(?P<prefix>\bhref\s*=\s*[\"\'])(?P<url>[^\"\']+)(?P<suffix>[\"\'])', re.I)
+
+          def normalize_local_href(match: re.Match) -> str:
+              href = match.group('url').strip()
+              if not href or href.startswith(('#', 'mailto:', 'tel:', 'javascript:', 'data:')):
+                  return match.group(0)
+              parsed = urlsplit(href)
+              if parsed.scheme or parsed.netloc or not parsed.path.endswith('.html'):
+                  return match.group(0)
+              new_path = '/' if parsed.path in ('index.html', '/index.html') else parsed.path[:-5]
+              new_href = urlunsplit(('', '', new_path, parsed.query, parsed.fragment))
+              return match.group('prefix') + new_href + match.group('suffix')
+
+          replaced_absolute = 0
+          rewritten_html_files = 0
+
+          for path in ROOT.rglob('*'):
+              if not path.is_file() or '.git' in path.parts or '.github' in path.parts:
+                  continue
+              if path.suffix.lower() not in text_suffixes and path.name not in {'_redirects', '_headers'}:
+                  continue
+              if is_google_verification(path):
+                  continue
+              try:
+                  text = path.read_text(encoding='utf-8')
+              except UnicodeDecodeError:
+                  continue
+              original = text
+              replaced_absolute += len(own_html_re.findall(text))
+              text = own_html_re.sub(replace_own_html, text)
+              if path.suffix.lower() == '.html':
+                  before = text
+                  text = href_re.sub(normalize_local_href, text)
+                  if text != before:
+                      rewritten_html_files += 1
+              if text != original:
+                  path.write_text(text, encoding='utf-8')
+
+          canonical_re = re.compile(r'<link\b(?=[^>]*\brel\s*=\s*[\"\']canonical[\"\'])[^>]*>\s*', re.I)
+          og_url_re = re.compile(r'<meta\b(?=[^>]*\bproperty\s*=\s*[\"\']og:url[\"\'])[^>]*>\s*', re.I)
+          robots_meta_re = re.compile(r'<meta\b(?=[^>]*\bname\s*=\s*[\"\']robots[\"\'])[^>]*>\s*', re.I)
+
+          indexable_html = []
+          normalized = 0
+          for path in sorted(ROOT.rglob('*.html')):
+              if '.git' in path.parts or '.github' in path.parts or is_google_verification(path):
+                  continue
+              text = path.read_text(encoding='utf-8')
+              if path.name == '404.html':
+                  text = canonical_re.sub('', text)
+                  text = og_url_re.sub('', text)
+                  text = robots_meta_re.sub('', text)
+                  marker = '<meta name="robots" content="noindex,follow">\n'
+                  pos = text.lower().find('</head>')
+                  if pos == -1:
+                      raise RuntimeError('404.html: missing </head>')
+                  path.write_text(text[:pos] + marker + text[pos:], encoding='utf-8')
+                  continue
+              url = public_url(path)
+              indexable_html.append(path)
+              text = canonical_re.sub('', text)
+              text = og_url_re.sub('', text)
+              tags = f'<link rel="canonical" href="{url}">\n<meta property="og:url" content="{url}">\n'
+              pos = text.lower().find('</head>')
+              if pos == -1:
+                  raise RuntimeError(f'{path}: missing </head>')
+              path.write_text(text[:pos] + tags + text[pos:], encoding='utf-8')
+              normalized += 1
+
+          redirects_path = Path('_redirects')
+          if redirects_path.exists():
+              out = []
+              for line in redirects_path.read_text(encoding='utf-8').splitlines():
+                  stripped = line.strip()
+                  if not stripped or stripped.startswith('#'):
+                      out.append(line)
+                      continue
+                  parts = stripped.split()
+                  if len(parts) >= 2 and parts[1].endswith('.html'):
+                      parts[1] = parts[1][:-5]
+                  out.append(' '.join(parts))
+              redirects_path.write_text('\n'.join(out).rstrip() + '\n', encoding='utf-8')
+
+          sitemap_urls = sorted({public_url(p) for p in indexable_html}, key=lambda u: (u != DOMAIN + '/', u))
+          xml = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+          for url in sitemap_urls:
+              xml += ['  <url>', f'    <loc>{url}</loc>', '  </url>']
+          xml.append('</urlset>')
+          Path('sitemap.xml').write_text('\n'.join(xml) + '\n', encoding='utf-8')
+          Path('robots.txt').write_text('User-agent: *\nAllow: /\n\nSitemap: https://getdetailerfit.com/sitemap.xml\n', encoding='utf-8')
+
+          canonical_extract = re.compile(r'<link\b(?=[^>]*\brel\s*=\s*[\"\']canonical[\"\'])(?=[^>]*\bhref\s*=\s*[\"\']([^\"\']+)[\"\'])[^>]*>', re.I)
+          og_extract = re.compile(r'<meta\b(?=[^>]*\bproperty\s*=\s*[\"\']og:url[\"\'])(?=[^>]*\bcontent\s*=\s*[\"\']([^\"\']+)[\"\'])[^>]*>', re.I)
+          errors = []
+          broken_links = set()
+
+          for path in indexable_html:
+              text = path.read_text(encoding='utf-8')
+              expected = public_url(path)
+              if canonical_extract.findall(text) != [expected]:
+                  errors.append(f'{path}: canonical mismatch')
+              if og_extract.findall(text) != [expected]:
+                  errors.append(f'{path}: og:url mismatch')
+              for m in href_re.finditer(text):
+                  href = m.group('url').strip()
+                  if not href or href.startswith(('#', 'mailto:', 'tel:', 'javascript:', 'data:')):
+                      continue
+                  parsed = urlsplit(href)
+                  if parsed.scheme or parsed.netloc:
+                      continue
+                  p = parsed.path
+                  if p.endswith('.html'):
+                      errors.append(f'{path}: internal .html href remains: {href}')
+                      continue
+                  if not p or p == '/':
+                      continue
+                  candidate = ROOT / p.lstrip('/') if p.startswith('/') else path.parent / p
+                  if candidate.suffix.lower() in {'.css', '.js', '.png', '.jpg', '.jpeg', '.webp', '.svg', '.ico', '.xml', '.txt', '.pdf'}:
+                      continue
+                  if candidate.exists() or candidate.with_suffix('.html').exists():
+                      continue
+                  broken_links.add(f'{path} -> {href}')
+
+          locs = re.findall(r'<loc>(.*?)</loc>', Path('sitemap.xml').read_text(encoding='utf-8'))
+          if locs != sitemap_urls:
+              errors.append('sitemap URLs do not exactly match extensionless canonicals')
+          if any(u.endswith('.html') for u in locs):
+              errors.append('sitemap still contains .html URLs')
+
+          for path in ROOT.rglob('*'):
+              if not path.is_file() or '.git' in path.parts or '.github' in path.parts or is_google_verification(path):
+                  continue
+              if path.suffix.lower() not in text_suffixes and path.name not in {'_redirects', '_headers'}:
+                  continue
+              try:
+                  text = path.read_text(encoding='utf-8')
+              except UnicodeDecodeError:
+                  continue
+              if re.search(r'https://getdetailerfit\.com/[^\s\"\'<>?#]+\.html', text, re.I):
+                  errors.append(f'{path}: absolute DetailerFit .html URL remains')
+
+          if errors:
+              print('VALIDATION FAILED:')
+              for error in errors:
+                  print(' -', error)
+              raise SystemExit(1)
+
+          print('# DetailerFit Extensionless SEO Fix')
+          print(f'- HTML pages normalized: {normalized}')
+          print(f'- Absolute .html self-URLs rewritten: {replaced_absolute}')
+          print(f'- HTML files with internal href rewrites: {rewritten_html_files}')
+          print(f'- Sitemap URLs: {len(sitemap_urls)}')
+          print(f'- Broken local-link warnings: {len(broken_links)}')
+          for item in sorted(broken_links):
+              print('  -', item)
+          print('Extensionless canonical validation passed.')
+
+          if WORKFLOW.exists():
+              WORKFLOW.unlink()
+          PY
+
+      - name: Show changed files
+        shell: bash
+        run: |
+          git status --short
+          echo
+          echo "Remaining absolute self .html URLs:"
+          grep -R --line-number --exclude-dir=.git --exclude-dir=.github \
+            -E 'https://getdetailerfit\.com/[^[:space:]"'"'<>?#]+\.html' . \
+            && exit 1 || true
+
+      - name: Commit normalized URL format
+        shell: bash
+        run: |
+          git config user.name "DetailerFit SEO Repair"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes were necessary."
+            exit 0
+          fi
+          git commit -m "Align canonical URLs with Cloudflare extensionless routes"
+          git push

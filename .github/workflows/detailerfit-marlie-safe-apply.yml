@@ -1,0 +1,189 @@
+name: Apply Marlie AI changes safely
+
+on:
+  push:
+    paths:
+      - ".github/workflows/detailerfit-marlie-safe-apply.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Apply Marlie payload with safe 3-way merges
+        shell: python
+        run: |
+          import ast
+          import json
+          import subprocess
+          import tempfile
+          from pathlib import Path
+
+          source = Path(".github/workflows/detailerfit-marlie-ai-implementation.yml")
+          if not source.exists():
+              raise SystemExit("Missing source workflow: " + str(source))
+
+          text = source.read_text(encoding="utf-8")
+          payload_line = None
+
+          for line in text.splitlines():
+              stripped = line.strip()
+              if stripped.startswith("payload = json.loads("):
+                  payload_line = stripped
+                  break
+
+          if payload_line is None or not payload_line.endswith(")"):
+              raise SystemExit("Could not locate the embedded Marlie payload.")
+
+          expr = payload_line[len("payload = json.loads("):-1]
+
+          try:
+              payload_json = ast.literal_eval(expr)
+              payload = json.loads(payload_json)
+          except Exception as exc:
+              raise SystemExit(f"Could not decode Marlie payload: {exc}")
+
+          changed = []
+          already_done = []
+
+          for name, data in payload.items():
+              path = Path(name)
+              before = data.get("before")
+              after = data.get("after")
+              current = path.read_text(encoding="utf-8") if path.exists() else None
+
+              if current == after:
+                  already_done.append(name)
+                  continue
+
+              if before is None:
+                  if current is None:
+                      path.parent.mkdir(parents=True, exist_ok=True)
+                      path.write_text(after, encoding="utf-8")
+                      changed.append(name)
+                      continue
+                  raise SystemExit(
+                      "Refusing to overwrite an unexpected existing new file: " + name
+                  )
+
+              if current == before:
+                  path.write_text(after, encoding="utf-8")
+                  changed.append(name)
+                  continue
+
+              # The repository changed after the Marlie workflow was generated.
+              # Apply the Marlie before->after delta to the current file with a
+              # true 3-way merge so unrelated newer edits are preserved.
+              with tempfile.TemporaryDirectory() as td:
+                  td = Path(td)
+                  current_file = td / "current"
+                  base_file = td / "base"
+                  desired_file = td / "desired"
+
+                  current_file.write_text(current, encoding="utf-8")
+                  base_file.write_text(before, encoding="utf-8")
+                  desired_file.write_text(after, encoding="utf-8")
+
+                  result = subprocess.run(
+                      [
+                          "git",
+                          "merge-file",
+                          "-p",
+                          str(current_file),
+                          str(base_file),
+                          str(desired_file),
+                      ],
+                      capture_output=True,
+                      text=True,
+                  )
+
+                  if result.returncode != 0:
+                      raise SystemExit(
+                          f"3-way merge conflict in {name}. "
+                          "No commit was created. Resolve this file before retrying."
+                      )
+
+                  merged = result.stdout
+
+              if "<<<<<<<" in merged or "=======" in merged or ">>>>>>>" in merged:
+                  raise SystemExit(
+                      f"Conflict markers detected in {name}. No commit was created."
+                  )
+
+              path.write_text(merged, encoding="utf-8")
+              changed.append(name)
+
+          # Critical monetization checks
+          affiliate_url = "https://www.marlie.ai/?via=ryo"
+          review = Path("marlie-ai-review-auto-detailers.html")
+          if not review.exists():
+              raise SystemExit("Marlie review page was not created.")
+
+          review_text = review.read_text(encoding="utf-8")
+          if affiliate_url not in review_text:
+              raise SystemExit("Marlie affiliate URL missing from review page.")
+          if 'rel="sponsored noopener"' not in review_text:
+              raise SystemExit('Missing rel="sponsored noopener" on Marlie review page.')
+          if 'data-vendor="Marlie AI"' not in review_text:
+              raise SystemExit('Missing data-vendor="Marlie AI" on Marlie review page.')
+
+          disclosure = Path("affiliate-disclosure.html").read_text(encoding="utf-8")
+          if "Marlie AI" not in disclosure:
+              raise SystemExit("Marlie AI missing from affiliate disclosure.")
+
+          sitemap = Path("sitemap.xml").read_text(encoding="utf-8")
+          marlie_url = "https://getdetailerfit.com/marlie-ai-review-auto-detailers"
+          if sitemap.count(marlie_url) != 1:
+              raise SystemExit(
+                  f"Sitemap should contain the Marlie review URL exactly once; "
+                  f"found {sitemap.count(marlie_url)}."
+              )
+
+          print("Changed files:")
+          for name in changed:
+              print(" -", name)
+
+          if already_done:
+              print("Already applied:")
+              for name in already_done:
+                  print(" -", name)
+
+      - name: Validate and commit
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git diff --check
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add \
+            affiliate-disclosure.html \
+            best-ai-receptionists-auto-detailing.html \
+            best-ai-software-auto-detailing.html \
+            best-auto-detailing-software-2026.html \
+            best-mobile-detailing-software.html \
+            guides.html \
+            marlie-ai-review-auto-detailers.html \
+            reviews.html \
+            sitemap.xml \
+            urable.html
+
+          if git diff --cached --quiet; then
+            echo "Marlie AI changes are already applied."
+            exit 0
+          fi
+
+          git commit -m "Apply Marlie AI revenue paths safely"
+          git push origin HEAD:main

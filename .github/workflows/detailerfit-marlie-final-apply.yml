@@ -1,0 +1,340 @@
+name: Apply Marlie AI changes FINAL
+
+on:
+  push:
+    paths:
+      - ".github/workflows/detailerfit-marlie-final-apply.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply-marlie:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Apply Marlie changes without overwriting newer site edits
+        shell: python
+        run: |
+          import ast
+          import json
+          import re
+          import subprocess
+          import tempfile
+          from pathlib import Path
+
+          SOURCE = Path(".github/workflows/detailerfit-marlie-ai-implementation.yml")
+          if not SOURCE.exists():
+              raise SystemExit(f"Missing source workflow: {SOURCE}")
+
+          source_text = SOURCE.read_text(encoding="utf-8")
+          payload_line = next(
+              (line.strip() for line in source_text.splitlines()
+               if line.strip().startswith("payload = json.loads(")),
+              None,
+          )
+          if not payload_line or not payload_line.endswith(")"):
+              raise SystemExit("Could not locate the embedded Marlie payload.")
+
+          expr = payload_line[len("payload = json.loads("):-1]
+          payload = json.loads(ast.literal_eval(expr))
+
+          changed = []
+
+          def read(name):
+              path = Path(name)
+              return path.read_text(encoding="utf-8") if path.exists() else None
+
+          def write(name, text):
+              Path(name).write_text(text, encoding="utf-8")
+              if name not in changed:
+                  changed.append(name)
+
+          # ------------------------------------------------------------
+          # 1) Files that previously merged cleanly: use guarded 3-way.
+          # ------------------------------------------------------------
+          auto_merge = [
+              "best-ai-receptionists-auto-detailing.html",
+              "best-ai-software-auto-detailing.html",
+              "best-auto-detailing-software-2026.html",
+              "best-mobile-detailing-software.html",
+              "guides.html",
+          ]
+
+          for name in auto_merge:
+              before = payload[name]["before"]
+              after = payload[name]["after"]
+              current = read(name)
+
+              if current == after:
+                  continue
+              if current == before:
+                  write(name, after)
+                  continue
+              if current is None:
+                  raise SystemExit(f"Missing expected file: {name}")
+
+              with tempfile.TemporaryDirectory() as td:
+                  td = Path(td)
+                  ours = td / "current"
+                  base = td / "before"
+                  theirs = td / "after"
+                  ours.write_text(current, encoding="utf-8")
+                  base.write_text(before, encoding="utf-8")
+                  theirs.write_text(after, encoding="utf-8")
+
+                  result = subprocess.run(
+                      ["git", "merge-file", "-p", str(ours), str(base), str(theirs)],
+                      capture_output=True,
+                      text=True,
+                  )
+
+              if result.returncode != 0 or any(
+                  marker in result.stdout
+                  for marker in ("<<<<<<<", "=======", ">>>>>>>")
+              ):
+                  raise SystemExit(f"Unexpected merge conflict in {name}")
+
+              if result.stdout != current:
+                  write(name, result.stdout)
+
+          # ------------------------------------------------------------
+          # 2) Affiliate disclosure: update only the original status line.
+          # Preserve the newer final-audit relationship block below it.
+          # ------------------------------------------------------------
+          name = "affiliate-disclosure.html"
+          current = read(name)
+          if current is None:
+              raise SystemExit(f"Missing expected file: {name}")
+
+          old_phrase = "AI Receptionist, and The Wrap Institute."
+          new_phrase = "AI Receptionist, The Wrap Institute, and Marlie AI."
+
+          status_start = current.find('<div class="note"><b>Current status:</b>')
+          status_end = current.find("</div>", status_start)
+          status_block = current[status_start:status_end + 6] if status_start >= 0 and status_end >= 0 else ""
+
+          if "Marlie AI" not in status_block:
+              if old_phrase not in current:
+                  raise SystemExit("Could not safely update the affiliate disclosure status line.")
+              current = current.replace(old_phrase, new_phrase, 1)
+              write(name, current)
+
+          # ------------------------------------------------------------
+          # 3) New dedicated Marlie review page.
+          # ------------------------------------------------------------
+          name = "marlie-ai-review-auto-detailers.html"
+          desired = payload[name]["after"]
+          current = read(name)
+
+          if current is None:
+              write(name, desired)
+          elif current != desired:
+              # Do not overwrite an independently-created page.
+              if "Marlie AI Review for Auto Detailers" not in current:
+                  raise SystemExit(
+                      "An unexpected marlie-ai-review-auto-detailers.html already exists."
+                  )
+
+          # ------------------------------------------------------------
+          # 4) reviews.html: surgical update, preserving DetailPilot and
+          #    the final-audit sponsored/target attributes.
+          # ------------------------------------------------------------
+          name = "reviews.html"
+          current = read(name)
+          if current is None:
+              raise SystemExit(f"Missing expected file: {name}")
+
+          updated = current
+          updated = updated.replace(
+              '"dateModified":"2026-09-08"',
+              '"dateModified":"2026-09-15"',
+              1,
+          )
+          updated = updated.replace(
+              "Page updated September 8, 2026 · Editorial and interface update; source-check dates are listed separately.",
+              "Page updated September 15, 2026 · Editorial and interface update; source-check dates are listed separately.",
+              1,
+          )
+
+          if 'data-vendor="Marlie AI"' not in updated:
+              desired_reviews = payload[name]["after"]
+              match = re.search(
+                  r'(<article class="card software-card"><div class="kicker">'
+                  r'Best for Urable shops &amp; missed-call coverage.*?</article>)',
+                  desired_reviews,
+                  flags=re.S,
+              )
+              if not match:
+                  raise SystemExit("Could not extract the Marlie reviews card from the source payload.")
+
+              marlie_card = match.group(1)
+              anchor = (
+                  '</article></div><div class="actions">'
+                  '<a class="btn secondary" href="compare">Compare Software</a>'
+              )
+              if anchor not in updated:
+                  raise SystemExit("Could not find the reviews grid insertion point.")
+
+              updated = updated.replace(
+                  anchor,
+                  "</article>" + marlie_card + '</div><div class="actions">'
+                  '<a class="btn secondary" href="compare">Compare Software</a>',
+                  1,
+              )
+
+          if updated != current:
+              write(name, updated)
+
+          # ------------------------------------------------------------
+          # 5) sitemap.xml: append Marlie URL without disturbing newer URLs.
+          # ------------------------------------------------------------
+          name = "sitemap.xml"
+          current = read(name)
+          if current is None:
+              raise SystemExit(f"Missing expected file: {name}")
+
+          marlie_page_url = "https://getdetailerfit.com/marlie-ai-review-auto-detailers"
+          if marlie_page_url not in current:
+              entry = (
+                  "  <url><loc>https://getdetailerfit.com/"
+                  "marlie-ai-review-auto-detailers</loc>"
+                  "<lastmod>2026-09-15</lastmod></url>\n"
+              )
+              if "</urlset>" not in current:
+                  raise SystemExit("sitemap.xml has no closing </urlset> tag.")
+              current = current.replace("</urlset>", entry + "</urlset>", 1)
+              write(name, current)
+
+          # ------------------------------------------------------------
+          # 6) Urable page: add the Marlie integration callout only.
+          # ------------------------------------------------------------
+          name = "urable.html"
+          current = read(name)
+          if current is None:
+              raise SystemExit(f"Missing expected file: {name}")
+
+          if 'aria-label="Using Urable but still missing calls?"' not in current:
+              desired_urable = payload[name]["after"]
+              match = re.search(
+                  r'(<aside class="note goodnote" aria-label="Using Urable but still missing calls\?">'
+                  r'.*?</aside>)',
+                  desired_urable,
+                  flags=re.S,
+              )
+              if not match:
+                  raise SystemExit("Could not extract the Urable Marlie callout.")
+
+              block = match.group(1) + "\n"
+              anchor = '<div class="sourcebox"><b>Official sources</b>'
+              if anchor not in current:
+                  raise SystemExit("Could not find the Urable source-box insertion point.")
+
+              current = current.replace(anchor, block + anchor, 1)
+              write(name, current)
+
+          # ------------------------------------------------------------
+          # 7) Final monetization / SEO integrity checks.
+          # ------------------------------------------------------------
+          affiliate_url = "https://www.marlie.ai/?via=ryo"
+
+          required_affiliate_pages = [
+              "marlie-ai-review-auto-detailers.html",
+              "reviews.html",
+              "urable.html",
+              "best-ai-receptionists-auto-detailing.html",
+              "best-ai-software-auto-detailing.html",
+              "best-auto-detailing-software-2026.html",
+              "best-mobile-detailing-software.html",
+          ]
+
+          for filename in required_affiliate_pages:
+              text = read(filename) or ""
+              if affiliate_url not in text:
+                  raise SystemExit(f"Marlie affiliate URL missing from {filename}")
+
+              tags = re.findall(
+                  r'<a\b[^>]*href="https://www\.marlie\.ai/\?via=ryo"[^>]*>',
+                  text,
+                  flags=re.I,
+              )
+              if not tags:
+                  raise SystemExit(f"No Marlie CTA anchor found in {filename}")
+
+              for tag in tags:
+                  if 'data-vendor="Marlie AI"' not in tag:
+                      raise SystemExit(f'Missing data-vendor="Marlie AI" in {filename}')
+                  rel_match = re.search(r'rel="([^"]*)"', tag, flags=re.I)
+                  rel_tokens = set(rel_match.group(1).lower().split()) if rel_match else set()
+                  if not {"sponsored", "noopener"}.issubset(rel_tokens):
+                      raise SystemExit(f"Missing sponsored/noopener rel tokens in {filename}")
+
+          review_text = read("marlie-ai-review-auto-detailers.html") or ""
+          for required in [
+              'rel="canonical" href="https://getdetailerfit.com/marlie-ai-review-auto-detailers"',
+              '"@type":"Article"',
+              '"@type":"FAQPage"',
+              "Basic",
+              "$49",
+              "Standard",
+              "$99",
+              "AI receptionist",
+          ]:
+              if required not in review_text:
+                  raise SystemExit(f"Marlie review validation failed: missing {required}")
+
+          disclosure = read("affiliate-disclosure.html") or ""
+          if "Marlie AI" not in disclosure:
+              raise SystemExit("Marlie AI is missing from affiliate disclosure.")
+
+          sitemap = read("sitemap.xml") or ""
+          if sitemap.count(marlie_page_url) != 1:
+              raise SystemExit(
+                  f"Marlie sitemap URL must appear exactly once; "
+                  f"found {sitemap.count(marlie_page_url)}"
+              )
+
+          if 'href="marlie-ai-review-auto-detailers"' not in (read("guides.html") or ""):
+              raise SystemExit("Marlie review is missing from guides.html")
+
+          print("Marlie implementation validated.")
+          print("Changed files:")
+          for filename in changed:
+              print(" -", filename)
+
+      - name: Commit validated Marlie implementation
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git diff --check
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add \
+            affiliate-disclosure.html \
+            best-ai-receptionists-auto-detailing.html \
+            best-ai-software-auto-detailing.html \
+            best-auto-detailing-software-2026.html \
+            best-mobile-detailing-software.html \
+            guides.html \
+            marlie-ai-review-auto-detailers.html \
+            reviews.html \
+            sitemap.xml \
+            urable.html
+
+          if git diff --cached --quiet; then
+            echo "Marlie AI implementation is already fully applied."
+            exit 0
+          fi
+
+          git commit -m "Add Marlie AI review and revenue paths"
+          git push origin HEAD:main

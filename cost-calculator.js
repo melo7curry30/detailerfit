@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (selfBooking) pushes.push('customer self-booking requires Elite or higher');
     if (routeOpt) pushes.push('route optimization requires Elite or higher');
     return {
-      name:'QuoteIQ', url:'quoteiq.html', plan:p.plan, monthly:p.monthly,
+      name:'QuoteIQ', url:'quoteiq', plan:p.plan, monthly:p.monthly,
       annualMonthly:p.annualMonthly, annualTotal:p.annualTotal, complete:true,
       capacity:p.users,
       why: pushes.length ? pushes.join('; ') + '.' : 'Essentials covers the entry workflow for one user when self-booking and route optimization are not required.',
@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (routeOpt) why += ' Auto Routing is available as an add-on across plans.';
 
     return {
-      name:'ServiceM8', url:'servicem8.html', plan:p.plan, monthly:p.monthly,
+      name:'ServiceM8', url:'servicem8', plan:p.plan, monthly:p.monthly,
       annualMonthly:null, annualTotal:null, complete:!routeOpt,
       capacity:p.capacity, why,
       watch: routeOpt
@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (routeOpt) reasons.push('route optimization is published on Connect, Grow, and Plus');
       if (selfBooking) reasons.push('online booking is already available on Core');
       return {
-        name:'Jobber', url:'jobber.html', plan:'Verify team configuration', monthly:null,
+        name:'Jobber', url:'jobber', plan:'Verify team configuration', monthly:null,
         annualMonthly:null, annualTotal:null, complete:false,
         capacity:`${team} users · verify current eligible plan and seat configuration`,
         why:reasons.join('; ') + '.',
@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (routeOpt) reasons.push('route optimization is available on Connect, Grow, and Plus');
     if (selfBooking) reasons.push('online booking is already available on Core');
     return {
-      name:'Jobber', url:'jobber.html', plan:p.plan, monthly:p.monthly,
+      name:'Jobber', url:'jobber', plan:p.plan, monthly:p.monthly,
       annualMonthly:p.annualMonthly, annualTotal:p.annualMonthly*12, complete:true,
       capacity:p.capacity,
       why: reasons.length ? reasons.join('; ') + '.' : 'Core is the lowest published no-commitment configuration for one user.',
@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (routeOpt) reasons.push('route creation/optimization is published on Express and above');
     reasons.push('users are unlimited on all published plans');
     return {
-      name:'Urable', url:'urable.html', plan:p.plan, monthly:p.monthly,
+      name:'Urable', url:'urable', plan:p.plan, monthly:p.monthly,
       annualMonthly:p.annualMonthly, annualTotal:p.annualTotal, complete:true,
       capacity:'Unlimited users', why:reasons.join('; ') + '.',
       watch:'The monthly and published annual totals are effectively the same monthly rate; the main cost jump here is the Pro feature gate for online booking.'
@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const mobileTechRX = (team, selfBooking, routeOpt) => {
     if (team > 10) {
       return {
-        name:'Mobile Tech RX', url:'mobile-tech-rx-pricing-auto-detailers.html',
+        name:'Mobile Tech RX', url:'mobile-tech-rx-pricing-auto-detailers',
         plan:'Custom pricing', monthly:null, annualMonthly:null, annualTotal:null,
         complete:false, capacity:`${team} users · custom pricing`,
         why:'Mobile Tech RX directs teams above 10 people to custom pricing.',
@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (selfBooking) reasons.push('native customer-facing self-booking is not clearly established in the official sources reviewed');
       if (routeOpt) reasons.push('route optimization is not treated as confirmed');
       return {
-        name:'Mobile Tech RX', url:'mobile-tech-rx-pricing-auto-detailers.html',
+        name:'Mobile Tech RX', url:'mobile-tech-rx-pricing-auto-detailers',
         plan:'Verify required workflow', monthly:null, annualMonthly:null, annualTotal:null,
         complete:false,
         capacity:`1 admin + ${Math.max(0,team-1)} additional user${team===2?'':'s'}`,
@@ -162,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const monthly=39+(additional*15);
     const annualTotal=429+(additional*165);
     return {
-      name:'Mobile Tech RX', url:'mobile-tech-rx-pricing-auto-detailers.html',
+      name:'Mobile Tech RX', url:'mobile-tech-rx-pricing-auto-detailers',
       plan:'Getting Started', monthly,
       annualMonthly:annualTotal/12, annualTotal, complete:true,
       capacity:`1 admin + ${additional} additional user${additional===1?'':'s'}`,
@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (routeOpt) reasons.push('route optimization requires Max');
     if (team > 1) reasons.push(`${team} users affect the included-seat math`);
     return {
-      name:'Housecall Pro', url:'housecall-pro.html', plan:p.plan, monthly:p.monthly,
+      name:'Housecall Pro', url:'housecall-pro', plan:p.plan, monthly:p.monthly,
       annualMonthly:p.annualMonthly, annualTotal:p.annualTotal, complete:true,
       capacity:p.capacity,
       why: reasons.length ? reasons.join('; ') + '.' : 'Basic is the lowest published configuration for one user.',

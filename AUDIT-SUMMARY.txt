@@ -1,0 +1,31 @@
+DetailerFit Audit Summary — 2026-09-15
+
+LIVE CHECKS
+- HTTPS clean URL works for /housecall-pro.
+- .html variants redirect to extensionless URLs.
+- robots.txt allows crawling and points to sitemap.xml.
+- sitemap includes the site's HTML pages in the source snapshot.
+- Housecall Pro live pricing checked against current official Housecall Pro documentation:
+  Basic $79 monthly / $59 annual, Essentials $189 / $149, Max $329 / $299,
+  with a 14-day trial and no card required.
+
+HIGH-PRIORITY FINDING
+The site uses extensionless production URLs, but app.js previously compared location.pathname
+against keys ending in .html. On clean URLs, this prevented intended dynamic CTA blocks from
+running on several high-intent comparison pages. The patch normalizes both forms.
+
+CONVERSION FINDING
+The Housecall Pro referral landing page currently headlines a special 20% discount for the
+first 12 months. Existing site CTAs focused only on the free trial. The patch uses
+"See Current Housecall Pro Offer" and adds a dated, cautious offer note on the dedicated review.
+
+SEO / UX FINDING
+Finder and calculator JavaScript generated .html internal links even though canonical URLs are
+extensionless. The patch outputs clean internal URLs to avoid extra redirect hops.
+
+NEXT PRIORITY AFTER THIS PATCH
+- Connect the site property inside GSC Wizard if you want ChatGPT to inspect index coverage,
+  page/query impressions and indexing status directly. The connected GSC Wizard account did not
+  currently expose a DetailerFit property during this audit.
+- After enough traffic exists, optimize CTA placement using actual outbound-click / conversion data
+  rather than adding more buttons indiscriminately.

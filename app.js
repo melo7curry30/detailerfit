@@ -48,32 +48,32 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('.footergrid > div').forEach(col=>{
     const heading=col.querySelector('strong');
     if(!heading||heading.textContent.trim()!=='Research')return;
-    if(col.querySelector('a[href="software-cost-calculator.html"]'))return;
-    const finder=col.querySelector('a[href="finder.html"]');
+    if(col.querySelector('a[href="software-cost-calculator"]'))return;
+    const finder=col.querySelector('a[href="finder"]');
     if(!finder)return;
     const link=document.createElement('a');
-    link.href='software-cost-calculator.html';
+    link.href='software-cost-calculator';
     link.textContent='Cost calculator';
     finder.insertAdjacentElement('afterend',link);
   });
 
   // Revenue Acceleration v4: add clear decision exits to high-intent comparisons
   // that previously ended without a strong next step.
-  const pageName=location.pathname.split('/').pop() || 'index.html';
+  const pageName=(location.pathname.split('/').pop() || 'index').replace(/\.html$/i,'');
   const decisionExits={
-    'jobber-vs-housecall-pro-auto-detailing.html':[
+    'jobber-vs-housecall-pro-auto-detailing':[
       {label:'Check Jobber Pricing',url:'https://www.getjobber.com/pricing/',vendor:'Jobber',rel:'noopener'},
-      {label:'Start Housecall Pro Free Trial',url:'https://housecallpro.partnerlinks.io/lquesdqg2t22',vendor:'Housecall Pro',rel:'sponsored noopener',target:'_blank'}
+      {label:'See Current Housecall Pro Offer',url:'https://housecallpro.partnerlinks.io/lquesdqg2t22',vendor:'Housecall Pro',rel:'sponsored noopener',target:'_blank'}
     ],
-    'orbisx-vs-jobber-auto-detailing.html':[
+    'orbisx-vs-jobber-auto-detailing':[
       {label:'Try OrbisX Free',url:'https://orbisx.com/detailerfit/',vendor:'OrbisX',rel:'sponsored noopener',target:'_blank'},
       {label:'Check Jobber Pricing',url:'https://www.getjobber.com/pricing/',vendor:'Jobber',rel:'noopener'}
     ],
-    'urable-vs-housecall-pro.html':[
+    'urable-vs-housecall-pro':[
       {label:'Check Urable Pricing',url:'https://urable.com/pricing/',vendor:'Urable',rel:'noopener'},
-      {label:'Start Housecall Pro Free Trial',url:'https://housecallpro.partnerlinks.io/lquesdqg2t22',vendor:'Housecall Pro',rel:'sponsored noopener',target:'_blank'}
+      {label:'See Current Housecall Pro Offer',url:'https://housecallpro.partnerlinks.io/lquesdqg2t22',vendor:'Housecall Pro',rel:'sponsored noopener',target:'_blank'}
     ],
-    'urable-vs-orbisx.html':[
+    'urable-vs-orbisx':[
       {label:'Check Urable Pricing',url:'https://urable.com/pricing/',vendor:'Urable',rel:'noopener'},
       {label:'Try OrbisX Free',url:'https://orbisx.com/detailerfit/',vendor:'OrbisX',rel:'sponsored noopener',target:'_blank'}
     ]
@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       const hasSponsoredExit=decisionExits[pageName].some(x=>x.rel.includes('sponsored'));
       block.innerHTML=`<div><h3>Ready to narrow the decision?</h3><p>Check current vendor terms, or use DetailerFit's tools if you still need to compare workflow and real plan cost.</p><div class="actions">${
         decisionExits[pageName].map(x=>`<a class="btn primary" data-vendor="${x.vendor}" href="${x.url}" rel="${x.rel}"${x.target?` target="${x.target}"`:``}>${x.label}</a>`).join('')
-      }<a class="btn secondary" href="finder.html">Use the Software Finder</a><a class="btn secondary" href="software-cost-calculator.html">Calculate Real Plan Cost</a></div>${hasSponsoredExit?'<p class="cta-disclosure small">DetailerFit may earn a commission if you sign up through a sponsored link, at no extra cost to you. <a href="affiliate-disclosure.html">Affiliate disclosure</a>.</p>':''}</div>`;
+      }<a class="btn secondary" href="finder">Use the Software Finder</a><a class="btn secondary" href="software-cost-calculator">Calculate Real Plan Cost</a></div>${hasSponsoredExit?'<p class="cta-disclosure small">DetailerFit may earn a commission if you sign up through a sponsored link, at no extra cost to you. <a href="affiliate-disclosure">Affiliate disclosure</a>.</p>':''}</div>`;
       const editorialFooter=article.querySelector(':scope > footer')||article.querySelector('footer');
       if(editorialFooter)editorialFooter.insertAdjacentElement('beforebegin',block);
       else article.appendChild(block);
@@ -96,14 +96,14 @@ document.addEventListener('DOMContentLoaded',()=>{
   // Keep vendor CTA treatment visually consistent on the ceramic-coating guide.
   // Each CTA is inserted at the end of its own product block, not at the end of the whole article.
   // QuoteIQ, Mobile Tech RX and Housecall Pro remain explicitly marked as sponsored affiliate links.
-  if(pageName==='best-software-ceramic-coating-business.html'){
+  if(pageName==='best-software-ceramic-coating-business'){
     const vendorCtas={
       'section-3':{label:'Check Urable Pricing',url:'https://urable.com/pricing/',vendor:'Urable',rel:'noopener',match:'urable.com/pricing'},
       'section-4':{label:'Try OrbisX Free',url:'https://orbisx.com/detailerfit/',vendor:'OrbisX',rel:'sponsored noopener',target:'_blank',match:'orbisx.com/detailerfit'},
       'section-5':{label:'Check Mobile Tech RX Pricing',url:'https://www.mobiletechrx.com/?_by=detailerfit-5e824c',vendor:'Mobile Tech RX',rel:'sponsored noopener',match:'mobiletechrx.com/?_by=detailerfit-5e824c'},
       'section-6':{label:'Start QuoteIQ Trial',url:'https://admin-quoteiq.web.app/register?via=ryo',vendor:'QuoteIQ',rel:'sponsored noopener',match:'admin-quoteiq.web.app/register?via=ryo'},
       'section-7':{label:'Check Jobber Pricing',url:'https://www.getjobber.com/pricing/',vendor:'Jobber',rel:'noopener',match:'getjobber.com/pricing'},
-      'section-8':{label:'Start Housecall Pro Free Trial',url:'https://housecallpro.partnerlinks.io/lquesdqg2t22',vendor:'Housecall Pro',rel:'sponsored noopener',target:'_blank',match:'housecallpro.partnerlinks.io/lquesdqg2t22'}
+      'section-8':{label:'See Current Housecall Pro Offer',url:'https://housecallpro.partnerlinks.io/lquesdqg2t22',vendor:'Housecall Pro',rel:'sponsored noopener',target:'_blank',match:'housecallpro.partnerlinks.io/lquesdqg2t22'}
     };
 
     Object.entries(vendorCtas).forEach(([id,x])=>{
@@ -168,7 +168,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   const tools={
     "QuoteIQ":{
       s:0,
-      url:"quoteiq.html",
+      url:"quoteiq",
       vendorUrl:"https://admin-quoteiq.web.app/register?via=ryo",
       vendorRel:"sponsored noopener",
       why:"Strong detailing-oriented quoting, invoicing and internal scheduling at a low entry price, with deeper communications and operations on higher tiers.",
@@ -177,7 +177,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     },
     "Mobile Tech RX":{
       s:0,
-      url:"mobile-tech-rx-review-auto-detailers.html",
+      url:"mobile-tech-rx-review-auto-detailers",
       vendorUrl:"https://www.mobiletechrx.com/?_by=detailerfit-5e824c",
       vendorRel:"sponsored noopener",
       why:"A vehicle-first automotive workflow built around VIN scanning, estimating, before/after documentation, customer records and structured job operations.",
@@ -186,7 +186,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     },
     "ServiceM8":{
       s:0,
-      url:"servicem8.html",
+      url:"servicem8",
       vendorUrl:"https://www.servicem8.com/us/pricing",
       vendorRel:"noopener",
       why:"Excellent entry economics, online booking on all published plans and unlimited users on paid plans.",
@@ -195,7 +195,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     },
     "Jobber":{
       s:0,
-      url:"jobber.html",
+      url:"jobber",
       vendorUrl:"https://www.getjobber.com/pricing/",
       vendorRel:"noopener",
       why:"A mature general field-service workflow with online booking on Core and stronger automation, routing and team tools above it.",
@@ -204,7 +204,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     },
     "Urable":{
       s:0,
-      url:"urable.html",
+      url:"urable",
       vendorUrl:"https://urable.com/pricing/",
       vendorRel:"noopener",
       why:"A strong automotive-specialist fit in the six-product Finder, with unlimited users on every published plan.",
@@ -213,7 +213,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     },
     "Housecall Pro":{
       s:0,
-      url:"housecall-pro.html",
+      url:"housecall-pro",
       vendorUrl:"https://housecallpro.partnerlinks.io/lquesdqg2t22",
       vendorRel:"sponsored noopener",
       vendorTarget:"_blank",
@@ -447,7 +447,7 @@ document.addEventListener('DOMContentLoaded',()=>{
           <div class="actions">
             <a class="btn secondary" href="${x.url}">See research notes</a>
             <a class="btn primary" data-vendor="${x.name}" href="${x.vendorUrl}" rel="${vendorRel}"${x.vendorTarget?` target="${x.vendorTarget}"`:``}>Visit ${x.name}</a>
-            ${i===0?'<a class="btn ghost" href="compare.html">Open comparison hub</a>':''}
+            ${i===0?'<a class="btn ghost" href="compare">Open comparison hub</a>':''}
           </div>
         </article>`;
     }).join('');
@@ -467,7 +467,9 @@ document.querySelector('.site-header')?.addEventListener('focusout', (event) => 
     if(button){button.setAttribute('aria-expanded','false');button.textContent='Menu';}
   }
 });
-const currentPage=location.pathname.split('/').pop() || 'index.html';
+const currentPage=(location.pathname.split('/').pop() || '').replace(/\.html$/i,'');
 document.querySelectorAll('.navlinks a').forEach(link=>{
-  if(link.getAttribute('href')===currentPage)link.setAttribute('aria-current','page');
+  const raw=link.getAttribute('href')||'';
+  const href=raw.replace(/^\//,'').replace(/\.html$/i,'');
+  if((!currentPage && raw==='/') || href===currentPage)link.setAttribute('aria-current','page');
 });

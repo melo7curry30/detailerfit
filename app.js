@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   const decisionExits={
     'jobber-vs-housecall-pro-auto-detailing.html':[
       {label:'Check Jobber Pricing',url:'https://www.getjobber.com/pricing/',vendor:'Jobber',rel:'noopener'},
-      {label:'Check Housecall Pro Pricing',url:'https://www.housecallpro.com/pricing/',vendor:'Housecall Pro',rel:'noopener'}
+      {label:'Start Housecall Pro Free Trial',url:'https://housecallpro.partnerlinks.io/lquesdqg2t22',vendor:'Housecall Pro',rel:'sponsored noopener',target:'_blank'}
     ],
     'orbisx-vs-jobber-auto-detailing.html':[
       {label:'Try OrbisX Free',url:'https://orbisx.com/detailerfit/',vendor:'OrbisX',rel:'sponsored noopener',target:'_blank'},
@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     ],
     'urable-vs-housecall-pro.html':[
       {label:'Check Urable Pricing',url:'https://urable.com/pricing/',vendor:'Urable',rel:'noopener'},
-      {label:'Check Housecall Pro Pricing',url:'https://www.housecallpro.com/pricing/',vendor:'Housecall Pro',rel:'noopener'}
+      {label:'Start Housecall Pro Free Trial',url:'https://housecallpro.partnerlinks.io/lquesdqg2t22',vendor:'Housecall Pro',rel:'sponsored noopener',target:'_blank'}
     ],
     'urable-vs-orbisx.html':[
       {label:'Check Urable Pricing',url:'https://urable.com/pricing/',vendor:'Urable',rel:'noopener'},
@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   // Keep vendor CTA treatment visually consistent on the ceramic-coating guide.
   // Each CTA is inserted at the end of its own product block, not at the end of the whole article.
-  // QuoteIQ and Mobile Tech RX remain explicitly marked as sponsored affiliate links.
+  // QuoteIQ, Mobile Tech RX and Housecall Pro remain explicitly marked as sponsored affiliate links.
   if(pageName==='best-software-ceramic-coating-business.html'){
     const vendorCtas={
       'section-3':{label:'Check Urable Pricing',url:'https://urable.com/pricing/',vendor:'Urable',rel:'noopener',match:'urable.com/pricing'},
@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       'section-5':{label:'Check Mobile Tech RX Pricing',url:'https://www.mobiletechrx.com/?_by=detailerfit-5e824c',vendor:'Mobile Tech RX',rel:'sponsored noopener',match:'mobiletechrx.com/?_by=detailerfit-5e824c'},
       'section-6':{label:'Start QuoteIQ Trial',url:'https://admin-quoteiq.web.app/register?via=ryo',vendor:'QuoteIQ',rel:'sponsored noopener',match:'admin-quoteiq.web.app/register?via=ryo'},
       'section-7':{label:'Check Jobber Pricing',url:'https://www.getjobber.com/pricing/',vendor:'Jobber',rel:'noopener',match:'getjobber.com/pricing'},
-      'section-8':{label:'Check Housecall Pro Pricing',url:'https://www.housecallpro.com/pricing/',vendor:'Housecall Pro',rel:'noopener',match:'housecallpro.com/pricing'}
+      'section-8':{label:'Start Housecall Pro Free Trial',url:'https://housecallpro.partnerlinks.io/lquesdqg2t22',vendor:'Housecall Pro',rel:'sponsored noopener',target:'_blank',match:'housecallpro.partnerlinks.io/lquesdqg2t22'}
     };
 
     Object.entries(vendorCtas).forEach(([id,x])=>{
@@ -214,8 +214,9 @@ document.addEventListener('DOMContentLoaded',()=>{
     "Housecall Pro":{
       s:0,
       url:"housecall-pro.html",
-      vendorUrl:"https://www.housecallpro.com/pricing/",
-      vendorRel:"noopener",
+      vendorUrl:"https://housecallpro.partnerlinks.io/lquesdqg2t22",
+      vendorRel:"sponsored noopener",
+      vendorTarget:"_blank",
       why:"A broad field-service platform with online booking and scheduling/dispatch on Basic, then stronger routing and team controls above it.",
       baseWatch:"It is built for general home-service operations rather than vehicle-care businesses. Teams above eight users can add users to Max at an extra published per-user cost.",
       tags:["iOS + Android","Dispatch-focused"]
@@ -445,7 +446,7 @@ document.addEventListener('DOMContentLoaded',()=>{
           <div class="result-watch"><strong>Verify before buying:</strong> ${x.baseWatch}</div>
           <div class="actions">
             <a class="btn secondary" href="${x.url}">See research notes</a>
-            <a class="btn primary" data-vendor="${x.name}" href="${x.vendorUrl}" rel="${vendorRel}">Visit ${x.name}</a>
+            <a class="btn primary" data-vendor="${x.name}" href="${x.vendorUrl}" rel="${vendorRel}"${x.vendorTarget?` target="${x.vendorTarget}"`:``}>Visit ${x.name}</a>
             ${i===0?'<a class="btn ghost" href="compare.html">Open comparison hub</a>':''}
           </div>
         </article>`;

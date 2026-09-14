@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     'ServiceM8': {url:'https://www.servicem8.com/us/pricing', rel:'noopener'},
     'Jobber': {url:'https://www.getjobber.com/pricing/', rel:'noopener'},
     'Urable': {url:'https://urable.com/pricing/', rel:'noopener'},
-    'Housecall Pro': {url:'https://www.housecallpro.com/pricing/', rel:'noopener'}
+    'Housecall Pro': {url:'https://housecallpro.partnerlinks.io/lquesdqg2t22', rel:'sponsored noopener', target:'_blank'}
   };
 
   const quoteIQ = (team, selfBooking, routeOpt) => {
@@ -262,7 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="${r.complete?'note':'warning'}"><b>${r.complete?'Verify before buying':'Cost not fully known'}:</b> ${r.watch}</div>
           <div class="actions">
             <a class="btn secondary" href="${r.url}">See ${r.name} research</a>
-            <a class="btn primary" data-vendor="${r.name}" href="${vendorMap[r.name].url}" rel="${vendorMap[r.name].rel}">Visit ${r.name}</a>
+            <a class="btn primary" data-vendor="${r.name}" href="${vendorMap[r.name].url}" rel="${vendorMap[r.name].rel}"${vendorMap[r.name].target?` target="${vendorMap[r.name].target}"`:``}>Visit ${r.name}</a>
           </div>
         </article>`;
     }).join('');

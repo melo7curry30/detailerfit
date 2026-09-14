@@ -1,0 +1,124 @@
+name: DetailerFit PPF Training Monetization
+
+on:
+  push:
+    paths:
+      - ".github/workflows/detailerfit-ppf-training-monetization.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-ppf-training-monetization:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Add The Wrap Institute affiliate resource to PPF guide
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          page = Path("best-software-ppf-business.html")
+          html = page.read_text(encoding="utf-8")
+
+          def replace_once(text, old, new, label):
+              if old in text:
+                  return text.replace(old, new, 1)
+              if new in text:
+                  return text
+              raise SystemExit(f"Expected text not found: {label}")
+
+          html = replace_once(
+              html,
+              '"dateModified":"2026-09-12"',
+              '"dateModified":"2026-09-14"',
+              "PPF guide dateModified",
+          )
+
+          old_disclosure = '<p class="research-context">Research based on published vendor documentation. <a href="methodology">How we review software</a> · <a href="affiliate-disclosure">Affiliate disclosure</a>. Confirm pricing and trial terms with the vendor.</p>'
+          new_disclosure = '<p class="research-context">Research based on published vendor documentation. This page contains a clearly marked affiliate link to The Wrap Institute; affiliate relationships do not affect software rankings or editorial conclusions. <a href="methodology">How we review software</a> · <a href="affiliate-disclosure">Affiliate disclosure</a>. Confirm pricing and trial terms with the vendor.</p>'
+
+          html = replace_once(
+              html,
+              old_disclosure,
+              new_disclosure,
+              "PPF guide disclosure",
+          )
+
+          marker = '<h2 id="section-11">Final Verdict</h2>'
+
+          training_block = (
+              '<section aria-label="PPF installer training resource">\n'
+              '<div class="callout">\n'
+              '  <div>\n'
+              '    <div class="kicker">INSTALLER TRAINING · AFFILIATE RESOURCE</div>\n'
+              '    <h3>PPF Installer Training: The Wrap Institute</h3>\n'
+              '    <p><strong>This is not CRM or pattern-cutting software.</strong> The Wrap Institute is an on-demand training platform for vehicle wrap and PPF installation. If install quality, speed, technique, or team training is the bottleneck in your shop, it can complement the business software and cutting tools covered above rather than replace them.</p>\n'
+              '    <div class="actions">\n'
+              '      <a class="btn primary" href="https://watch.thewrapinstitute.com/?via=ryo" rel="sponsored noopener" target="_blank">Explore The Wrap Institute</a>\n'
+              '    </div>\n'
+              '    <p class="cta-disclosure small">Affiliate link. DetailerFit may earn a commission if you subscribe through this link, at no extra cost to you. This relationship does not affect the PPF software rankings above.</p>\n'
+              '  </div>\n'
+              '</div>\n'
+              '</section>\n\n'
+          )
+
+          if "https://watch.thewrapinstitute.com/?via=ryo" not in html:
+              if marker not in html:
+                  raise SystemExit("Final Verdict marker not found")
+              html = html.replace(marker, training_block + marker, 1)
+
+          source_marker = '<a href="https://salesthumb.com/" rel="noopener">SalesThumb — Product</a><br/>\n'
+          source_line = '<a href="https://www.wrapinstitute.com/" rel="noopener">The Wrap Institute — Vehicle Wrap &amp; PPF Training</a><br/>\n'
+
+          if source_line not in html:
+              if source_marker not in html:
+                  raise SystemExit("Official sources marker not found")
+              html = html.replace(source_marker, source_line + source_marker, 1)
+
+          page.write_text(html, encoding="utf-8")
+
+          final = page.read_text(encoding="utf-8")
+          required = [
+              "https://watch.thewrapinstitute.com/?via=ryo",
+              'rel="sponsored noopener"',
+              "PPF Installer Training: The Wrap Institute",
+              "This is not CRM or pattern-cutting software.",
+              '"dateModified":"2026-09-14"',
+              "affiliate link to The Wrap Institute",
+              "The Wrap Institute — Vehicle Wrap &amp; PPF Training",
+          ]
+
+          missing = [item for item in required if item not in final]
+          if missing:
+              raise SystemExit(f"Validation failed: {missing}")
+
+          print("PPF training monetization patch validated.")
+          PY
+
+      - name: Show and validate diff
+        shell: bash
+        run: |
+          git diff --check
+          git diff -- best-software-ppf-business.html
+
+      - name: Commit updated PPF guide
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "No changes needed."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add best-software-ppf-business.html
+          git commit -m "Add PPF training affiliate resource"
+          git push

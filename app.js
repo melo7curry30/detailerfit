@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       {label:'Check Housecall Pro Pricing',url:'https://www.housecallpro.com/pricing/',vendor:'Housecall Pro',rel:'noopener'}
     ],
     'orbisx-vs-jobber-auto-detailing.html':[
-      {label:'Check OrbisX Pricing',url:'https://orbisx.com/pricing/',vendor:'OrbisX',rel:'noopener'},
+      {label:'Try OrbisX Free',url:'https://orbisx.com/detailerfit/',vendor:'OrbisX',rel:'sponsored noopener',target:'_blank'},
       {label:'Check Jobber Pricing',url:'https://www.getjobber.com/pricing/',vendor:'Jobber',rel:'noopener'}
     ],
     'urable-vs-housecall-pro.html':[
@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     ],
     'urable-vs-orbisx.html':[
       {label:'Check Urable Pricing',url:'https://urable.com/pricing/',vendor:'Urable',rel:'noopener'},
-      {label:'Check OrbisX Pricing',url:'https://orbisx.com/pricing/',vendor:'OrbisX',rel:'noopener'}
+      {label:'Try OrbisX Free',url:'https://orbisx.com/detailerfit/',vendor:'OrbisX',rel:'sponsored noopener',target:'_blank'}
     ]
   };
   if(decisionExits[pageName]&&!document.querySelector('.revenue-decision-cta')){
@@ -83,9 +83,10 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(article){
       const block=document.createElement('div');
       block.className='callout revenue-decision-cta';
+      const hasSponsoredExit=decisionExits[pageName].some(x=>x.rel.includes('sponsored'));
       block.innerHTML=`<div><h3>Ready to narrow the decision?</h3><p>Check current vendor terms, or use DetailerFit's tools if you still need to compare workflow and real plan cost.</p><div class="actions">${
-        decisionExits[pageName].map(x=>`<a class="btn primary" data-vendor="${x.vendor}" href="${x.url}" rel="${x.rel}">${x.label}</a>`).join('')
-      }<a class="btn secondary" href="finder.html">Use the Software Finder</a><a class="btn secondary" href="software-cost-calculator.html">Calculate Real Plan Cost</a></div></div>`;
+        decisionExits[pageName].map(x=>`<a class="btn primary" data-vendor="${x.vendor}" href="${x.url}" rel="${x.rel}"${x.target?` target="${x.target}"`:``}>${x.label}</a>`).join('')
+      }<a class="btn secondary" href="finder.html">Use the Software Finder</a><a class="btn secondary" href="software-cost-calculator.html">Calculate Real Plan Cost</a></div>${hasSponsoredExit?'<p class="cta-disclosure small">DetailerFit may earn a commission if you sign up through a sponsored link, at no extra cost to you. <a href="affiliate-disclosure.html">Affiliate disclosure</a>.</p>':''}</div>`;
       const editorialFooter=article.querySelector(':scope > footer')||article.querySelector('footer');
       if(editorialFooter)editorialFooter.insertAdjacentElement('beforebegin',block);
       else article.appendChild(block);
@@ -98,7 +99,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   if(pageName==='best-software-ceramic-coating-business.html'){
     const vendorCtas={
       'section-3':{label:'Check Urable Pricing',url:'https://urable.com/pricing/',vendor:'Urable',rel:'noopener',match:'urable.com/pricing'},
-      'section-4':{label:'Check OrbisX Pricing',url:'https://orbisx.com/pricing/',vendor:'OrbisX',rel:'noopener',match:'orbisx.com/pricing'},
+      'section-4':{label:'Try OrbisX Free',url:'https://orbisx.com/detailerfit/',vendor:'OrbisX',rel:'sponsored noopener',target:'_blank',match:'orbisx.com/detailerfit'},
       'section-5':{label:'Check Mobile Tech RX Pricing',url:'https://www.mobiletechrx.com/?_by=detailerfit-5e824c',vendor:'Mobile Tech RX',rel:'sponsored noopener',match:'mobiletechrx.com/?_by=detailerfit-5e824c'},
       'section-6':{label:'Start QuoteIQ Trial',url:'https://admin-quoteiq.web.app/register?via=ryo',vendor:'QuoteIQ',rel:'sponsored noopener',match:'admin-quoteiq.web.app/register?via=ryo'},
       'section-7':{label:'Check Jobber Pricing',url:'https://www.getjobber.com/pricing/',vendor:'Jobber',rel:'noopener',match:'getjobber.com/pricing'},
@@ -130,13 +131,14 @@ document.addEventListener('DOMContentLoaded',()=>{
         existingLink.classList.add('btn','primary');
         existingLink.dataset.vendor=x.vendor;
         existingLink.rel=x.rel;
+        if(x.target)existingLink.target=x.target;
         return;
       }
 
       const actions=document.createElement('div');
       actions.className='actions revenue-vendor-actions';
       actions.dataset.section=id;
-      actions.innerHTML=`<a class="btn primary" data-vendor="${x.vendor}" href="${x.url}" rel="${x.rel}">${x.label}</a>`;
+      actions.innerHTML=`<a class="btn primary" data-vendor="${x.vendor}" href="${x.url}" rel="${x.rel}"${x.target?` target="${x.target}"`:``}>${x.label}</a>`;
 
       if(insertBefore)parent.insertBefore(actions,insertBefore);
       else parent.appendChild(actions);

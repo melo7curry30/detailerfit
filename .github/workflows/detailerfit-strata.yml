@@ -1,0 +1,847 @@
+name: DetailerFit - Add Strata CRM
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: detailerfit-strata-update
+  cancel-in-progress: false
+
+jobs:
+  implement:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out current default branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 1
+
+      - name: Create additive Strata changes
+        shell: bash
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          from html.parser import HTMLParser
+          import json
+          import re
+          import xml.etree.ElementTree as ET
+
+          ROOT = Path(".")
+          URL = "https://stratacrm.app/?via=ryo-yonemura"
+          SLUG = "/strata-crm-review"
+          CANONICAL = "https://getdetailerfit.com" + SLUG
+          MARKER = "<!-- DETAILERFIT-STRATA-V1 -->"
+          SOURCE_DATE = "September 14, 2026"
+
+          DISCLOSURE = (
+              '<p class="cta-disclosure small">'
+              'DetailerFit may earn a commission if you sign up through '
+              'this link, at no extra cost to you. '
+              '<a href="/affiliate-disclosure">Affiliate disclosure</a>.'
+              '</p>'
+          )
+
+          def cta(label):
+              return (
+                  '<a class="btn primary" data-vendor="Strata" '
+                  f'href="{URL}" rel="sponsored noopener" '
+                  f'target="_blank">{label}</a>'
+              )
+
+          def read(path):
+              return (ROOT / path).read_text(encoding="utf-8")
+
+          def insert_before_last(text, marker, addition):
+              position = text.lower().rfind(marker.lower())
+              if position < 0:
+                  raise RuntimeError(f"Required closing tag missing: {marker}")
+              return text[:position] + addition + "\n" + text[position:]
+
+          required = [
+              "reviews.html",
+              "compare.html",
+              "best-crm-solo-mobile-detailers.html",
+              "best-auto-detailing-software-2026.html",
+              "software-cost-calculator.html",
+              "finder.html",
+              "app.js",
+              "styles.css",
+              "sitemap.xml",
+          ]
+          for path in required:
+              if not (ROOT / path).is_file():
+                  raise RuntimeError(
+                      f"Expected file missing: {path}. No changes written."
+                  )
+
+          before = {path: read(path) for path in required}
+          changes = {}
+
+          # Reuse the existing header/footer without replacing either.
+          template_path = (
+              "detailpilot-review-auto-detailers.html"
+              if (ROOT / "detailpilot-review-auto-detailers.html").is_file()
+              else "reviews.html"
+          )
+          template = read(template_path)
+          header = re.search(
+              r'<header\b[^>]*class=["\'][^"\']*\bsite-header\b'
+              r'[^"\']*["\'][^>]*>[\s\S]*?</header>',
+              template,
+              re.I,
+          )
+          footer = re.search(
+              r'<footer\b[^>]*class=["\'][^"\']*\bfooter\b'
+              r'[^"\']*["\'][^>]*>[\s\S]*?</footer>',
+              template,
+              re.I,
+          )
+          if not header or not footer:
+              raise RuntimeError(
+                  "Existing header/footer not recognized. No changes written."
+              )
+
+          title = (
+              "Strata CRM Review: Pricing & Fit for Auto Detailers | DetailerFit"
+          )
+          description = (
+              "Research-based Strata CRM review for auto detailers: "
+              "customer and vehicle management, booking, pricing, "
+              "limitations, and who should use or skip it."
+          )
+          schema = {
+              "@context": "https://schema.org",
+              "@type": "Article",
+              "headline": "Strata CRM review for auto detailers",
+              "description": description,
+              "author": {
+                  "@type": "Organization",
+                  "name": "DetailerFit",
+                  "url": "https://getdetailerfit.com/",
+              },
+              "publisher": {
+                  "@type": "Organization",
+                  "name": "DetailerFit",
+                  "url": "https://getdetailerfit.com/",
+              },
+              "mainEntityOfPage": CANONICAL,
+              "inLanguage": "en-US",
+          }
+
+          review = """<!doctype html>
+          <html lang="en">
+          <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+          <meta name="theme-color" content="#090d12">
+          <title>__TITLE__</title>
+          <meta name="description" content="__DESCRIPTION__">
+          <link rel="stylesheet" href="/styles.css">
+          <link rel="canonical" href="__CANONICAL__">
+          <meta property="og:url" content="__CANONICAL__">
+          <meta property="og:type" content="article">
+          <meta property="og:title" content="__TITLE__">
+          <meta property="og:description" content="__DESCRIPTION__">
+          <meta name="twitter:card" content="summary">
+          <meta name="twitter:title" content="__TITLE__">
+          <meta name="twitter:description" content="__DESCRIPTION__">
+          <script type="application/ld+json">__SCHEMA__</script>
+          </head>
+          <body>
+          <a class="skip-link" href="#main-content">Skip to content</a>
+          __HEADER__
+          <main id="main-content" tabindex="-1">
+          <!-- DETAILERFIT-STRATA-V1 -->
+          <section class="heroMini"><div class="wrap">
+          <div class="breadcrumbs">
+          <a href="/">Home</a> /
+          <a href="/reviews">Reviews</a> / Strata CRM
+          </div>
+          <span class="eyebrow">RESEARCH-BASED SOFTWARE REVIEW</span>
+          <h1>Strata CRM review: a fit for your auto detailing business?</h1>
+          <p class="lead">
+          A vehicle-focused CRM to consider when customer history,
+          booking and everyday administration need to live together.
+          </p>
+          <div class="actions">
+          __HERO_CTA__
+          <a class="btn secondary" href="/finder">Find your software fit</a>
+          </div>
+          __DISCLOSURE__
+          </div></section>
+
+          <section class="section"><div class="wrap article">
+          <aside class="research-context research-block"
+                 aria-label="Research transparency">
+          <details open>
+          <summary>Research-based · Official sources checked September 14, 2026</summary>
+          <p>
+          This review evaluates published product documentation.
+          Hands-on testing is not claimed. Fit assessments are
+          DetailerFit's editorial judgment.
+          <a href="/methodology">How we review software</a>.
+          Confirm current vendor terms before subscribing.
+          </p>
+          </details>
+          </aside>
+
+          <h2>What is Strata CRM?</h2>
+          <p>
+          Strata markets business software for automotive shops.
+          Its official site connects booking, customer communication,
+          quotes and invoices, with mobile access advertised for
+          iPhone and Android. For a detailer, the useful question is
+          whether that organization fits the way real jobs are handled.
+          </p>
+
+          <h2>Main features for auto detailers</h2>
+          <ul class="list">
+          <li><strong>Customer and vehicle management:</strong>
+          separate vehicle histories under one customer, with notes,
+          quotes and invoices connected to the record.
+          A stored VIN field does not establish VIN scanning.</li>
+          <li><strong>Booking and payments:</strong>
+          a customer booking page, deposits through Stripe,
+          and a connected quoting and invoicing workflow.</li>
+          <li><strong>Detailing context:</strong>
+          the detailing product page describes package quotes,
+          vehicle-linked before/after history and coating
+          maintenance reminders.</li>
+          <li><strong>Business organization:</strong>
+          scheduling and follow-up tools bring administrative
+          work together. Their practical reliability should
+          be checked during a trial.</li>
+          </ul>
+          <div class="actions">
+          __FEATURE_CTA__
+          <a class="btn secondary" href="#pricing">Review plan limits</a>
+          </div>
+
+          <h2>Advantages</h2>
+          <p>
+          Vehicle-level context is useful to evaluate when customers
+          return with different cars or maintenance needs.
+          Keeping history close to the next estimate could reduce
+          repeated data entry. That is a potential workflow benefit,
+          not a measured time-saving claim.
+          </p>
+
+          <h2>Disadvantages and uncertainties</h2>
+          <ul class="list">
+          <li>Client capacity and logins differ by plan.
+          The entry price does not describe every shop's cost.</li>
+          <li>Texting documentation is inconsistent:
+          the pricing page describes included texting, while
+          the CRM FAQ describes connecting Twilio.
+          Confirm setup, numbers and charges with Strata.</li>
+          <li>Route optimization, offline operation and VIN scanning
+          were not verified in this review.</li>
+          <li>This research does not establish support quality,
+          migration completeness or return on investment.</li>
+          </ul>
+
+          <h2 id="pricing">Strata CRM pricing</h2>
+          <p>
+          Published standard monthly subscriptions are shown below.
+          Limited founder promotions are excluded from this comparison.
+          </p>
+          <div class="tablewrap" role="region" tabindex="0"
+               aria-label="Strata standard monthly pricing">
+          <table>
+          <thead><tr>
+          <th>Plan</th><th>Monthly subscription</th><th>Published capacity</th>
+          </tr></thead>
+          <tbody>
+          <tr><td>Focus</td><td>$39</td>
+          <td>One login; up to 2,000 clients</td></tr>
+          <tr><td>Flow</td><td>$89</td>
+          <td>Unlimited team logins; up to 20,000 clients</td></tr>
+          <tr><td>Reach</td><td>$179</td>
+          <td>Unlimited clients; provisioned local texting number</td></tr>
+          </tbody>
+          </table>
+          </div>
+          <p class="small">
+          Strata advertises a 30-day trial without a card.
+          Verify current checkout terms, payment-processing costs
+          and texting arrangements. Subscription pricing is not
+          an all-in operating-cost estimate.
+          </p>
+
+          <h2>How does Strata compare with other detailing software?</h2>
+          <p>
+          The best CRM for auto detailers depends on the work.
+          Compare record organization with <a href="/urable">Urable</a>;
+          investigate <a href="/mobile-tech-rx-review-auto-detailers">
+          Mobile Tech RX</a> if vehicle intake and estimating
+          dominate your day. For broader field-service requirements,
+          inspect <a href="/jobber">Jobber</a>.
+          These are evaluation paths, not claims that one product
+          wins every feature.
+          </p>
+          <p>
+          Use our <a href="/compare">software comparison</a> and
+          <a href="/best-crm-solo-mobile-detailers">solo detailer CRM guide</a>
+          to build a shortlist before switching.
+          </p>
+
+          <h2>Who should use Strata?</h2>
+          <p>
+          Solo operators and small shops with repeat customers,
+          multiple vehicles per customer and fragmented records
+          should consider a trial. Run a representative customer
+          from booking through payment, then check how easily
+          the next visit can be prepared.
+          </p>
+
+          <h2>Who should skip Strata?</h2>
+          <p>
+          Skip or defer a switch if your current system already
+          handles these tasks well, the subscription exceeds your
+          budget, or an unverified requirement is essential.
+          Confirm data export and migration needs before moving
+          your customer book.
+          </p>
+
+          <h2>Final verdict</h2>
+          <div class="verdict"><p>
+          <strong>Strata deserves a place on a vehicle-focused
+          CRM shortlist.</strong>
+          Its documented workflow is relevant to detailers.
+          A successful trial and confirmed total costs should
+          decide the purchase. Affiliate compensation does not
+          determine this assessment.
+          </p></div>
+          <div class="actions">
+          __FINAL_CTA__
+          <a class="btn secondary" href="/finder">Use the Software Finder</a>
+          </div>
+
+          <h2>Official sources</h2>
+          <div class="sourcebox">
+          <a href="https://stratacrm.app/" rel="noopener" target="_blank">
+          Strata product overview</a><br>
+          <a href="https://stratacrm.app/pricing" rel="noopener" target="_blank">
+          Published pricing and plan terms</a><br>
+          <a href="https://stratacrm.app/features/crm" rel="noopener" target="_blank">
+          Customer and vehicle CRM documentation</a><br>
+          <a href="https://stratacrm.app/auto-detailing-software"
+             rel="noopener" target="_blank">Strata for auto detailers</a>
+          </div>
+          <p class="small">
+          Source check: September 14, 2026. Official documentation
+          may change or disagree; the texting discrepancy above
+          remains unresolved.
+          </p>
+          </div></section>
+          </main>
+          __FOOTER__
+          <script src="/app.js"></script>
+          </body>
+          </html>
+          """
+
+          replacements = {
+              "__TITLE__": title.replace("&", "&amp;"),
+              "__DESCRIPTION__": description,
+              "__CANONICAL__": CANONICAL,
+              "__SCHEMA__": json.dumps(schema),
+              "__HEADER__": header.group(0),
+              "__FOOTER__": footer.group(0),
+              "__HERO_CTA__": cta("Explore Strata CRM"),
+              "__FEATURE_CTA__": cta("See Strata"),
+              "__FINAL_CTA__": cta("Check Strata Pricing"),
+              "__DISCLOSURE__": DISCLOSURE,
+          }
+          for key, value in replacements.items():
+              review = review.replace(key, value)
+
+          review_path = ROOT / "strata-crm-review.html"
+          if not review_path.exists():
+              changes[review_path.name] = review
+          elif MARKER not in read(review_path.name):
+              raise RuntimeError(
+                  "An existing Strata review was found. "
+                  "Refusing to overwrite it."
+              )
+
+          def has_page_disclosure(text):
+              # Require a visible commission/no-extra-cost statement,
+              # rather than treating a footer link alone as disclosure.
+              plain = re.sub(
+                  r"<(?:script|style)\b[^>]*>[\s\S]*?</(?:script|style)>",
+                  "",
+                  text,
+                  flags=re.I,
+              )
+              plain = re.sub(r"<[^>]+>", " ", plain)
+              return bool(re.search(
+                  r"commission[^.]{0,200}(?:no extra cost|at no cost)",
+                  plain,
+                  re.I,
+              ))
+
+          placements = {
+              "reviews.html": (
+                  "Strata CRM",
+                  "Another option for detailers who need customer and "
+                  "vehicle history connected to booking and invoicing. "
+                  "Read the benefits and limitations before choosing.",
+              ),
+              "compare.html": (
+                  "Also compare Strata for vehicle-focused CRM",
+                  "Consider Strata alongside the core comparison when "
+                  "organizing repeat customers and their vehicles matters. "
+                  "Review plan capacity and workflow requirements before "
+                  "adding it to your shortlist.",
+              ),
+              "best-crm-solo-mobile-detailers.html": (
+                  "Strata for solo auto detailers",
+                  "If your main problem is scattered customer and vehicle "
+                  "records, Strata is another candidate to evaluate. "
+                  "Check the one-login Focus plan and its client limit, "
+                  "then test a complete booking-to-invoice workflow.",
+              ),
+              "best-auto-detailing-software-2026.html": (
+                  "Strata for small detailing businesses",
+                  "Consider Strata when customer history, vehicle records "
+                  "and booking are central to your work. This additional "
+                  "option does not replace the existing recommendations.",
+              ),
+              "software-cost-calculator.html": (
+                  "Considering Strata? Check its plan limits",
+                  "The calculator above does not model Strata. "
+                  "Its appropriate plan depends on client capacity, "
+                  "logins and texting needs. Review those limits "
+                  "separately before comparing total costs.",
+              ),
+          }
+
+          for path, (heading, paragraph) in placements.items():
+              current = before[path]
+              if MARKER in current:
+                  continue
+              disclosure = (
+                  "" if has_page_disclosure(current) else DISCLOSURE
+              )
+              block = f"""
+          {MARKER}
+          <section class="section tight" aria-labelledby="strata-crm-option">
+          <div class="wrap article"><div class="card">
+          <div class="kicker">CUSTOMER &amp; VEHICLE MANAGEMENT</div>
+          <h2 id="strata-crm-option">{heading}</h2>
+          <p>{paragraph}</p>
+          <p class="small">
+          Research checked {SOURCE_DATE}.
+          Confirm current pricing and texting setup.
+          Route optimization and VIN scanning are not verified.
+          </p>
+          <div class="actions">
+          <a class="btn secondary" href="{SLUG}">Read the Strata CRM review</a>
+          {cta("Visit Strata")}
+          </div>
+          {disclosure}
+          </div></div></section>
+          """
+              changes[path] = insert_before_last(
+                  current, "</main>", block
+              )
+
+          # Add an isolated Finder extension; do not replace app.js.
+          # It does not alter the six-product scoring or existing CTAs.
+          finder = before["finder.html"]
+          if MARKER not in finder:
+              if not re.search(
+                  r'id=["\']finderForm["\']', finder
+              ) or not re.search(
+                  r'id=["\']resultsBox["\']', finder
+              ):
+                  raise RuntimeError(
+                      "Finder structure changed. No changes written."
+                  )
+
+              finder_note = f"""
+          {MARKER}
+          <section class="section tight"><div class="wrap article">
+          <h2>Also researching customer and vehicle management?</h2>
+          <p>
+          <a href="{SLUG}">Read our Strata CRM review</a>.
+          Strata may appear as an additional candidate for solo operators
+          or small teams seeking online booking or a detailing workflow.
+          Its client limits require a separate check.
+          </p>
+          </div></section>
+          """
+              finder = insert_before_last(
+                  finder, "</main>", finder_note
+              )
+              finder = insert_before_last(
+                  finder,
+                  "</body>",
+                  '<script src="/strata-finder.js" defer></script>',
+              )
+              changes["finder.html"] = finder
+
+          finder_js = r"""
+          /* DETAILERFIT-STRATA-V1 */
+          (() => {
+            'use strict';
+            const affiliate = 'https://stratacrm.app/?via=ryo-yonemura';
+
+            function init() {
+              const form = document.getElementById('finderForm');
+              const results = document.getElementById('resultsBox');
+              if (!form || !results) return;
+              if (form.dataset.strataExtension === 'ready') return;
+              form.dataset.strataExtension = 'ready';
+
+              form.addEventListener('submit', () => {
+                // Run after the existing Finder has rendered its results.
+                window.setTimeout(() => {
+                  document.getElementById('strata-finder-candidate')?.remove();
+                  const data = new FormData(form);
+                  const team = Number(data.get('teamCount'));
+                  const budget = Number(data.get('budgetAmount'));
+                  const booking = data.get('booking');
+                  const needs = data.getAll('priority');
+                  const baseline = team === 1 ? 39 : 89;
+
+                  if (!Number.isFinite(team) || !Number.isFinite(budget)) return;
+                  if (!Number.isInteger(team) || team < 1 || team > 5) return;
+                  if (budget < baseline) return;
+                  if (needs.includes('scale') || needs.includes('vehicle')) return;
+                  if (booking !== 'yes' && !needs.includes('detail')) return;
+
+                  const candidate = document.createElement('article');
+                  candidate.id = 'strata-finder-candidate';
+                  candidate.className = 'result';
+                  const plan = team === 1
+                    ? 'Focus: $39/month, one login, up to 2,000 clients'
+                    : 'Flow: $89/month, unlimited team logins, up to 20,000 clients';
+
+                  candidate.innerHTML = `
+                    <div class="kicker">ADDITIONAL CRM CANDIDATE</div>
+                    <h3>Strata</h3>
+                    <p>Worth evaluating for customer and vehicle records,
+                    online booking and everyday business organization.</p>
+                    <div class="result-plan">
+                    <strong>Standard subscription to inspect:</strong> ${plan}
+                    </div>
+                    <div class="result-watch">
+                    <strong>Verify plan fit:</strong>
+                    Your client count may require a higher plan.
+                    This form does not establish an exact Strata cost match.
+                    Confirm texting setup and charges; official pages disagree.
+                    Route optimization, VIN scanning and offline operation
+                    are not verified. Source check: September 14, 2026.
+                    </div>
+                    <div class="actions">
+                    <a class="btn secondary" href="/strata-crm-review">
+                    Read the Strata CRM review</a>
+                    <a class="btn primary" data-vendor="Strata"
+                    href="${affiliate}" rel="sponsored noopener">
+                    Explore Strata CRM</a>
+                    </div>
+                    <p class="cta-disclosure small">
+                    DetailerFit may earn a commission if you sign up through
+                    this link, at no extra cost to you.
+                    <a href="/affiliate-disclosure">Affiliate disclosure</a>.
+                    </p>`;
+                  results.appendChild(candidate);
+                }, 0);
+              });
+            }
+
+            if (document.readyState === 'loading') {
+              document.addEventListener('DOMContentLoaded', init, {once: true});
+            } else {
+              init();
+            }
+          })();
+          """
+          js_path = ROOT / "strata-finder.js"
+          if not js_path.exists():
+              changes[js_path.name] = finder_js.strip() + "\n"
+          elif "DETAILERFIT-STRATA-V1" not in read(js_path.name):
+              raise RuntimeError(
+                  "Existing strata-finder.js is not owned by this update."
+              )
+
+          sitemap = before["sitemap.xml"]
+          sitemap_root = ET.fromstring(sitemap)
+          existing_locations = [
+              element.text for element in sitemap_root.iter()
+              if element.tag.split("}")[-1] == "loc"
+          ]
+          if CANONICAL not in existing_locations:
+              sitemap = insert_before_last(
+                  sitemap,
+                  "</urlset>",
+                  f"  <url><loc>{CANONICAL}</loc></url>",
+              )
+              ET.fromstring(sitemap)
+              changes["sitemap.xml"] = sitemap
+
+          # Validate all candidate content before writing any website file.
+          class Elements(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.links = []
+                  self.canonicals = []
+                  self.headings = 0
+                  self.scripts = []
+
+              def handle_starttag(self, tag, attrs):
+                  a = dict(attrs)
+                  if tag == "a":
+                      self.links.append(a)
+                  if tag == "link" and a.get("rel") == "canonical":
+                      self.canonicals.append(a.get("href"))
+                  if tag == "h1":
+                      self.headings += 1
+                  if tag == "script" and a.get("src"):
+                      self.scripts.append(a["src"])
+
+          def elements(text):
+              parser = Elements()
+              parser.feed(text)
+              return parser
+
+          for path, content in changes.items():
+              if not path.endswith(".html"):
+                  continue
+              parsed = elements(content)
+
+              if path in before:
+                  original = elements(before[path])
+                  if parsed.canonicals != original.canonicals:
+                      raise RuntimeError(f"Canonical changed: {path}")
+
+                  # Existing anchor tags, including all tracking attributes,
+                  # must remain in their original order.
+                  cursor = 0
+                  for anchor in re.findall(
+                      r"<a\b[^>]*>", before[path], flags=re.I
+                  ):
+                      position = content.find(anchor, cursor)
+                      if position < 0:
+                          raise RuntimeError(
+                              f"Existing anchor changed or removed: {path}"
+                          )
+                      cursor = position + len(anchor)
+
+              for anchor in parsed.links:
+                  href = anchor.get("href", "")
+                  if "via=ryo-yonemura" in href:
+                      if (
+                          href != URL
+                          or anchor.get("rel") != "sponsored noopener"
+                          or anchor.get("data-vendor") != "Strata"
+                      ):
+                          raise RuntimeError(f"Invalid Strata CTA: {path}")
+
+              if path == "strata-crm-review.html":
+                  if parsed.canonicals != [CANONICAL]:
+                      raise RuntimeError("Invalid review canonical")
+                  if parsed.headings != 1:
+                      raise RuntimeError("Review must have one H1")
+                  if sum(
+                      a.get("href") == URL for a in parsed.links
+                  ) != 3:
+                      raise RuntimeError("Expected three review CTAs")
+                  json.loads(re.search(
+                      r'<script type="application/ld\+json">([\s\S]*?)</script>',
+                      content,
+                  ).group(1))
+
+          # Validate new internal destinations against source files.
+          new_review = changes.get(
+              "strata-crm-review.html",
+              read("strata-crm-review.html")
+              if review_path.exists() else "",
+          )
+          for anchor in elements(new_review).links:
+              href = anchor.get("href", "")
+              if not href.startswith("/") or href.startswith("//"):
+                  continue
+              target = href.split("#", 1)[0].split("?", 1)[0].lstrip("/")
+              if not target:
+                  continue
+              candidates = [target, target + ".html", target + "/index.html"]
+              if not any(
+                  p in changes or (ROOT / p).is_file() for p in candidates
+              ):
+                  raise RuntimeError(f"Missing internal target: {href}")
+
+          # Shared styles and existing application logic are deliberately
+          # not rewritten by this additive update.
+          if "styles.css" in changes or "app.js" in changes:
+              raise RuntimeError("Unexpected shared-file modification")
+
+          for path, content in changes.items():
+              (ROOT / path).write_text(content, encoding="utf-8")
+
+          print("Written files:")
+          for path in changes:
+              print(" -", path)
+          print("PASS: existing anchors and canonical tags preserved")
+          print("PASS: Strata URL, rel and data-vendor validated")
+          print("PASS: review schema, H1, CTA count and internal targets")
+          print("PASS: sitemap XML")
+          print("UNCHANGED: styles.css and app.js")
+          print("PENDING: deployed-page/mobile/browser checks")
+          PY
+
+      - name: Validate JavaScript syntax
+        run: node --check strata-finder.js
+
+      - name: Test Finder conditions
+        shell: bash
+        run: |
+          node <<'JS'
+          const fs = require('node:fs');
+          const vm = require('node:vm');
+          const assert = require('node:assert/strict');
+          const code = fs.readFileSync('strata-finder.js', 'utf8');
+
+          function run(team, budget, booking, needs, expected) {
+            let submit;
+            let card;
+            const form = {
+              dataset: {},
+              addEventListener(name, handler) {
+                if (name === 'submit') submit = handler;
+              }
+            };
+            const results = {
+              appendChild(value) { card = value; }
+            };
+            const document = {
+              readyState: 'complete',
+              getElementById(id) {
+                if (id === 'finderForm') return form;
+                if (id === 'resultsBox') return results;
+                if (id === 'strata-finder-candidate' && card) {
+                  return {remove() { card = undefined; }};
+                }
+                return null;
+              },
+              createElement() { return {}; }
+            };
+            class FormData {
+              get(key) {
+                return {
+                  teamCount: String(team),
+                  budgetAmount: String(budget),
+                  booking
+                }[key];
+              }
+              getAll() { return needs; }
+            }
+            vm.runInNewContext(code, {
+              document,
+              FormData,
+              window: {setTimeout(callback) { callback(); }}
+            });
+            assert.equal(typeof submit, 'function');
+            submit();
+            assert.equal(Boolean(card), expected);
+            if (card) {
+              assert.ok(card.innerHTML.includes(
+                'https://stratacrm.app/?via=ryo-yonemura'
+              ));
+              assert.ok(card.innerHTML.includes(
+                'rel="sponsored noopener"'
+              ));
+              assert.ok(card.innerHTML.includes('data-vendor="Strata"'));
+              assert.ok(card.innerHTML.includes('at no extra cost to you'));
+            }
+            // Submitting again must replace, rather than duplicate, the card.
+            submit();
+            assert.equal(Boolean(card), expected);
+          }
+
+          const cases = [
+            [1, 50, 'yes', [], true],
+            [3, 100, 'no', ['detail'], true],
+            [1, 38, 'yes', [], false],
+            [3, 88, 'yes', ['detail'], false],
+            [6, 200, 'yes', ['detail'], false],
+            [1, 200, 'yes', ['scale'], false],
+            [1, 200, 'yes', ['vehicle'], false],
+            [1, 100, 'no', [], false],
+            [1, 39, 'no', ['detail'], true]
+          ];
+          cases.forEach(args => run(...args));
+          console.log('PASS: 9 Finder cases and repeated submissions');
+          JS
+
+      - name: Commit website changes
+        shell: bash
+        env:
+          TARGET_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add -- \
+            strata-crm-review.html \
+            strata-finder.js \
+            reviews.html \
+            compare.html \
+            best-crm-solo-mobile-detailers.html \
+            best-auto-detailing-software-2026.html \
+            software-cost-calculator.html \
+            finder.html \
+            sitemap.xml
+
+          if git diff --cached --quiet; then
+            echo "No new changes. Strata implementation already exists."
+            exit 0
+          fi
+
+          git diff --cached --check
+          git commit -m "Add Strata CRM review and affiliate discovery paths"
+          git push origin "HEAD:${TARGET_BRANCH}"
+
+      - name: Write result summary
+        shell: bash
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<'TEXT'
+          ## Strata CRM implementation
+
+          Added:
+          - `/strata-crm-review` with three affiliate CTAs
+          - Related placements on reviews, comparison, solo CRM,
+            best software and cost calculator pages
+          - Conditional additional Finder candidate
+          - Sitemap entry
+
+          Affiliate URL:
+          `https://stratacrm.app/?via=ryo-yonemura`
+
+          Checks:
+          - Existing anchor attributes and canonical tags preserved
+          - Strata CTA URL, sponsored rel and vendor attributes validated
+          - Review schema, H1 and internal targets validated
+          - Sitemap XML validated
+          - JavaScript syntax checked
+          - Nine Finder cases and repeated submissions tested
+
+          Shared CSS and existing app.js were not rewritten.
+
+          Still required after deployment:
+          - Confirm extensionless review URL returns successfully
+          - Check mobile layout and CTA overflow
+          - Check browser console and real Finder interaction
+          - Confirm existing affiliate paths on the deployed site
+
+          This workflow commits source changes. Publication depends on
+          the repository's existing deployment setup.
+          TEXT

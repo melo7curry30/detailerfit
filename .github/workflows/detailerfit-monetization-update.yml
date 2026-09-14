@@ -1,0 +1,247 @@
+name: DetailerFit Monetization Update
+
+on:
+  push:
+    paths:
+      - ".github/workflows/detailerfit-monetization-update.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-monetization:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Add monetization links and refresh disclosures
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace_once(text, old, new, label):
+              if old in text:
+                  return text.replace(old, new, 1)
+              if new in text:
+                  return text
+              raise SystemExit(f"Expected text not found: {label}")
+
+          # ============================================================
+          # 1) Best AI Receptionists page — AI Receptionist affiliate CTA
+          # ============================================================
+          ai_page = Path("best-ai-receptionists-auto-detailing.html")
+          html = ai_page.read_text(encoding="utf-8")
+
+          html = replace_once(
+              html,
+              '"dateModified":"2026-09-11"',
+              '"dateModified":"2026-09-14"',
+              "AI page dateModified",
+          )
+
+          html = replace_once(
+              html,
+              '<div class="research-detail"><b>Affiliate disclosure:</b> This page contains an affiliate link to QuoteIQ. If you sign up through it, DetailerFit may earn a commission at no extra cost to you. Affiliate relationships do not determine our rankings or conclusions.</div>',
+              '<div class="research-detail"><b>Affiliate disclosure:</b> This page contains affiliate links to QuoteIQ and AI Receptionist. If you sign up through one of these links, DetailerFit may earn a commission at no extra cost to you. Affiliate relationships do not determine our rankings or conclusions.</div>',
+              "AI page affiliate disclosure",
+          )
+
+          html = replace_once(
+              html,
+              '<p class="template-update">Page updated September 11, 2026.</p>',
+              '<p class="template-update">Page updated September 14, 2026.</p>',
+              "AI page update date",
+          )
+
+          section9 = '<h2 id="section-9">Other AI Receptionist Options Worth Watching</h2>\n\n'
+          ai_block = '''<h3>AI Receptionist — Affiliate Option to Test</h3>
+          <p>If you want a dedicated AI receptionist without replacing your CRM, AI Receptionist is another option to evaluate. We have not ranked it above the products in our main comparison yet, so test it with your real detailing calls, pricing rules, booking flow and escalation needs before buying.</p>
+
+          <div class="actions">
+            <a class="btn primary" href="https://ai-receptionist.com?via=detailerfit56" rel="sponsored noopener" target="_blank">Try AI Receptionist</a>
+          </div>
+          <p class="cta-disclosure small">Affiliate link. DetailerFit may earn a commission if you sign up, at no extra cost to you. This affiliate relationship does not determine our rankings.</p>
+
+          '''
+
+          if "https://ai-receptionist.com?via=detailerfit56" not in html:
+              if section9 not in html:
+                  raise SystemExit("AI page section-9 marker not found")
+              html = html.replace(section9, section9 + ai_block, 1)
+
+          ai_source = '  <a href="https://ai-receptionist.com/" rel="noopener">AI Receptionist — Official Site</a><br/>\n'
+          housecall_source = '  <a href="https://help.housecallpro.com/en/articles/9311875-ai-team-overview" rel="noopener">Housecall Pro — AI Team Overview</a><br/>\n'
+          if ai_source not in html:
+              if housecall_source not in html:
+                  raise SystemExit("AI page official-source marker not found")
+              html = html.replace(housecall_source, ai_source + housecall_source, 1)
+
+          ai_page.write_text(html, encoding="utf-8")
+
+          # ============================================================
+          # 2) Best Auto Detailing Software — DetailPilot + RO App
+          # ============================================================
+          software_page = Path("best-auto-detailing-software-2026.html")
+          software = software_page.read_text(encoding="utf-8")
+
+          software = replace_once(
+              software,
+              '"dateModified":"2026-09-08"',
+              '"dateModified":"2026-09-14"',
+              "Software guide dateModified",
+          )
+
+          software = replace_once(
+              software,
+              '<p class="research-detail"><strong>Affiliate disclosure:</strong> DetailerFit may earn a commission if you sign up for Mobile Tech RX through links on this page, at no additional cost to you. Affiliate relationships do not affect our rankings or editorial conclusions.</p>',
+              '<p class="research-detail"><strong>Affiliate disclosure:</strong> DetailerFit may earn a commission if you sign up for Mobile Tech RX, DetailPilot, or RO App through clearly marked links on this page, at no additional cost to you. Affiliate relationships do not affect our rankings or editorial conclusions.</p>',
+              "Software guide affiliate disclosure",
+          )
+
+          software = replace_once(
+              software,
+              '<p class="template-update">Page updated September 8, 2026 · Editorial and interface update; source-check dates are listed separately.</p>',
+              '<p class="template-update">Page updated September 14, 2026 · Added clearly labeled affiliate options; ranked conclusions remain unchanged.</p>',
+              "Software guide update date",
+          )
+
+          section10 = '<section>\n<h2 id="section-10">Best Software by Type of Detailing Business</h2>'
+          affiliate_options = '''<section aria-label="Additional affiliate options worth testing">
+          <div class="note">
+            <strong>Two additional options worth testing:</strong> DetailPilot and RO App are not part of our ranked top six above. We are listing them separately so readers can evaluate newer or differently positioned tools without changing the editorial ranking.
+          </div>
+
+          <div class="fitbox">
+            <div class="card flat">
+              <div class="kicker">DETAILER-NATIVE BOOKING</div>
+              <h3>DetailPilot</h3>
+              <p>DetailPilot is built specifically for detailers and combines online booking, deposits, payments, invoices, crew scheduling and memberships. Its official pricing currently includes a free Starter plan, with paid plans beginning at $29/month.</p>
+              <div class="actions">
+                <a class="btn primary" href="https://detailpilot.com/?via=ryo" rel="sponsored noopener" target="_blank">Try DetailPilot</a>
+              </div>
+            </div>
+
+            <div class="card flat">
+              <div class="kicker">BROADER JOB + CRM WORKFLOW</div>
+              <h3>RO App</h3>
+              <p>RO App offers a broader business-management system with a dedicated car-detailing workflow, including booking, scheduling, customer and vehicle history, invoicing and payments. Compare its current plan structure directly before choosing it over a detailing-only platform.</p>
+              <div class="actions">
+                <a class="btn primary" href="https://roapp.io/?r=F93fGI7J03NeoBhRoLloNZhVcWNYieiR" rel="sponsored noopener" target="_blank">Try RO App</a>
+              </div>
+            </div>
+          </div>
+
+          <p class="cta-disclosure small">Affiliate links. DetailerFit may earn a commission from qualifying signups or purchases at no extra cost to you. These relationships do not change the ranked top six above.</p>
+          </section>
+
+          '''
+
+          if "https://detailpilot.com/?via=ryo" not in software or "https://roapp.io/?r=F93fGI7J03NeoBhRoLloNZhVcWNYieiR" not in software:
+              if section10 not in software:
+                  raise SystemExit("Software guide section-10 marker not found")
+              software = software.replace(section10, affiliate_options + section10, 1)
+
+          sources_marker = '<b>Jobber</b><br/>\n<a href="https://www.getjobber.com/pricing/" rel="noopener">Jobber Pricing</a><br/><br/>\n'
+          extra_sources = '''<b>DetailPilot</b><br/>
+          <a href="https://detailpilot.com/auto-detailing-software" rel="noopener">DetailPilot Auto Detailing Software</a><br/>
+          <a href="https://detailpilot.com/pricing" rel="noopener">DetailPilot Pricing</a><br/><br/>
+          <b>RO App</b><br/>
+          <a href="https://roapp.io/car-detailing-software-20122/" rel="noopener">RO App Car Detailing Software</a><br/>
+          <a href="https://roapp.io/pricing/" rel="noopener">RO App Pricing</a><br/><br/>
+          '''
+
+          if "DetailPilot Auto Detailing Software" not in software:
+              if sources_marker not in software:
+                  raise SystemExit("Software guide sources marker not found")
+              software = software.replace(sources_marker, extra_sources + sources_marker, 1)
+
+          software_page.write_text(software, encoding="utf-8")
+
+          # ============================================================
+          # 3) Site-wide affiliate disclosure
+          # ============================================================
+          disclosure = Path("affiliate-disclosure.html")
+          d = disclosure.read_text(encoding="utf-8")
+
+          old_status = '<div class="note"><b>Current status:</b> DetailerFit uses affiliate links on selected pages. QuoteIQ and Mobile Tech RX are currently products for which we may earn a commission from qualifying signups or purchases.</div>'
+          new_status = '<div class="note"><b>Current status:</b> DetailerFit uses affiliate links on selected pages. Current affiliate relationships may include QuoteIQ, Mobile Tech RX, RO App, DetailPilot, AI Receptionist, and The Wrap Institute. DetailerFit may earn a commission from qualifying signups or purchases made through clearly marked affiliate links.</div>'
+
+          d = replace_once(
+              d,
+              old_status,
+              new_status,
+              "Site-wide affiliate current-status disclosure",
+          )
+          disclosure.write_text(d, encoding="utf-8")
+
+          # ============================================================
+          # Validation
+          # ============================================================
+          checks = {
+              ai_page: [
+                  "https://ai-receptionist.com?via=detailerfit56",
+                  'rel="sponsored noopener"',
+                  "AI Receptionist — Affiliate Option to Test",
+                  "Page updated September 14, 2026.",
+                  '"dateModified":"2026-09-14"',
+                  "affiliate links to QuoteIQ and AI Receptionist",
+              ],
+              software_page: [
+                  "https://detailpilot.com/?via=ryo",
+                  "https://roapp.io/?r=F93fGI7J03NeoBhRoLloNZhVcWNYieiR",
+                  "DetailPilot",
+                  "RO App",
+                  "ranked top six",
+                  '"dateModified":"2026-09-14"',
+              ],
+              disclosure: [
+                  "QuoteIQ",
+                  "Mobile Tech RX",
+                  "RO App",
+                  "DetailPilot",
+                  "AI Receptionist",
+                  "The Wrap Institute",
+              ],
+          }
+
+          for file_path, required in checks.items():
+              content = file_path.read_text(encoding="utf-8")
+              missing = [item for item in required if item not in content]
+              if missing:
+                  raise SystemExit(f"Validation failed in {file_path}: {missing}")
+
+          print("DetailerFit monetization patch validated.")
+          PY
+
+      - name: Show and validate diff
+        shell: bash
+        run: |
+          git diff --check
+          git diff -- \
+            best-ai-receptionists-auto-detailing.html \
+            best-auto-detailing-software-2026.html \
+            affiliate-disclosure.html
+
+      - name: Commit updated pages
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "No changes needed."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add \
+            best-ai-receptionists-auto-detailing.html \
+            best-auto-detailing-software-2026.html \
+            affiliate-disclosure.html
+
+          git commit -m "Add affiliate monetization paths"
+          git push

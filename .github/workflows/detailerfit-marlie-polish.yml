@@ -1,0 +1,222 @@
+name: Polish Marlie AI implementation
+
+on:
+  push:
+    paths:
+      - ".github/workflows/detailerfit-marlie-polish.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  polish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Apply final Marlie polish
+        shell: python
+        run: |
+          import re
+          from pathlib import Path
+
+          TODAY = "2026-09-15"
+          TODAY_LONG = "September 15, 2026"
+          MARLIE_URL = "https://www.marlie.ai/?via=ryo"
+          changed = []
+
+          def read(path):
+              return Path(path).read_text(encoding="utf-8")
+
+          def write(path, text):
+              Path(path).write_text(text, encoding="utf-8")
+              if path not in changed:
+                  changed.append(path)
+
+          # ------------------------------------------------------------
+          # 1) Keep structured + visible update dates aligned.
+          # ------------------------------------------------------------
+          date_pages = [
+              "best-ai-software-auto-detailing.html",
+              "best-mobile-detailing-software.html",
+              "best-auto-detailing-software-2026.html",
+          ]
+
+          for filename in date_pages:
+              text = read(filename)
+              updated = re.sub(
+                  r'("dateModified"\s*:\s*")[0-9]{4}-[0-9]{2}-[0-9]{2}(")',
+                  rf'\g<1>{TODAY}\2',
+                  text,
+                  count=1,
+              )
+              updated = re.sub(
+                  r'Page updated September \d{1,2}, 2026',
+                  f'Page updated {TODAY_LONG}',
+                  updated,
+                  count=1,
+              )
+              if updated != text:
+                  write(filename, updated)
+
+          # ------------------------------------------------------------
+          # 2) Make both affiliate-disclosure vendor lists consistent.
+          # ------------------------------------------------------------
+          filename = "affiliate-disclosure.html"
+          text = read(filename)
+          updated = text
+
+          vendor_list = (
+              "QuoteIQ, Mobile Tech RX, RO App, DetailPilot, AI Receptionist, "
+              "The Wrap Institute, and Marlie AI"
+          )
+
+          updated, n1 = re.subn(
+              r'(<b>Current status:</b>\s*DetailerFit uses affiliate links on selected pages\. '
+              r'Current affiliate relationships may include )'
+              r'.*?'
+              r'(\. DetailerFit may earn a commission)',
+              rf'\g<1>{vendor_list}\2',
+              updated,
+              count=1,
+              flags=re.S,
+          )
+
+          updated, n2 = re.subn(
+              r'(<b>Current linked relationships:</b>\s*)'
+              r'.*?'
+              r'(\.\s*DetailerFit may earn a commission)',
+              rf'\g<1>{vendor_list}\2',
+              updated,
+              count=1,
+              flags=re.S,
+          )
+
+          if n1 != 1 or n2 != 1:
+              raise SystemExit(
+                  f"Affiliate disclosure normalization failed: status={n1}, linked={n2}"
+              )
+
+          if updated != text:
+              write(filename, updated)
+
+          # ------------------------------------------------------------
+          # 3) Standardize every Marlie revenue CTA to a new tab while
+          #    preserving sponsored/noopener + data-vendor tracking.
+          # ------------------------------------------------------------
+          marlie_anchor_pattern = re.compile(
+              r'<a\b[^>]*href="https://www\.marlie\.ai/\?via=ryo"[^>]*>',
+              flags=re.I,
+          )
+
+          for path in Path(".").glob("*.html"):
+              text = path.read_text(encoding="utf-8")
+              touched = [False]
+
+              def fix_anchor(match):
+                  tag = match.group(0)
+
+                  if 'target="_blank"' not in tag:
+                      tag = tag[:-1] + ' target="_blank">'
+                      touched[0] = True
+
+                  if 'data-vendor="Marlie AI"' not in tag:
+                      raise SystemExit(
+                          f'Missing data-vendor="Marlie AI" in {path.name}: {tag}'
+                      )
+
+                  rel_match = re.search(r'rel="([^"]*)"', tag, flags=re.I)
+                  rel_tokens = (
+                      set(rel_match.group(1).lower().split())
+                      if rel_match else set()
+                  )
+                  if not {"sponsored", "noopener"}.issubset(rel_tokens):
+                      raise SystemExit(
+                          f"Missing sponsored/noopener on Marlie CTA in {path.name}: {tag}"
+                      )
+
+                  return tag
+
+              updated = marlie_anchor_pattern.sub(fix_anchor, text)
+
+              if touched[0] and updated != text:
+                  write(path.name, updated)
+
+          # ------------------------------------------------------------
+          # 4) Final integrity checks.
+          # ------------------------------------------------------------
+          for filename in date_pages:
+              text = read(filename)
+              if not re.search(
+                  rf'"dateModified"\s*:\s*"{re.escape(TODAY)}"',
+                  text,
+              ):
+                  raise SystemExit(f"dateModified not updated in {filename}")
+
+          disclosure = read("affiliate-disclosure.html")
+          if disclosure.count("The Wrap Institute") < 2:
+              raise SystemExit(
+                  "The Wrap Institute is not present in both disclosure lists."
+              )
+          if disclosure.count("Marlie AI") < 2:
+              raise SystemExit("Marlie AI is not present in both disclosure lists.")
+
+          marlie_cta_count = 0
+          for path in Path(".").glob("*.html"):
+              text = path.read_text(encoding="utf-8")
+              for tag in marlie_anchor_pattern.findall(text):
+                  marlie_cta_count += 1
+                  if 'target="_blank"' not in tag:
+                      raise SystemExit(
+                          f'Marlie CTA missing target="_blank" in {path.name}'
+                      )
+                  if 'data-vendor="Marlie AI"' not in tag:
+                      raise SystemExit(
+                          f'Marlie CTA missing data-vendor in {path.name}'
+                      )
+                  rel_match = re.search(r'rel="([^"]*)"', tag, flags=re.I)
+                  rel_tokens = (
+                      set(rel_match.group(1).lower().split())
+                      if rel_match else set()
+                  )
+                  if not {"sponsored", "noopener"}.issubset(rel_tokens):
+                      raise SystemExit(
+                          f"Marlie CTA rel attributes invalid in {path.name}"
+                      )
+
+          if marlie_cta_count < 7:
+              raise SystemExit(
+                  f"Unexpectedly few Marlie CTAs found: {marlie_cta_count}"
+              )
+
+          print("Final Marlie polish validated.")
+          print(f"Validated {marlie_cta_count} Marlie affiliate CTA(s).")
+          print("Changed files:")
+          for filename in changed:
+              print(" -", filename)
+
+      - name: Commit final polish
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git diff --check
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add -- '*.html'
+
+          if git diff --cached --quiet; then
+            echo "Final Marlie polish is already applied."
+            exit 0
+          fi
+
+          git commit -m "Polish Marlie affiliate metadata and CTA behavior"
+          git push origin HEAD:main

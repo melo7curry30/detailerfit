@@ -1,0 +1,156 @@
+name: DetailerFit Affiliate Click Fallback
+
+on:
+  push:
+    paths:
+      - ".github/workflows/detailerfit-affiliate-click-fallback.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix-affiliate-clicks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Fix sponsored CTA fallback tracking
+        shell: python
+        run: |
+          from pathlib import Path
+
+          app_path = Path("app.js")
+          if not app_path.exists():
+              raise RuntimeError("app.js not found")
+
+          app = app_path.read_text(encoding="utf-8")
+
+          marker = "// DetailerFit affiliate click fallback v3."
+          if marker in app:
+              print("Affiliate click fallback v3 already applied.")
+          else:
+              old = """  const vendor=(link.dataset.vendor||'').trim();
+            if(vendor){
+              // DetailerFit revenue telemetry taxonomy v2.
+              // `data-vendor` identifies a vendor link, but only sponsored links are
+              // revenue clicks. `data-affiliate="true"` is an explicit override for
+              // future monetized links that cannot use rel="sponsored".
+              const relTokens=(link.getAttribute('rel')||'')
+                .toLowerCase()
+                .split(/\\s+/)
+                .filter(Boolean);
+              const isAffiliate=relTokens.includes('sponsored')||link.dataset.affiliate==='true';
+
+              dfTrackEvent(isAffiliate?'affiliate_click':'vendor_outbound_click',{
+                vendor,
+                link_url:link.href,
+                link_host:link.hostname,
+                link_text:(link.textContent||'').trim().slice(0,120),
+                cta_position:dfLinkContext(link),
+                monetized:isAffiliate
+              });
+              return;
+            }
+          """
+
+              new = """  // DetailerFit affiliate click fallback v3.
+            // A sponsored affiliate CTA must be tracked even if data-vendor was omitted.
+            // data-vendor still provides the preferred human-readable vendor label.
+            const relTokens=(link.getAttribute('rel')||'')
+              .toLowerCase()
+              .split(/\\s+/)
+              .filter(Boolean);
+            const isAffiliate=relTokens.includes('sponsored')||link.dataset.affiliate==='true';
+            const explicitVendor=(link.dataset.vendor||'').trim();
+            const vendor=explicitVendor||(isAffiliate ? link.hostname : '');
+
+            if(vendor||isAffiliate){
+              dfTrackEvent(isAffiliate?'affiliate_click':'vendor_outbound_click',{
+                vendor:vendor||'unknown',
+                vendor_label_source:explicitVendor?'data-vendor':(isAffiliate?'hostname':'none'),
+                link_url:link.href,
+                link_host:link.hostname,
+                link_text:(link.textContent||'').trim().slice(0,120),
+                cta_position:dfLinkContext(link),
+                monetized:isAffiliate
+              });
+              return;
+            }
+          """
+
+              if old not in app:
+                  raise RuntimeError(
+                      "Expected v2 vendor click handler was not found. "
+                      "Stop rather than patching unknown code."
+                  )
+
+              app = app.replace(old, new, 1)
+              app_path.write_text(app, encoding="utf-8")
+              print("Applied affiliate click fallback v3.")
+
+          audit = """# DetailerFit Affiliate Click Fallback — 2026-09-15
+
+          ## Root cause
+          The v2 click handler only entered the vendor-event branch when a clicked link had `data-vendor`.
+          A sponsored affiliate CTA missing `data-vendor` therefore fell through without sending `affiliate_click`,
+          even though the link itself correctly used `rel="sponsored"`.
+
+          ## Fix
+          - Evaluate affiliate status before requiring `data-vendor`.
+          - Any link with `rel="sponsored"` or `data-affiliate="true"` now sends `affiliate_click`.
+          - `data-vendor` remains the preferred vendor label.
+          - When a sponsored CTA has no `data-vendor`, the event uses the clicked hostname as a fallback vendor label.
+          - Non-sponsored links with `data-vendor` still send `vendor_outbound_click`.
+          - Existing rankings, URLs, design, SEO content and affiliate destinations are unchanged.
+
+          ## Validation target
+          After deployment, click one sponsored CTA and confirm `affiliate_click` appears in GA4 Realtime.
+          """
+          Path("AFFILIATE-CLICK-FALLBACK-2026-09-15.md").write_text(audit, encoding="utf-8")
+
+          # Safety checks
+          check = app_path.read_text(encoding="utf-8")
+          required = [
+              "DetailerFit affiliate click fallback v3.",
+              "relTokens.includes('sponsored')",
+              "vendor_label_source",
+              "affiliate_click",
+              "vendor_outbound_click",
+              "G-1MS4N4L2J1",
+          ]
+          for item in required:
+              if item not in check:
+                  raise RuntimeError(f"Required marker missing after patch: {item}")
+
+          if check.count("DetailerFit affiliate click fallback v3.") != 1:
+              raise RuntimeError("Fallback v3 marker count must be exactly 1.")
+
+          print("Affiliate click fallback patch applied successfully.")
+
+
+      - name: Validate JavaScript and diff
+        shell: bash
+        run: |
+          node --check app.js
+          grep -q "DetailerFit affiliate click fallback v3" app.js
+          grep -q "vendor_label_source" app.js
+          grep -q "affiliate_click" app.js
+          grep -q "vendor_outbound_click" app.js
+          grep -q "G-1MS4N4L2J1" app.js
+          git diff --check
+          git status --short
+
+      - name: Commit and push
+        shell: bash
+        run: |
+          if git diff --quiet && [ -z "$(git status --porcelain --untracked-files=normal)" ]; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app.js AFFILIATE-CLICK-FALLBACK-2026-09-15.md
+          git commit -m "Fix sponsored affiliate click fallback tracking"
+          git push

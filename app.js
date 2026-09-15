@@ -88,20 +88,21 @@ document.addEventListener('click',(e)=>{
   const link=e.target.closest?.('a[href]');
   if(!link)return;
 
-  const vendor=(link.dataset.vendor||'').trim();
-  if(vendor){
-    // DetailerFit revenue telemetry taxonomy v2.
-    // `data-vendor` identifies a vendor link, but only sponsored links are
-    // revenue clicks. `data-affiliate="true"` is an explicit override for
-    // future monetized links that cannot use rel="sponsored".
-    const relTokens=(link.getAttribute('rel')||'')
-      .toLowerCase()
-      .split(/\s+/)
-      .filter(Boolean);
-    const isAffiliate=relTokens.includes('sponsored')||link.dataset.affiliate==='true';
+  // DetailerFit affiliate click fallback v3.
+  // A sponsored affiliate CTA must be tracked even if data-vendor was omitted.
+  // data-vendor still provides the preferred human-readable vendor label.
+  const relTokens=(link.getAttribute('rel')||'')
+    .toLowerCase()
+    .split(/\s+/)
+    .filter(Boolean);
+  const isAffiliate=relTokens.includes('sponsored')||link.dataset.affiliate==='true';
+  const explicitVendor=(link.dataset.vendor||'').trim();
+  const vendor=explicitVendor||(isAffiliate ? link.hostname : '');
 
+  if(vendor||isAffiliate){
     dfTrackEvent(isAffiliate?'affiliate_click':'vendor_outbound_click',{
-      vendor,
+      vendor:vendor||'unknown',
+      vendor_label_source:explicitVendor?'data-vendor':(isAffiliate?'hostname':'none'),
       link_url:link.href,
       link_host:link.hostname,
       link_text:(link.textContent||'').trim().slice(0,120),

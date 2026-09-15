@@ -31,6 +31,24 @@ document.addEventListener('keydown',(e)=>{
 });
 
 
+// DetailerFit GA4 bootstrap v1.
+// One shared loader keeps GA4 consistent across every page that already loads app.js.
+const DF_GA4_MEASUREMENT_ID='G-1MS4N4L2J1';
+window.dataLayer=window.dataLayer||[];
+window.gtag=window.gtag||function(){window.dataLayer.push(arguments);};
+
+if(!document.querySelector(`script[data-detailerfit-ga4="${DF_GA4_MEASUREMENT_ID}"]`)){
+  const ga4=document.createElement('script');
+  ga4.async=true;
+  ga4.src=`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(DF_GA4_MEASUREMENT_ID)}`;
+  ga4.dataset.detailerfitGa4=DF_GA4_MEASUREMENT_ID;
+  document.head.appendChild(ga4);
+
+  window.gtag('js',new Date());
+  window.gtag('config',DF_GA4_MEASUREMENT_ID);
+}
+
+
 // DetailerFit conversion telemetry.
 // If GA4/gtag is installed later, these events start flowing automatically.
 // dataLayer is also populated for Google Tag Manager compatibility.

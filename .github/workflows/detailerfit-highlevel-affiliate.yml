@@ -1,0 +1,575 @@
+name: DetailerFit - Add HighLevel Affiliate Revenue Paths
+
+on:
+  push:
+    paths:
+      - ".github/workflows/detailerfit-highlevel-affiliate.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: detailerfit-highlevel-affiliate
+  cancel-in-progress: false
+
+jobs:
+  implement:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out current default branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 0
+
+      - name: Add HighLevel review and affiliate placements safely
+        shell: python
+        run: |
+          from pathlib import Path
+          from html.parser import HTMLParser
+          import json
+          import re
+          import xml.etree.ElementTree as ET
+
+          ROOT = Path(".")
+          AFFILIATE_URL = "https://www.gohighlevel.com/?fp_ref=ryo-c2d397"
+          SLUG = "/highlevel-auto-detailers"
+          CANONICAL = "https://getdetailerfit.com" + SLUG
+          MARKER = "<!-- DETAILERFIT-HIGHLEVEL-V1 -->"
+          DISCLOSURE_MARKER = "<!-- DETAILERFIT-HIGHLEVEL-DISCLOSURE-V1 -->"
+          SOURCE_DATE = "September 15, 2026"
+          ISO_DATE = "2026-09-15"
+
+          required = [
+              "reviews.html",
+              "affiliate-disclosure.html",
+              "sitemap.xml",
+              "styles.css",
+              "app.js",
+          ]
+          for filename in required:
+              if not (ROOT / filename).is_file():
+                  raise RuntimeError(f"Required file missing: {filename}")
+
+          optional_targets = [
+              "best-crm-solo-mobile-detailers.html",
+              "best-ai-software-auto-detailing.html",
+              "best-auto-detailing-software-2026.html",
+              "guides.html",
+          ]
+
+          def read(name):
+              return (ROOT / name).read_text(encoding="utf-8")
+
+          original = {name: read(name) for name in required}
+          for name in optional_targets:
+              if (ROOT / name).is_file():
+                  original[name] = read(name)
+
+          changes = {}
+
+          def current_text(name):
+              if name in changes:
+                  return changes[name]
+              path = ROOT / name
+              return path.read_text(encoding="utf-8") if path.is_file() else None
+
+          def insert_before_last(text, closing_tag, addition):
+              pos = text.lower().rfind(closing_tag.lower())
+              if pos < 0:
+                  raise RuntimeError(f"Required closing tag missing: {closing_tag}")
+              return text[:pos] + addition + "\n" + text[pos:]
+
+          def tracked_cta(label):
+              return (
+                  '<a class="btn primary" data-vendor="HighLevel" '
+                  f'href="{AFFILIATE_URL}" rel="sponsored noopener" '
+                  f'target="_blank">{label}</a>'
+              )
+
+          local_disclosure = (
+              '<p class="cta-disclosure small">'
+              'DetailerFit may earn a commission if you sign up through this link, '
+              'at no extra cost to you. '
+              '<a href="/affiliate-disclosure">Affiliate disclosure</a>.'
+              '</p>'
+          )
+
+          # ------------------------------------------------------------
+          # 1) Dedicated HighLevel research page.
+          #    Reuse the site's existing header/footer shell.
+          # ------------------------------------------------------------
+          shell = original["reviews.html"]
+          header_match = re.search(r"<header\b[\s\S]*?</header>", shell, flags=re.I)
+          footer_match = re.search(r"<footer\b[\s\S]*?</footer>", shell, flags=re.I)
+          if not header_match or not footer_match:
+              raise RuntimeError("Could not reuse the current DetailerFit header/footer shell.")
+
+          header = header_match.group(0)
+          footer = footer_match.group(0)
+
+          schema = {
+              "@context": "https://schema.org",
+              "@graph": [
+                  {
+                      "@type": "Article",
+                      "@id": CANONICAL + "#article",
+                      "headline": "HighLevel for Auto Detailers (2026): CRM, Booking & Automation Fit",
+                      "description": (
+                          "Research-based review of HighLevel for auto detailing businesses, "
+                          "covering CRM, appointments, workflows, follow-up automation, fit and limitations."
+                      ),
+                      "dateModified": ISO_DATE,
+                      "author": {
+                          "@type": "Organization",
+                          "name": "DetailerFit",
+                          "url": "https://getdetailerfit.com/",
+                      },
+                      "publisher": {
+                          "@type": "Organization",
+                          "name": "DetailerFit",
+                          "url": "https://getdetailerfit.com/",
+                      },
+                      "mainEntityOfPage": {
+                          "@type": "WebPage",
+                          "@id": CANONICAL,
+                      },
+                      "inLanguage": "en-US",
+                  },
+                  {
+                      "@type": "BreadcrumbList",
+                      "itemListElement": [
+                          {
+                              "@type": "ListItem",
+                              "position": 1,
+                              "name": "Home",
+                              "item": "https://getdetailerfit.com/",
+                          },
+                          {
+                              "@type": "ListItem",
+                              "position": 2,
+                              "name": "Reviews",
+                              "item": "https://getdetailerfit.com/reviews",
+                          },
+                          {
+                              "@type": "ListItem",
+                              "position": 3,
+                              "name": "HighLevel for Auto Detailers",
+                              "item": CANONICAL,
+                          },
+                      ],
+                  },
+                  {
+                      "@type": "FAQPage",
+                      "mainEntity": [
+                          {
+                              "@type": "Question",
+                              "name": "Is HighLevel built specifically for auto detailers?",
+                              "acceptedAnswer": {
+                                  "@type": "Answer",
+                                  "text": (
+                                      "No. HighLevel is a broad CRM and marketing-automation platform. "
+                                      "Detailers should compare it with automotive-specific software if "
+                                      "vehicle records, inspections or detailing-specific estimating are essential."
+                                  ),
+                              },
+                          },
+                          {
+                              "@type": "Question",
+                              "name": "Can HighLevel automate appointment follow-up?",
+                              "acceptedAnswer": {
+                                  "@type": "Answer",
+                                  "text": (
+                                      "Yes. HighLevel documents workflow triggers for customer-booked "
+                                      "appointments and appointment-status changes, which can be used for "
+                                      "reminders, follow-up and internal notifications."
+                                  ),
+                              },
+                          },
+                      ],
+                  },
+              ],
+          }
+
+          review = f"""<!doctype html>
+          <html lang="en">
+          <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+          <meta name="theme-color" content="#090d12">
+          <title>HighLevel for Auto Detailers (2026): CRM, Booking & Automation Fit | DetailerFit</title>
+          <meta name="description" content="Research-based HighLevel review for auto detailers in 2026. Evaluate CRM, appointment booking, workflows, follow-up automation, best-fit use cases and limitations.">
+          <link rel="stylesheet" href="/styles.css">
+          <link rel="canonical" href="{CANONICAL}">
+          <meta property="og:title" content="HighLevel for Auto Detailers (2026): CRM, Booking & Automation Fit">
+          <meta property="og:description" content="Research-based review of HighLevel for detailing businesses, including CRM, appointments, workflows and fit.">
+          <meta property="og:type" content="article">
+          <meta property="og:url" content="{CANONICAL}">
+          <meta name="twitter:card" content="summary">
+          <script type="application/ld+json">{json.dumps(schema, separators=(",", ":"))}</script>
+          </head>
+          <body>
+          <a class="skip-link" href="#main-content">Skip to content</a>
+          {header}
+          <main id="main-content" tabindex="-1">
+          <section class="heroMini"><div class="wrap">
+          <div class="breadcrumbs"><a href="/">Home</a> / <a href="/reviews">Reviews</a> / HighLevel</div>
+          <span class="eyebrow">CRM + MARKETING AUTOMATION · RESEARCH-BASED · {SOURCE_DATE}</span>
+          <h1>HighLevel for Auto Detailers: CRM, Booking &amp; Automation Fit</h1>
+          <p class="lead">HighLevel is a broad CRM and marketing-automation platform rather than detailing-specific shop software. Its strongest fit is a business that wants lead capture, appointment workflows and automated follow-up in one system.</p>
+          <div class="actions">
+          {tracked_cta("Explore HighLevel")}
+          <a class="btn secondary" href="/best-crm-solo-mobile-detailers">Compare Detailer CRMs</a>
+          </div>
+          {local_disclosure}
+          </div></section>
+
+          <section class="section"><div class="wrap article">
+          <aside class="research-context research-block" aria-label="Research transparency">
+          <details open>
+          <summary>Research-based · Source check: {SOURCE_DATE} · How we researched this</summary>
+          <div><strong>Research basis</strong><span>Current HighLevel support documentation for subscription tiers, workflows and appointments.</span></div>
+          <div><strong>Hands-on testing</strong><span>Not claimed for this review.</span></div>
+          <p><a href="/methodology">How we review software</a> · <a href="/affiliate-disclosure">Affiliate disclosure</a>.</p>
+          </details>
+          </aside>
+
+          <h2>What HighLevel does</h2>
+          <p>HighLevel documents three core subscription tiers: Starter, Unlimited and Agency Pro. Its workflow system can automate lead management, appointment scheduling, reminders, follow-up communications, customer onboarding and CRM updates.</p>
+          <p>For a detailing business, that makes HighLevel most relevant when the bottleneck is converting and following up with leads rather than documenting vehicles or managing a highly specialized detailing workflow.</p>
+
+          <h2>Appointments and follow-up automation</h2>
+          <p>HighLevel supports customer-booked appointment triggers and appointment-status triggers. Those events can launch workflows for confirmations, reminders, missed-appointment follow-up and internal notifications.</p>
+          <p>This can be useful for mobile detailers that depend on fast lead response and consistent appointment communication. The trade-off is setup complexity: automation is only valuable when the calendar, contact data and workflows are configured correctly.</p>
+
+          <h2>Where HighLevel fits a detailing business</h2>
+          <ul class="list">
+          <li>Lead capture and CRM are more important than automotive-specific vehicle records.</li>
+          <li>You want automated email/SMS follow-up around inquiries and appointments.</li>
+          <li>You want workflows that react to forms, bookings, payments or CRM changes.</li>
+          <li>You are willing to configure a broader platform around your own detailing process.</li>
+          </ul>
+
+          <h2>Where HighLevel may be a weaker fit</h2>
+          <ul class="list">
+          <li>You want software purpose-built around vehicle inspections, VIN workflows or detailing estimates.</li>
+          <li>You mainly need a lightweight scheduling/invoicing tool with minimal setup.</li>
+          <li>You do not need marketing automation or lead-nurture workflows.</li>
+          </ul>
+
+          <h2>HighLevel vs detailing-specific software</h2>
+          <p>HighLevel should not automatically replace an automotive-specific platform. Compare it with <a href="/urable">Urable</a>, <a href="/orbisx-review-auto-detailers">OrbisX</a> and <a href="/mobile-tech-rx-review-auto-detailers">Mobile Tech RX</a> if vehicle-centric operations matter. Compare it with <a href="/best-crm-solo-mobile-detailers">our CRM guide</a> if your priority is customer management, booking and follow-up.</p>
+
+          <div class="verdict"><p><strong>DetailerFit assessment:</strong> HighLevel is most compelling for a detailing business that treats CRM and marketing automation as a growth engine. It is less compelling when the core requirement is a deeply automotive-specific operating system.</p></div>
+
+          <div class="actions">
+          {tracked_cta("See HighLevel")}
+          <a class="btn secondary" href="/finder">Use the Software Finder</a>
+          </div>
+          {local_disclosure}
+
+          <h2>Official sources</h2>
+          <div class="sourcebox">
+          <a href="https://help.gohighlevel.com/support/solutions/articles/155000001156" rel="noopener" target="_blank">HighLevel Pricing Guide</a><br>
+          <a href="https://help.gohighlevel.com/support/solutions/articles/155000002288" rel="noopener" target="_blank">Getting Started with Workflows</a><br>
+          <a href="https://help.gohighlevel.com/support/solutions/articles/155000002675" rel="noopener" target="_blank">Customer Booked Appointment trigger</a><br>
+          <a href="https://help.gohighlevel.com/support/solutions/articles/155000002619" rel="noopener" target="_blank">Appointment Status trigger</a>
+          </div>
+          <p class="small">Source check: {SOURCE_DATE}. Product features, plan limits and pricing can change. Confirm current terms directly with HighLevel.</p>
+
+          <h2>Final check</h2>
+          <p>Before subscribing, map one real detailing lead from inquiry through booking, reminder, job completion and follow-up. If HighLevel reduces manual follow-up without creating unnecessary admin work, it may fit. If vehicle-specific operations dominate your day, compare specialist platforms first.</p>
+          <div class="actions">
+          {tracked_cta("Visit HighLevel")}
+          <a class="btn secondary" href="/compare">Compare Software</a>
+          </div>
+          {local_disclosure}
+          </div></section>
+          </main>
+          {footer}
+          <script src="/app.js"></script>
+          </body>
+          </html>
+          """
+
+          review_path = ROOT / "highlevel-auto-detailers.html"
+          if review_path.exists():
+              existing_review = review_path.read_text(encoding="utf-8")
+              if MARKER not in existing_review:
+                  # Do not overwrite an unrelated hand-written page.
+                  raise RuntimeError(
+                      "highlevel-auto-detailers.html already exists without the DetailerFit HighLevel marker."
+                  )
+              # If our page already exists, leave it unchanged.
+          else:
+              review = review.replace(
+                  "<main id=\"main-content\" tabindex=\"-1\">",
+                  MARKER + "\n<main id=\"main-content\" tabindex=\"-1\">",
+                  1,
+              )
+              changes["highlevel-auto-detailers.html"] = review
+
+          # ------------------------------------------------------------
+          # 2) Additive discovery/revenue placements on relevant pages.
+          #    Append before </main>; do not alter rankings or existing links.
+          # ------------------------------------------------------------
+          placements = {
+              "reviews.html": (
+                  "CRM + MARKETING AUTOMATION",
+                  "HighLevel for auto detailers",
+                  "Consider HighLevel when lead capture, CRM, appointment workflows and automated follow-up matter more than automotive-specific vehicle operations.",
+                  "Read the HighLevel review",
+              ),
+              "best-crm-solo-mobile-detailers.html": (
+                  "ALSO CONSIDER · MARKETING AUTOMATION",
+                  "HighLevel for lead follow-up and CRM automation",
+                  "HighLevel is a broader CRM and marketing-automation option for detailers who want workflow-driven follow-up around leads and appointments. It is not added to the ranked list above and is not presented as automotive-specific software.",
+                  "Evaluate HighLevel",
+              ),
+              "best-ai-software-auto-detailing.html": (
+                  "ALSO CONSIDER · WORKFLOW AUTOMATION",
+                  "HighLevel for automated lead and appointment workflows",
+                  "HighLevel can automate actions triggered by forms, appointments and CRM events. It is a broader platform rather than a detailing-specific AI product, so evaluate it separately from the ranked tools on this page.",
+                  "Explore HighLevel",
+              ),
+              "best-auto-detailing-software-2026.html": (
+                  "ALSO CONSIDER · GROWTH CRM",
+                  "HighLevel for marketing-heavy detailing businesses",
+                  "HighLevel is worth a separate look when your main bottleneck is lead response, appointment follow-up and CRM automation. This placement does not change the ranked detailing-software picks above.",
+                  "See HighLevel",
+              ),
+              "guides.html": (
+                  "CRM + AUTOMATION GUIDE",
+                  "HighLevel for auto detailers",
+                  "Research HighLevel as a broad CRM and marketing-automation option for detailing businesses that want appointment and lead-follow-up workflows.",
+                  "Read the HighLevel review",
+              ),
+          }
+
+          for filename, (kicker, heading, paragraph, label) in placements.items():
+              if not (ROOT / filename).is_file():
+                  continue
+              current = current_text(filename)
+              if MARKER in current:
+                  continue
+
+              block = f"""
+          {MARKER}
+          <section class="section tight" aria-labelledby="highlevel-option-{filename.replace('.', '-')}">
+          <div class="wrap article"><div class="card">
+          <div class="kicker">{kicker}</div>
+          <h2 id="highlevel-option-{filename.replace('.', '-')}">{heading}</h2>
+          <p>{paragraph}</p>
+          <p class="small">Research checked {SOURCE_DATE}. HighLevel is a general CRM/automation platform, not a detailing-specific operating system.</p>
+          <div class="actions">
+          <a class="btn secondary" href="{SLUG}">{label}</a>
+          {tracked_cta("Visit HighLevel")}
+          </div>
+          {local_disclosure}
+          </div></div></section>
+          """
+              changes[filename] = insert_before_last(current, "</main>", block)
+
+          # ------------------------------------------------------------
+          # 3) Affiliate disclosure: add a separate, idempotent relationship note.
+          # ------------------------------------------------------------
+          disclosure = current_text("affiliate-disclosure.html")
+          if DISCLOSURE_MARKER not in disclosure:
+              disclosure_block = f"""
+          {DISCLOSURE_MARKER}
+          <section class="section tight"><div class="wrap article">
+          <div class="note"><b>HighLevel affiliate relationship:</b> DetailerFit may earn a commission from qualifying HighLevel signups made through clearly marked affiliate links. This relationship does not buy ranking position or a positive editorial conclusion.</div>
+          </div></section>
+          """
+              changes["affiliate-disclosure.html"] = insert_before_last(
+                  disclosure, "</main>", disclosure_block
+              )
+
+          # ------------------------------------------------------------
+          # 4) Sitemap entry.
+          # ------------------------------------------------------------
+          sitemap = current_text("sitemap.xml")
+          ET.fromstring(sitemap)
+          locations = re.findall(r"<loc>(.*?)</loc>", sitemap, flags=re.I)
+          if CANONICAL not in locations:
+              sitemap = insert_before_last(
+                  sitemap,
+                  "</urlset>",
+                  f"  <url><loc>{CANONICAL}</loc><lastmod>{ISO_DATE}</lastmod></url>",
+              )
+              ET.fromstring(sitemap)
+              changes["sitemap.xml"] = sitemap
+
+          # ------------------------------------------------------------
+          # 5) Validation before writing.
+          # ------------------------------------------------------------
+          class Elements(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.links = []
+                  self.canonicals = []
+                  self.h1_count = 0
+
+              def handle_starttag(self, tag, attrs):
+                  a = dict(attrs)
+                  if tag.lower() == "a":
+                      self.links.append(a)
+                  if tag.lower() == "link" and a.get("rel") == "canonical":
+                      self.canonicals.append(a.get("href"))
+                  if tag.lower() == "h1":
+                      self.h1_count += 1
+
+          def parse_html(text):
+              parser = Elements()
+              parser.feed(text)
+              return parser
+
+          final_review = changes.get(
+              "highlevel-auto-detailers.html",
+              review_path.read_text(encoding="utf-8") if review_path.exists() else "",
+          )
+          parsed_review = parse_html(final_review)
+
+          if parsed_review.canonicals != [CANONICAL]:
+              raise RuntimeError("HighLevel review canonical is invalid.")
+          if parsed_review.h1_count != 1:
+              raise RuntimeError("HighLevel review must contain exactly one H1.")
+          if sum(a.get("href") == AFFILIATE_URL for a in parsed_review.links) != 3:
+              raise RuntimeError("Expected exactly three tracked HighLevel CTAs on the review page.")
+          if final_review.count("at no extra cost to you") < 3:
+              raise RuntimeError("Each review-page affiliate CTA needs a nearby disclosure.")
+
+          # Validate every HighLevel affiliate link in every changed HTML file.
+          for filename, text in changes.items():
+              if not filename.endswith(".html"):
+                  continue
+              parsed = parse_html(text)
+              for anchor in parsed.links:
+                  if anchor.get("href") != AFFILIATE_URL:
+                      continue
+                  rel_tokens = set((anchor.get("rel") or "").split())
+                  if not {"sponsored", "noopener"}.issubset(rel_tokens):
+                      raise RuntimeError(f"Missing sponsored/noopener on HighLevel CTA in {filename}")
+                  if anchor.get("data-vendor") != "HighLevel":
+                      raise RuntimeError(f"Missing data-vendor=HighLevel in {filename}")
+                  if anchor.get("target") != "_blank":
+                      raise RuntimeError(f"HighLevel CTA must open in a new tab in {filename}")
+
+          # Existing pages are append-only: existing anchor tags must remain in order.
+          for filename in placements:
+              if filename not in changes or filename not in original:
+                  continue
+              before = original[filename]
+              after = changes[filename]
+              cursor = 0
+              for anchor in re.findall(r"<a\b[^>]*>", before, flags=re.I):
+                  pos = after.find(anchor, cursor)
+                  if pos < 0:
+                      raise RuntimeError(f"Existing anchor changed or removed: {filename}")
+                  cursor = pos + len(anchor)
+
+          final_sitemap = changes.get("sitemap.xml", original["sitemap.xml"])
+          if final_sitemap.count(CANONICAL) != 1:
+              raise RuntimeError("HighLevel canonical must appear exactly once in sitemap.xml.")
+          ET.fromstring(final_sitemap)
+
+          # Never touch shared presentation/behavior files.
+          if current_text("styles.css") != original["styles.css"]:
+              raise RuntimeError("styles.css changed unexpectedly.")
+          if current_text("app.js") != original["app.js"]:
+              raise RuntimeError("app.js changed unexpectedly.")
+
+          # Official source links must remain editorial/untracked.
+          for source_url in [
+              "https://help.gohighlevel.com/support/solutions/articles/155000001156",
+              "https://help.gohighlevel.com/support/solutions/articles/155000002288",
+              "https://help.gohighlevel.com/support/solutions/articles/155000002675",
+              "https://help.gohighlevel.com/support/solutions/articles/155000002619",
+          ]:
+              if source_url not in final_review:
+                  raise RuntimeError(f"Official HighLevel source missing: {source_url}")
+
+          # Write only after all validations pass.
+          for filename, text in changes.items():
+              (ROOT / filename).write_text(text, encoding="utf-8")
+
+          print("Written files:")
+          for filename in changes:
+              print(" -", filename)
+          print("PASS: HighLevel affiliate URL + sponsored/noopener + vendor + target")
+          print("PASS: dedicated review canonical, single H1, schema and official sources")
+          print("PASS: exactly three review-page affiliate CTAs with local disclosures")
+          print("PASS: additive placements preserve existing anchors and rankings")
+          print("PASS: affiliate disclosure + sitemap")
+          print("UNCHANGED: styles.css and app.js")
+
+      - name: Commit website changes
+        shell: bash
+        env:
+          TARGET_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add -- \
+            highlevel-auto-detailers.html \
+            reviews.html \
+            affiliate-disclosure.html \
+            sitemap.xml
+
+          for f in \
+            best-crm-solo-mobile-detailers.html \
+            best-ai-software-auto-detailing.html \
+            best-auto-detailing-software-2026.html \
+            guides.html
+          do
+            if [ -f "$f" ]; then
+              git add -- "$f"
+            fi
+          done
+
+          if git diff --cached --quiet; then
+            echo "No new changes. HighLevel implementation already exists."
+            exit 0
+          fi
+
+          git diff --check
+          git commit -m "Add HighLevel review and affiliate revenue paths"
+          git push origin "HEAD:${TARGET_BRANCH}"
+
+      - name: Write result summary
+        shell: bash
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<'TEXT'
+          ## HighLevel affiliate implementation
+
+          Affiliate URL:
+          `https://www.gohighlevel.com/?fp_ref=ryo-c2d397`
+
+          Added safely:
+          - `/highlevel-auto-detailers` research-based review
+          - Relevant discovery/revenue placements on Reviews, CRM, AI software,
+            best-software and Guides pages when those files exist
+          - HighLevel affiliate relationship disclosure
+          - Sitemap entry
+
+          Editorial safeguards:
+          - HighLevel is presented as a broad CRM/marketing-automation platform,
+            not as detailing-specific software
+          - Existing ranked picks are not changed
+          - Existing anchors are preserved
+          - Official HighLevel source links are editorial/untracked
+          - Shared `styles.css` and `app.js` are unchanged
+
+          Affiliate-link validation:
+          - `rel="sponsored noopener"`
+          - `data-vendor="HighLevel"`
+          - `target="_blank"`
+          - Local commission disclosure near tracked CTAs
+          - Exactly three tracked CTAs on the dedicated review page
+          TEXT

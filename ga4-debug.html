@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow">
+  <title>GA4 Diagnostics | DetailerFit</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .debug-wrap{max-width:900px;margin:0 auto;padding:32px 20px 64px}
+    .debug-actions{display:flex;flex-wrap:wrap;gap:12px;margin:20px 0}
+    .debug-status{display:grid;gap:8px;margin:20px 0;padding:18px}
+    .debug-status code,.debug-log{word-break:break-word}
+    .debug-log{background:#081112;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:16px;white-space:pre-wrap;overflow:auto;max-height:55vh}
+  </style>
+</head>
+<body>
+  <main class="debug-wrap">
+    <div class="eyebrow">TEMPORARY DIAGNOSTIC</div>
+    <h1>DetailerFit GA4 event diagnostics</h1>
+    <p>This page is intentionally noindex. It checks whether custom GA4 commands and DetailerFit's click telemetry are firing in the browser.</p>
+
+    <div class="debug-status card">
+      <div>gtag available: <code id="gtag-status">checking…</code></div>
+      <div>dataLayer entries: <code id="dl-count">0</code></div>
+      <div>local affiliate_click objects: <code id="affiliate-count">0</code></div>
+      <div>local vendor_outbound_click objects: <code id="vendor-count">0</code></div>
+      <div>gtag event commands: <code id="gtag-event-count">0</code></div>
+    </div>
+
+    <div class="debug-actions">
+      <button class="btn primary" id="direct-gtag" type="button">1. Send direct GA4 debug event</button>
+      <button class="btn secondary" id="df-event" type="button">2. Send via dfTrackEvent</button>
+      <a class="btn primary" id="affiliate-test" href="https://example.com/" rel="sponsored noopener" target="_blank" data-vendor="Debug Vendor" data-cta-position="ga4-debug">3. Test sponsored click</a>
+    </div>
+
+    <p class="small">Expected locally: button 2 adds <code>df_debug_via_tracker</code>; link 3 adds <code>affiliate_click</code>. Button 1 sends directly to GA4 with explicit <code>send_to</code>.</p>
+
+    <h2>Recent dataLayer entries</h2>
+    <pre class="debug-log" id="debug-log">Waiting…</pre>
+  </main>
+
+  <script src="app.js"></script>
+  <script>
+    (function(){
+      const MID='G-1MS4N4L2J1';
+
+      function normalizedEntries(){
+        return (window.dataLayer||[]).map((entry,index)=>{
+          if(entry && typeof entry==='object' && typeof entry.length==='number' && '0' in entry){
+            const arr=Array.from(entry);
+            return {index,type:'gtag-command',command:arr[0],event_name:arr[1],params:arr[2]||null};
+          }
+          if(entry && typeof entry==='object') return {index,type:'object',...entry};
+          return {index,type:typeof entry,value:String(entry)};
+        });
+      }
+
+      function render(){
+        const entries=normalizedEntries();
+        document.getElementById('gtag-status').textContent=typeof window.gtag==='function'?'YES':'NO';
+        document.getElementById('dl-count').textContent=String(entries.length);
+        document.getElementById('affiliate-count').textContent=String(entries.filter(x=>x.event==='affiliate_click').length);
+        document.getElementById('vendor-count').textContent=String(entries.filter(x=>x.event==='vendor_outbound_click').length);
+        document.getElementById('gtag-event-count').textContent=String(entries.filter(x=>x.type==='gtag-command'&&x.command==='event').length);
+        document.getElementById('debug-log').textContent=JSON.stringify(entries.slice(-20),null,2);
+      }
+
+      document.getElementById('direct-gtag').addEventListener('click',()=>{
+        if(typeof window.gtag==='function'){
+          window.gtag('event','df_debug_direct',{
+            send_to:MID,
+            debug_mode:true,
+            diagnostic_source:'ga4-debug-page'
+          });
+        }
+        setTimeout(render,100);
+      });
+
+      document.getElementById('df-event').addEventListener('click',()=>{
+        if(typeof window.dfTrackEvent==='function'){
+          window.dfTrackEvent('df_debug_via_tracker',{diagnostic_source:'ga4-debug-page'});
+        }
+        setTimeout(render,100);
+      });
+
+      document.getElementById('affiliate-test').addEventListener('click',()=>setTimeout(render,150));
+      setInterval(render,500);
+      render();
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+name: DetailerFit Window Tint OrbisX Monetization
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: detailerfit-window-tint-orbisx-monetization
+  cancel-in-progress: false
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Add OrbisX affiliate exit to Window Tint guide
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          page_path = Path("best-window-tint-software.html")
+          if not page_path.exists():
+              raise SystemExit("best-window-tint-software.html was not found")
+
+          text = page_path.read_text(encoding="utf-8")
+          original = text
+
+          affiliate_url = "https://orbisx.com/detailerfit/"
+
+          old_context = (
+              '<p class="research-context">Research based on published vendor documentation. '
+              '<a href="methodology">How we review software</a> · '
+              '<a href="affiliate-disclosure">Affiliate disclosure</a>. '
+              'Confirm live pricing, plan limits and trial terms with the vendor before buying.</p>'
+          )
+
+          new_context = (
+              '<p class="research-context">Research based on published vendor documentation. '
+              'This page contains clearly marked affiliate links. DetailerFit may earn a commission if you sign up '
+              'through some links, at no extra cost to you; affiliate relationships do not affect rankings or editorial conclusions. '
+              '<a href="methodology">How we review software</a> · '
+              '<a href="affiliate-disclosure">Affiliate disclosure</a>. '
+              'Confirm live pricing, plan limits and trial terms with the vendor before buying.</p>'
+          )
+
+          if old_context in text:
+              text = text.replace(old_context, new_context, 1)
+          elif new_context not in text:
+              raise SystemExit("Expected research-context disclosure was not found; refusing a blind edit")
+
+          old_actions = '''<div class="actions"><a class="btn secondary" href="orbisx-review-auto-detailers">Read our OrbisX Review</a><a class="btn secondary" href="urable-vs-orbisx">Urable vs OrbisX</a></div>'''
+
+          new_actions = '''<div class="actions mid-cta"><a class="btn primary" data-vendor="OrbisX" data-cta-position="window-tint-orbisx-section" href="https://orbisx.com/detailerfit/" rel="sponsored noopener" target="_blank">Try OrbisX Free</a><a class="btn secondary" href="orbisx-review-auto-detailers">Read our OrbisX Review</a><a class="btn secondary" href="urable-vs-orbisx">Urable vs OrbisX</a></div>
+          <p class="cta-disclosure small">DetailerFit may earn a commission if you sign up through this link, at no extra cost to you. <a href="affiliate-disclosure">Affiliate disclosure</a>.</p>'''
+
+          if affiliate_url not in text:
+              if old_actions not in text:
+                  raise SystemExit("Expected OrbisX action block was not found; refusing a blind edit")
+              text = text.replace(old_actions, new_actions, 1)
+
+          # Keep structured data current for this substantive page update.
+          text, modified_count = re.subn(
+              r'("dateModified"\s*:\s*")\d{4}-\d{2}-\d{2}(")',
+              r'\g<1>2026-09-16\g<2>',
+              text,
+              count=1,
+          )
+          if modified_count != 1:
+              raise SystemExit("Could not update Article dateModified safely")
+
+          if text != original:
+              page_path.write_text(text, encoding="utf-8")
+
+          final = page_path.read_text(encoding="utf-8")
+
+          # Revenue/tracking guardrails.
+          if final.count(affiliate_url) != 1:
+              raise SystemExit(
+                  f"Expected exactly one OrbisX affiliate URL in Window Tint guide; found {final.count(affiliate_url)}"
+              )
+
+          required = [
+              '<h2 id="orbisx">3. OrbisX — Best for Multi-Service Film Shops</h2>',
+              'data-vendor="OrbisX"',
+              'data-cta-position="window-tint-orbisx-section"',
+              'rel="sponsored noopener"',
+              'target="_blank"',
+              '>Try OrbisX Free</a>',
+              'class="cta-disclosure small"',
+              'This page contains clearly marked affiliate links.',
+              '<tr><td><strong>3</strong></td><td><strong>OrbisX</strong></td>',
+              '{"@type":"ListItem","position":1,"name":"Tint Wiz"}',
+              '{"@type":"ListItem","position":2,"name":"Service VIN"}',
+              '{"@type":"ListItem","position":3,"name":"OrbisX"}',
+              '{"@type":"ListItem","position":4,"name":"Urable"}',
+              '{"@type":"ListItem","position":5,"name":"FilmIQ"}',
+              'href="https://orbisx.com/tinters/" rel="noopener">OrbisX — tint installers</a>',
+              'href="https://orbisx.com/pricing/" rel="noopener">pricing</a>',
+          ]
+          missing = [item for item in required if item not in final]
+          if missing:
+              raise SystemExit("Validation failed; missing expected guardrails: " + " | ".join(missing))
+
+          # Keep official sources non-affiliate.
+          sources_start = final.find('<h2 id="sources">Official Sources</h2>')
+          if sources_start == -1:
+              raise SystemExit("Official Sources section not found")
+          sources = final[sources_start:]
+          if affiliate_url in sources:
+              raise SystemExit("Affiliate URL leaked into Official Sources section")
+
+          print("Window Tint OrbisX monetization patch validated successfully.")
+          PY
+
+      - name: Validate diff
+        shell: bash
+        run: |
+          git diff --check
+          echo "Changed files:"
+          git status --short
+          echo "--- Window Tint guide diff ---"
+          git diff -- best-window-tint-software.html
+
+      - name: Commit and push
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "No changes needed. The patch is already applied."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add best-window-tint-software.html
+          git commit -m "Add OrbisX revenue CTA to window tint guide"
+          git push origin HEAD:main

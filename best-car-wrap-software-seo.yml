@@ -1,0 +1,311 @@
+name: DetailerFit Car Wrap Software SEO Wiring
+
+on:
+  push:
+    paths:
+      - ".github/workflows/best-car-wrap-software-seo.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  wire-car-wrap-guide:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Add discovery links and sitemap entry
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          ROOT = Path(".")
+          DOMAIN = "https://getdetailerfit.com"
+          SLUG = "best-car-wrap-software"
+          URL = f"{DOMAIN}/{SLUG}"
+          PAGE = ROOT / f"{SLUG}.html"
+          WORKFLOW = ROOT / ".github/workflows/best-car-wrap-software-seo.yml"
+          TODAY = "2026-09-15"
+
+          def read(p):
+              return p.read_text(encoding="utf-8")
+
+          def write(p, text):
+              p.write_text(text, encoding="utf-8")
+
+          def insert_before_main_close(text, block):
+              idx = text.lower().rfind("</main>")
+              if idx >= 0:
+                  return text[:idx] + "\n" + block + "\n" + text[idx:]
+              idx = text.lower().rfind("</body>")
+              if idx >= 0:
+                  return text[:idx] + "\n" + block + "\n" + text[idx:]
+              return text + "\n" + block + "\n"
+
+          def upsert_block(path, block_id, block):
+              if not path.exists():
+                  print(f"Skip missing: {path.name}")
+                  return
+              text = read(path)
+              wrapped = f"<!-- {block_id} START -->\n{block}\n<!-- {block_id} END -->"
+              pat = re.compile(
+                  rf"<!-- {re.escape(block_id)} START -->.*?<!-- {re.escape(block_id)} END -->",
+                  re.I | re.S
+              )
+              if pat.search(text):
+                  text = pat.sub(wrapped, text, count=1)
+              elif f"/{SLUG}" not in text and URL not in text:
+                  text = insert_before_main_close(text, wrapped)
+              write(path, text)
+
+          if not PAGE.exists():
+              raise SystemExit(
+                  "Missing best-car-wrap-software.html. Add the article to the repository first."
+              )
+
+          # Normalize page canonical / OG URL and extensionless internal links.
+          text = read(PAGE)
+          canonical = f'<link rel="canonical" href="{URL}">'
+          if re.search(r'<link[^>]+rel=["\']canonical["\'][^>]*>', text, re.I):
+              text = re.sub(
+                  r'<link[^>]+rel=["\']canonical["\'][^>]*>',
+                  canonical,
+                  text,
+                  count=1,
+                  flags=re.I
+              )
+          else:
+              text = text.replace("</head>", canonical + "\n</head>", 1)
+
+          if re.search(r'<meta[^>]+property=["\']og:url["\'][^>]*>', text, re.I):
+              text = re.sub(
+                  r'<meta[^>]+property=["\']og:url["\'][^>]*>',
+                  f'<meta property="og:url" content="{URL}">',
+                  text,
+                  count=1,
+                  flags=re.I
+              )
+
+          text = re.sub(
+              r'href=(["\'])(?!https?://|//|#|mailto:|tel:)([^"\']+?)\.html([?#][^"\']*)?\1',
+              lambda m: f'href={m.group(1)}{m.group(2)}{m.group(3) or ""}{m.group(1)}',
+              text,
+              flags=re.I,
+          )
+          write(PAGE, text)
+
+          # Guides hub
+          guides_block = f'''
+          <section class="section" aria-label="Car wrap software guide">
+            <div class="wrap article">
+              <div class="card">
+                <div class="kicker">NEW BUYER'S GUIDE · WRAP SHOPS</div>
+                <h2><a href="/{SLUG}">Best Car Wrap Software in 2026</a></h2>
+                <p>Compare eight tools for wrap-shop quoting, CRM, AI visualization, film inventory, scheduling and cutting — including Wrapstart, Service VIN, DETAILFORGE, Tint Wiz, Urable, Mobile Tech RX, WrapForce and OmniPlot.</p>
+                <a class="text-link" href="/{SLUG}">Compare car wrap software</a>
+              </div>
+            </div>
+          </section>
+          '''
+          upsert_block(ROOT / "guides.html", "CAR-WRAP-GUIDE-HUB", guides_block)
+
+          # PPF guide
+          ppf_block = f'''
+          <section class="section" aria-label="Related wrap software guide">
+            <div class="wrap article">
+              <div class="note">
+                <b>Also run vinyl wraps?</b>
+                Our car wrap software guide separates visual quoting, CRM/shop operations and
+                production cutting so you can compare the right category for a wrap workflow.
+              </div>
+              <div class="actions">
+                <a class="btn secondary" href="/{SLUG}">Best Car Wrap Software</a>
+              </div>
+            </div>
+          </section>
+          '''
+          upsert_block(ROOT / "best-software-ppf-business.html", "CAR-WRAP-FROM-PPF", ppf_block)
+
+          # DETAILFORGE review
+          detailforge_block = f'''
+          <section class="section" aria-label="Compare car wrap software">
+            <div class="wrap article">
+              <div class="note">
+                <b>Comparing the full market?</b>
+                DETAILFORGE is our current pick for 3D visual selling, but wrap shops may need a
+                different tool when CRM depth, roll-costed inventory or plotter cutting is the bottleneck.
+              </div>
+              <div class="actions">
+                <a class="btn secondary" href="/{SLUG}">Compare 8 Car Wrap Software Tools</a>
+              </div>
+            </div>
+          </section>
+          '''
+          upsert_block(
+              ROOT / "detailforge-review-ai-quoting-wrap-ppf.html",
+              "CAR-WRAP-FROM-DETAILFORGE",
+              detailforge_block
+          )
+
+          # Tint Wiz review
+          tint_block = f'''
+          <section class="section" aria-label="Car wrap software comparison">
+            <div class="wrap article">
+              <div class="note">
+                <b>Wrap-shop comparison:</b>
+                Tint Wiz is one of eight current tools in our guide to CRM, quoting, visual sales,
+                inventory and production software for vehicle wrap businesses.
+              </div>
+              <div class="actions">
+                <a class="btn secondary" href="/{SLUG}">Best Car Wrap Software</a>
+              </div>
+            </div>
+          </section>
+          '''
+          upsert_block(ROOT / "tint-wiz-review.html", "CAR-WRAP-FROM-TINTWIZ", tint_block)
+
+          # Mobile Tech RX review
+          mtrx_block = f'''
+          <section class="section" aria-label="Vehicle wrap software comparison">
+            <div class="wrap article">
+              <div class="note">
+                <b>PPF/Vinyl buyer?</b>
+                See how Mobile Tech RX compares with wrap-specific CRM, AI visual quoting and
+                cutting platforms in our dedicated vehicle wrap software guide.
+              </div>
+              <div class="actions">
+                <a class="btn secondary" href="/{SLUG}">Compare Car Wrap Software</a>
+              </div>
+            </div>
+          </section>
+          '''
+          upsert_block(
+              ROOT / "mobile-tech-rx-review-auto-detailers.html",
+              "CAR-WRAP-FROM-MTRX",
+              mtrx_block
+          )
+
+          # OmniPlot review
+          omni_block = f'''
+          <section class="section" aria-label="Wrap shop software stack">
+            <div class="wrap article">
+              <div class="note">
+                <b>Production vs CRM:</b>
+                OmniPlot solves the cutting/plotter layer. Our car wrap software guide shows how
+                that differs from quoting, CRM, 3D visualization and shop-management platforms.
+              </div>
+              <div class="actions">
+                <a class="btn secondary" href="/{SLUG}">Best Car Wrap Software</a>
+              </div>
+            </div>
+          </section>
+          '''
+          upsert_block(
+              ROOT / "omniplot-review-ppf-tint-software.html",
+              "CAR-WRAP-FROM-OMNIPLOT",
+              omni_block
+          )
+
+          # Sitemap canonical entry
+          sitemap = ROOT / "sitemap.xml"
+          if not sitemap.exists():
+              raise SystemExit("Missing sitemap.xml")
+
+          sm = read(sitemap)
+          sm = re.sub(
+              rf'\s*<url>\s*<loc>[^<]*{re.escape(SLUG)}(?:\.html)?</loc>.*?</url>',
+              "",
+              sm,
+              flags=re.I | re.S
+          )
+
+          entry = (
+              "  <url>\n"
+              f"    <loc>{URL}</loc>\n"
+              f"    <lastmod>{TODAY}</lastmod>\n"
+              "  </url>\n"
+          )
+
+          if "</urlset>" not in sm:
+              raise SystemExit("sitemap.xml missing </urlset>")
+
+          sm = sm.replace("</urlset>", entry + "</urlset>", 1)
+          write(sitemap, sm)
+
+          # Validation
+          failures = []
+
+          page_now = read(PAGE)
+          if URL not in page_now:
+              failures.append("canonical URL missing from article")
+
+          if ".html" in "\n".join(
+              re.findall(r'href=["\']([^"\']+)["\']', page_now, flags=re.I)
+          ):
+              # Allow external URLs containing .html, block only relative .html.
+              rel_html = [
+                  h for h in re.findall(r'href=["\']([^"\']+)["\']', page_now, flags=re.I)
+                  if ".html" in h and not h.startswith(("http://", "https://"))
+              ]
+              if rel_html:
+                  failures.append("relative .html links remain: " + ", ".join(rel_html[:5]))
+
+          if read(sitemap).count(f"<loc>{URL}</loc>") != 1:
+              failures.append("sitemap canonical entry missing or duplicated")
+
+          required_pages = [
+              ("guides.html", "guide hub"),
+              ("best-software-ppf-business.html", "PPF guide"),
+              ("detailforge-review-ai-quoting-wrap-ppf.html", "DETAILFORGE review"),
+          ]
+          for filename, label in required_pages:
+              p = ROOT / filename
+              if p.exists() and f"/{SLUG}" not in read(p):
+                  failures.append(f"{label} missing internal link")
+
+          if failures:
+              print("VALIDATION FAILED")
+              for f in failures:
+                  print(" -", f)
+              raise SystemExit(1)
+
+          print("Car wrap guide SEO wiring passed.")
+          print(f"Canonical: {URL}")
+          print("Sitemap: OK")
+          print("Internal discovery links: OK")
+
+          if WORKFLOW.exists():
+              WORKFLOW.unlink()
+          PY
+
+      - name: Show changes
+        shell: bash
+        run: |
+          git diff --check
+          git status --short
+          git diff --stat
+          git diff --             best-car-wrap-software.html             guides.html             best-software-ppf-business.html             detailforge-review-ai-quoting-wrap-ppf.html             tint-wiz-review.html             mobile-tech-rx-review-auto-detailers.html             omniplot-review-ppf-tint-software.html             sitemap.xml || true
+
+      - name: Commit and push
+        shell: bash
+        run: |
+          git config user.name "DetailerFit SEO"
+          git config user.email "actions@users.noreply.github.com"
+
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo "No changes needed."
+            exit 0
+          fi
+
+          git commit -m "Publish car wrap software guide and wire internal links"
+          git push

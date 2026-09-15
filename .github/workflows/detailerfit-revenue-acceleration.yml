@@ -1,0 +1,223 @@
+name: DetailerFit Revenue Acceleration
+
+on:
+  push:
+    paths:
+      - ".github/workflows/detailerfit-revenue-acceleration.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  optimize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Apply safe conversion improvements
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+          import textwrap
+
+          AFFILIATES = (
+              "QuoteIQ, Mobile Tech RX, RO App, DetailPilot, AI Receptionist, "
+              "The Wrap Institute, Marlie AI, Strata, OrbisX, Housecall Pro, "
+              "BookingKoala, TrueReview, HighLevel, OnePageCRM, Jotform, and Smarfle"
+          )
+
+          def read(path):
+              return Path(path).read_text(encoding="utf-8")
+
+          def write(path, text):
+              Path(path).write_text(text, encoding="utf-8")
+
+          def replace_once(text, pattern, repl, label, flags=0):
+              new, count = re.subn(pattern, repl, text, count=1, flags=flags)
+              if count != 1:
+                  raise RuntimeError(f"{label}: expected 1 replacement, got {count}")
+              return new
+
+          # 1) Synchronize the main affiliate disclosure summary with active links.
+          disclosure = read("affiliate-disclosure.html")
+          disclosure = replace_once(
+              disclosure,
+              r"Current affiliate relationships may include .*?BookingKoala\.",
+              f"Current affiliate relationships currently include {AFFILIATES}.",
+              "affiliate disclosure summary",
+              re.S,
+          )
+          disclosure = replace_once(
+              disclosure,
+              r"(<b>Current linked relationships:</b>\s*).*?BookingKoala\.",
+              rf"\1{AFFILIATES}.",
+              "current linked relationships summary",
+              re.S,
+          )
+          if "Disclosure list updated September 15, 2026." not in disclosure:
+              marker = "<h2>Current affiliate links on DetailerFit</h2>"
+              disclosure = disclosure.replace(
+                  marker,
+                  marker + '\n    <p class="small">Disclosure list updated September 15, 2026.</p>',
+                  1,
+              )
+          write("affiliate-disclosure.html", disclosure)
+
+          # 2) Add neutral decision hubs to discovery pages.
+          hubs = {
+              "reviews.html": '''
+          <!-- DETAILERFIT-CONVERSION-HUB-V1 -->
+          <section class="section tight" aria-labelledby="reviews-conversion-hub">
+            <div class="wrap article"><div class="card">
+              <div class="kicker">READY TO NARROW THE DECISION?</div>
+              <h2 id="reviews-conversion-hub">Turn the reviews into a shortlist</h2>
+              <p>Use DetailerFit's rules-based Finder, side-by-side comparison, or verified pricing index before choosing a plan.</p>
+              <div class="actions">
+                <a class="btn primary" href="/finder">Find My Best Fit</a>
+                <a class="btn secondary" href="/compare">Compare Plans Side by Side</a>
+                <a class="btn secondary" href="/auto-detailing-software-pricing">Check Verified Pricing</a>
+              </div>
+              <p class="small">Some vendor buttons on the next-step pages are affiliate links. Commercial relationships do not change rankings.</p>
+            </div></div>
+          </section>
+          ''',
+              "guides.html": '''
+          <!-- DETAILERFIT-CONVERSION-HUB-V1 -->
+          <section class="section tight" aria-labelledby="guides-conversion-hub">
+            <div class="wrap article"><div class="card">
+              <div class="kicker">READY TO CHOOSE?</div>
+              <h2 id="guides-conversion-hub">Move from research to a practical shortlist</h2>
+              <p>Use the Finder for business-fit matching, Compare for plan-level trade-offs, or the Pricing Index for source-linked costs.</p>
+              <div class="actions">
+                <a class="btn primary" href="/finder">Find My Best Fit</a>
+                <a class="btn secondary" href="/compare">Compare Software</a>
+                <a class="btn secondary" href="/auto-detailing-software-pricing">Browse Verified Pricing</a>
+              </div>
+              <p class="small">Some vendor buttons on the next-step pages are affiliate links. Commercial relationships do not change rankings.</p>
+            </div></div>
+          </section>
+          ''',
+          }
+
+          for filename, block in hubs.items():
+              text = read(filename)
+              if "DETAILERFIT-CONVERSION-HUB-V1" not in text:
+                  if "</main>" not in text:
+                      raise RuntimeError(f"{filename}: </main> not found")
+                  text = text.replace("</main>", textwrap.dedent(block).strip() + "\n</main>", 1)
+                  write(filename, text)
+
+          # 3) Tag sponsored CTAs with explicit placement context for existing telemetry.
+          page_positions = {
+              "reviews.html": "reviews-page",
+              "guides.html": "guides-page",
+              "compare.html": "compare-page",
+              "best-crm-solo-mobile-detailers.html": "crm-buying-guide",
+              "best-mobile-detailing-software.html": "mobile-buying-guide",
+              "best-auto-detailing-software-2026.html": "overall-buying-guide",
+          }
+
+          anchor_re = re.compile(r"<a\b[^>]*>", re.I)
+
+          for filename, position in page_positions.items():
+              text = read(filename)
+
+              def tag_anchor(match):
+                  tag = match.group(0)
+                  low = tag.lower()
+                  if 'data-vendor=' not in low:
+                      return tag
+                  if 'sponsored' not in low:
+                      return tag
+                  if 'data-cta-position=' in low:
+                      return tag
+                  return tag[:-1] + f' data-cta-position="{position}">'
+
+              new = anchor_re.sub(tag_anchor, text)
+              if new != text:
+                  write(filename, new)
+
+          # 4) Give dynamically rendered Finder and decision-exit affiliate CTAs explicit context.
+          app = read("app.js")
+          app = app.replace(
+              '<a class="btn primary" data-vendor="${x.name}" href="${x.vendorUrl}"',
+              '<a class="btn primary" data-vendor="${x.name}" data-cta-position="finder-result" href="${x.vendorUrl}"',
+          )
+          app = app.replace(
+              '<a class="btn primary" data-vendor="${x.vendor}" href="${x.url}"',
+              '<a class="btn primary" data-vendor="${x.vendor}" data-cta-position="decision-exit" href="${x.url}"',
+          )
+          write("app.js", app)
+
+          # 5) Keep an audit note in the repository.
+          audit = '''
+          # DetailerFit Monetization Audit — 2026-09-15
+
+          ## What is already strong
+          - High-intent comparison pages already contain contextual affiliate CTAs.
+          - The Software Finder renders vendor exit buttons after a rules-based recommendation.
+          - Dedicated affiliate review pages use clearly marked sponsored links and local disclosures.
+          - Affiliate click telemetry is already implemented in `app.js` through `data-vendor`.
+
+          ## Changes in this pass
+          - Synchronized the main affiliate-disclosure summary with the currently linked programs.
+          - Added neutral next-step conversion hubs to `reviews.html` and `guides.html`.
+          - Added explicit CTA-position metadata to sponsored links on major decision pages.
+          - Added explicit tracking context to dynamic Finder and comparison decision exits.
+          - Preserved rankings, editorial conclusions, vendor URLs, CSS, pricing content and research claims.
+
+          ## Guardrail
+          Do not move an affiliate higher solely because it pays commission. Monetization should come from clearer decision paths, better matching, stronger high-intent SEO traffic and accurate measurement.
+          '''
+          write("MONETIZATION-AUDIT-2026-09-15.md", textwrap.dedent(audit).strip() + "\n")
+
+          # 6) Safety checks.
+          required = [
+              "affiliate-disclosure.html",
+              "reviews.html",
+              "guides.html",
+              "compare.html",
+              "finder.html",
+              "best-crm-solo-mobile-detailers.html",
+              "best-mobile-detailing-software.html",
+              "best-auto-detailing-software-2026.html",
+              "app.js",
+          ]
+          for filename in required:
+              if not Path(filename).exists():
+                  raise RuntimeError(f"Missing required file: {filename}")
+
+          disclosure_check = read("affiliate-disclosure.html")
+          for vendor in ["TrueReview", "HighLevel", "OnePageCRM", "Jotform", "Smarfle"]:
+              if vendor not in disclosure_check:
+                  raise RuntimeError(f"Disclosure missing current vendor: {vendor}")
+
+          for filename in ("reviews.html", "guides.html"):
+              text = read(filename)
+              if text.count("DETAILERFIT-CONVERSION-HUB-V1") != 1:
+                  raise RuntimeError(f"{filename}: conversion hub marker count is not 1")
+
+          print("Revenue acceleration patch applied successfully.")
+
+      - name: Validate diff
+        run: |
+          git diff --check
+          git status --short
+
+      - name: Commit and push
+        shell: bash
+        run: |
+          if git diff --quiet && [ -z "$(git status --porcelain --untracked-files=normal)" ]; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add affiliate-disclosure.html reviews.html guides.html compare.html \
+            best-crm-solo-mobile-detailers.html best-mobile-detailing-software.html \
+            best-auto-detailing-software-2026.html app.js MONETIZATION-AUDIT-2026-09-15.md
+          git commit -m "Strengthen affiliate conversion routing and tracking"
+          git push

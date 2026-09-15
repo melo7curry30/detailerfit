@@ -72,11 +72,23 @@ document.addEventListener('click',(e)=>{
 
   const vendor=(link.dataset.vendor||'').trim();
   if(vendor){
-    dfTrackEvent('affiliate_click',{
+    // DetailerFit revenue telemetry taxonomy v2.
+    // `data-vendor` identifies a vendor link, but only sponsored links are
+    // revenue clicks. `data-affiliate="true"` is an explicit override for
+    // future monetized links that cannot use rel="sponsored".
+    const relTokens=(link.getAttribute('rel')||'')
+      .toLowerCase()
+      .split(/\s+/)
+      .filter(Boolean);
+    const isAffiliate=relTokens.includes('sponsored')||link.dataset.affiliate==='true';
+
+    dfTrackEvent(isAffiliate?'affiliate_click':'vendor_outbound_click',{
       vendor,
       link_url:link.href,
+      link_host:link.hostname,
       link_text:(link.textContent||'').trim().slice(0,120),
-      cta_position:dfLinkContext(link)
+      cta_position:dfLinkContext(link),
+      monetized:isAffiliate
     });
     return;
   }

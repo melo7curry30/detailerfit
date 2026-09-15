@@ -1,0 +1,152 @@
+name: DetailerFit PPF OrbisX Monetization
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: detailerfit-ppf-orbisx-monetization
+  cancel-in-progress: false
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Patch PPF guide and remove temporary GA4 debug page
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          page_path = Path("best-software-ppf-business.html")
+          if not page_path.exists():
+              raise SystemExit("best-software-ppf-business.html was not found")
+
+          text = page_path.read_text(encoding="utf-8")
+          original = text
+
+          affiliate_url = "https://orbisx.com/detailerfit/"
+
+          # Keep the page-level disclosure accurate and future-proof without naming only one partner.
+          old_disclosure = (
+              '<p class="research-context">Research based on published vendor documentation. '
+              'This page contains a clearly marked affiliate link to The Wrap Institute; affiliate relationships '
+              'do not affect software rankings or editorial conclusions. '
+              '<a href="methodology">How we review software</a> · '
+              '<a href="affiliate-disclosure">Affiliate disclosure</a>. '
+              'Confirm pricing and trial terms with the vendor.</p>'
+          )
+          new_disclosure = (
+              '<p class="research-context">Research based on published vendor documentation. '
+              'This page contains clearly marked affiliate links. DetailerFit may earn a commission if you sign up '
+              'through some links, at no extra cost to you; affiliate relationships do not affect software rankings '
+              'or editorial conclusions. <a href="methodology">How we review software</a> · '
+              '<a href="affiliate-disclosure">Affiliate disclosure</a>. '
+              'Confirm pricing and trial terms with the vendor.</p>'
+          )
+          if old_disclosure in text:
+              text = text.replace(old_disclosure, new_disclosure, 1)
+          elif new_disclosure not in text:
+              raise SystemExit("Expected PPF research disclosure was not found; refusing a blind edit")
+
+          # Add a monetized exit to the existing #1 OrbisX section without changing the ranking or copy.
+          old_actions = '''<div class="actions">
+          <a class="btn secondary" href="orbisx-review-auto-detailers">Read our OrbisX Review</a>
+          <a class="btn secondary" href="urable-vs-orbisx">Urable vs OrbisX</a>
+          </div>'''
+
+          new_actions = '''<div class="actions mid-cta">
+          <a class="btn primary" data-cta-position="ppf-orbisx-section" data-vendor="OrbisX" href="https://orbisx.com/detailerfit/" rel="sponsored noopener" target="_blank">Try OrbisX Free</a>
+          <a class="btn secondary" href="orbisx-review-auto-detailers">Read our OrbisX Review</a>
+          <a class="btn secondary" href="urable-vs-orbisx">Urable vs OrbisX</a>
+          </div>
+          <p class="cta-disclosure small">DetailerFit may earn a commission if you sign up through this link, at no extra cost to you. <a href="affiliate-disclosure">Affiliate disclosure</a>.</p>'''
+
+          if affiliate_url not in text:
+              if old_actions not in text:
+                  raise SystemExit("Expected OrbisX action block was not found; refusing a blind edit")
+              text = text.replace(old_actions, new_actions, 1)
+
+          # This is a real editorial/page update, so keep Article dateModified current.
+          text, date_count = re.subn(
+              r'("dateModified"\s*:\s*")\d{4}-\d{2}-\d{2}("\s*,)',
+              r'\g<1>2026-09-16\g<2>',
+              text,
+              count=1,
+          )
+          if date_count != 1:
+              raise SystemExit("Could not update the Article dateModified field safely")
+
+          if text != original:
+              page_path.write_text(text, encoding="utf-8")
+
+          # GA4 diagnostics are complete; do not leave the temporary public page in production.
+          debug_path = Path("ga4-debug.html")
+          if debug_path.exists():
+              debug_path.unlink()
+
+          # Guardrails: rankings, monetization semantics, disclosure, and tracking metadata.
+          final = page_path.read_text(encoding="utf-8")
+
+          if final.count(affiliate_url) != 1:
+              raise SystemExit(f"Expected exactly one OrbisX affiliate URL in the PPF guide; found {final.count(affiliate_url)}")
+
+          required = [
+              'data-vendor="OrbisX"',
+              'data-cta-position="ppf-orbisx-section"',
+              'rel="sponsored noopener"',
+              'target="_blank"',
+              'class="cta-disclosure small"',
+              'This page contains clearly marked affiliate links.',
+              '<td><strong>1</strong></td>\n<td><strong>OrbisX</strong></td>',
+              '{"@type":"ListItem","position":1,"name":"OrbisX"}',
+              '{"@type":"ListItem","position":2,"name":"Urable"}',
+              '{"@type":"ListItem","position":3,"name":"Tint Wiz"}',
+              '{"@type":"ListItem","position":4,"name":"Mobile Tech RX"}',
+          ]
+          missing = [item for item in required if item not in final]
+          if missing:
+              raise SystemExit("Validation failed; missing expected guardrails: " + " | ".join(missing))
+
+          if "a clearly marked affiliate link to The Wrap Institute" in final:
+              raise SystemExit("Old incomplete disclosure is still present")
+
+          if Path("ga4-debug.html").exists():
+              raise SystemExit("ga4-debug.html still exists after cleanup")
+
+          print("PPF OrbisX monetization patch validated successfully.")
+          PY
+
+      - name: Validate diff
+        shell: bash
+        run: |
+          git diff --check
+          echo "Changed files:"
+          git status --short
+          echo "--- PPF guide diff ---"
+          git diff -- best-software-ppf-business.html
+          echo "--- Debug cleanup diff ---"
+          git diff -- ga4-debug.html || true
+
+      - name: Commit and push
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "No changes needed. The patch is already applied."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Add OrbisX revenue CTA to PPF guide"
+          git push origin HEAD:main

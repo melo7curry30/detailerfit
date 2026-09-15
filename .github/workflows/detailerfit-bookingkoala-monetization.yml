@@ -1,0 +1,238 @@
+name: DetailerFit BookingKoala monetization
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/detailerfit-bookingkoala-monetization.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Add BookingKoala research and affiliate placements
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          SIGNUP = "https://bookingkoala.com/signup/?aff=Ryo_Y_tsT"
+          DEMO = "https://bookingkoala.com/demo/?aff=Ryo_Y_tsT"
+
+          def replace_once(path, old, new):
+              p = Path(path)
+              text = p.read_text(encoding="utf-8")
+              if old not in text:
+                  raise SystemExit(f"Missing anchor in {path}: {old[:120]}")
+              p.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          def replace_all(path, old, new):
+              p = Path(path)
+              text = p.read_text(encoding="utf-8")
+              if old not in text:
+                  raise SystemExit(f"Missing anchor in {path}: {old[:120]}")
+              p.write_text(text.replace(old, new), encoding="utf-8")
+
+          # 1) Global affiliate disclosure
+          replace_all(
+              "affiliate-disclosure.html",
+              "The Wrap Institute, Marlie AI, Strata, OrbisX, and Housecall Pro.",
+              "The Wrap Institute, Marlie AI, Strata, OrbisX, Housecall Pro, and BookingKoala."
+          )
+
+          # 2) Booking & scheduling guide: make BookingKoala a researched eighth option.
+          p = "mobile-detailing-scheduling-software.html"
+          replace_all(p,
+              "Compare seven auto detailing booking and scheduling tools by online booking, deposits, pricing, mobile workflow and business fit.",
+              "Compare eight auto detailing booking and scheduling tools by online booking, deposits, pricing, mobile workflow and business fit.")
+          replace_all(p,
+              "Compare seven auto detailing booking and scheduling tools for online booking, deposits, mobile service rules, calendars, routing, team workflow and pricing.",
+              "Compare eight auto detailing booking and scheduling tools for online booking, deposits, mobile service rules, calendars, routing, team workflow and pricing.")
+          replace_once(p, '"numberOfItems":7', '"numberOfItems":8')
+          replace_once(p,
+              '{"@type":"ListItem","position":7,"name":"Housecall Pro"}',
+              '{"@type":"ListItem","position":7,"name":"BookingKoala"},{"@type":"ListItem","position":8,"name":"Housecall Pro"}')
+          replace_all(p,
+              "DetailPilot, OrbisX, ServiceM8, Jobber, Urable, QuoteIQ and Housecall Pro.",
+              "DetailPilot, OrbisX, ServiceM8, Jobber, Urable, QuoteIQ, BookingKoala and Housecall Pro.")
+          replace_all(p,
+              "This page contains affiliate links to DetailPilot, OrbisX, QuoteIQ and Housecall Pro.",
+              "This page contains affiliate links to DetailPilot, OrbisX, QuoteIQ, BookingKoala and Housecall Pro.")
+          replace_once(p,
+              '<li><a href="#section-9">7. Housecall Pro — best dispatch-heavy generalist</a></li>',
+              '<li><a href="#bookingkoala">7. BookingKoala — best booking-first growth platform</a></li>\n<li><a href="#section-9">8. Housecall Pro — best dispatch-heavy generalist</a></li>')
+          replace_once(p,
+              '<tr><td><strong>Housecall Pro</strong></td><td>From $59/mo annual billing</td>',
+              '<tr><td><strong>BookingKoala</strong></td><td>From $27/mo Starter</td><td><strong>Yes</strong> — customizable online booking forms</td><td>No — service-business platform with a dedicated mobile car wash use case</td><td>Mobile detailer prioritizing 24/7 customer self-booking and booking conversion</td></tr>\n<tr><td><strong>Housecall Pro</strong></td><td>From $59/mo annual billing</td>')
+
+          booking_section = f'''<h2 id="bookingkoala">7. BookingKoala — Best Booking-First Growth Platform</h2>
+          <p>BookingKoala is a service-business platform that publishes a dedicated <strong>mobile car wash software</strong> use case and explicitly supports customers booking washes and detailings online. Its current Starter plan begins at <strong>$27/month</strong> and allows up to five providers.</p>
+          <p>Its strongest fit is a mobile operator whose main bottleneck is turning website traffic into booked jobs. Booking forms can be used with BookingKoala's theme or installed on an existing website, and the vendor describes the forms as mobile-friendly and optimized.</p>
+          <h3>Why it stands out</h3>
+          <ul class="list"><li>Dedicated mobile car wash positioning rather than a generic calendar-only pitch.</li><li>Customer-facing online booking is central to the product.</li><li>Published $27/month Starter entry point.</li><li>Starter supports up to five providers, giving a small mobile crew some headroom.</li></ul>
+          <h3>Watch for</h3>
+          <p>BookingKoala is not an automotive-specific CRM in the same sense as platforms built around VINs, inspections or deep vehicle history. If vehicle-centric records are the priority, compare it with automotive-focused tools as well.</p>
+          <div class="actions"><a class="btn primary" data-vendor="BookingKoala" href="{SIGNUP}" rel="sponsored noopener" target="_blank">Start with BookingKoala</a><a class="btn secondary" data-vendor="BookingKoala" href="{DEMO}" rel="sponsored noopener" target="_blank">See BookingKoala Demo</a></div>
+          <p class="cta-disclosure small">Affiliate links. DetailerFit may earn a commission if you sign up through these links, at no extra cost to you. <a href="affiliate-disclosure">Affiliate disclosure</a>.</p>
+
+          '''
+          replace_once(p,
+              '<h2 id="section-9">7. Housecall Pro — Best Dispatch-Heavy Generalist</h2>',
+              booking_section + '<h2 id="section-9">8. Housecall Pro — Best Dispatch-Heavy Generalist</h2>')
+          replace_once(p,
+              '<li><strong>Housecall Pro:</strong> strong for dispatch-oriented teams.</li>',
+              '<li><strong>BookingKoala:</strong> best booking-first option for a mobile operator focused on customer self-booking and conversion.</li><li><strong>Housecall Pro:</strong> strong for dispatch-oriented teams.</li>')
+          replace_once(p,
+              '<b>Housecall Pro</b><br/><a href="https://www.housecallpro.com/pricing/" rel="noopener" target="_blank">Pricing</a>',
+              '<b>BookingKoala</b><br/><a href="https://www.bookingkoala.com/mobile-car-wash-software" rel="noopener" target="_blank">Mobile Car Wash Software</a> · <a href="https://www.bookingkoala.com/pricing/" rel="noopener" target="_blank">Pricing</a><br/><br/>\n<b>Housecall Pro</b><br/><a href="https://www.housecallpro.com/pricing/" rel="noopener" target="_blank">Pricing</a>')
+
+          # 3) Mobile software guide: add BookingKoala without displacing existing editorial picks.
+          p = "best-mobile-detailing-software.html"
+          replace_once(p,
+              "Compare 7 of the best mobile detailing apps and software for 2026, including QuoteIQ, OrbisX, Urable, Mobile Tech RX, Jobber, ServiceM8 and Housecall Pro.",
+              "Compare 8 mobile detailing apps and software options for 2026, including QuoteIQ, OrbisX, Urable, Mobile Tech RX, Jobber, ServiceM8, BookingKoala and Housecall Pro.")
+          replace_all(p,
+              "A research-based comparison of seven mobile detailing apps and software platforms",
+              "A research-based comparison of eight mobile detailing apps and software platforms")
+          replace_once(p,
+              "This page includes affiliate or referral links for QuoteIQ, OrbisX, Mobile Tech RX, Marlie AI and Housecall Pro.",
+              "This page includes affiliate or referral links for QuoteIQ, OrbisX, Mobile Tech RX, Marlie AI, BookingKoala and Housecall Pro.")
+          replace_once(p,
+              '<li><a href="#section-7">Housecall Pro — best dispatch-heavy mobile team option</a></li>',
+              '<li><a href="#section-bookingkoala">BookingKoala — best booking-first mobile option</a></li>\n<li><a href="#section-7">Housecall Pro — best dispatch-heavy mobile team option</a></li>')
+          replace_once(p,
+              '<li><strong>Customer self-booking + route-oriented field service:</strong> Jobber is a strong first look.</li>',
+              '<li><strong>Customer self-booking + route-oriented field service:</strong> Jobber is a strong first look.</li>\n<li><strong>Booking-first website conversion:</strong> BookingKoala deserves a look when 24/7 customer self-booking is the priority.</li>')
+          replace_once(p,
+              '7 Mobile Detailing Apps &amp; Software Options at a Glance',
+              '8 Mobile Detailing Apps &amp; Software Options at a Glance')
+          replace_once(p,
+              '<tr><td><a href="housecall-pro"><strong>Housecall Pro</strong></a></td><td>Dispatch-heavy mobile teams</td>',
+              '<tr><td><a href="bookingkoala"><strong>BookingKoala</strong></a></td><td>Booking-first mobile operators</td><td>Web platform + mobile-friendly booking forms</td><td>Dedicated mobile car wash use case, customer online booking and a $27 Starter entry point</td><td>Less vehicle-specific than an automotive CRM</td></tr>\n<tr><td><a href="housecall-pro"><strong>Housecall Pro</strong></a></td><td>Dispatch-heavy mobile teams</td>')
+
+          mobile_section = f'''<h2 id="section-bookingkoala">BookingKoala — Best Booking-First Mobile Option</h2>
+          <p>BookingKoala is worth separating from the field-service apps above because its strongest argument is the <strong>customer booking flow</strong>. The company has a dedicated mobile car wash software page and explicitly positions its booking forms for customers booking washes and detailings online.</p>
+          <p>The published Starter price is <strong>$27/month</strong>, with up to five providers. Booking forms can be used on BookingKoala's theme or installed on an existing website, which makes it especially relevant to a mobile detailer trying to turn website visitors into appointments without another phone call.</p>
+          <p><strong>Best fit:</strong> a solo or small mobile team that cares more about 24/7 online booking and conversion than deep VIN, inspection or vehicle-history tooling.</p>
+          <div class="actions"><a class="btn secondary" href="bookingkoala">Read BookingKoala Research Notes</a><a class="btn primary" data-vendor="BookingKoala" href="{SIGNUP}" rel="sponsored noopener" target="_blank">Start with BookingKoala</a><a class="btn secondary" data-vendor="BookingKoala" href="{DEMO}" rel="sponsored noopener" target="_blank">View Demo</a></div>
+          <p class="cta-disclosure small">Affiliate links. DetailerFit may earn a commission if you sign up through these links, at no extra cost to you. <a href="affiliate-disclosure">Affiliate disclosure</a>.</p>
+
+          '''
+          replace_once(p,
+              '<h2 id="section-7">Housecall Pro — Best Dispatch-Heavy Mobile Team Option</h2>',
+              mobile_section + '<h2 id="section-7">Housecall Pro — Best Dispatch-Heavy Mobile Team Option</h2>')
+          replace_once(p,
+              '<li><a href="https://www.housecallpro.com/features/mobile-app/" rel="noopener" target="_blank">Housecall Pro mobile app</a></li>',
+              '<li><a href="https://www.bookingkoala.com/mobile-car-wash-software" rel="noopener" target="_blank">BookingKoala mobile car wash software</a></li>\n<li><a href="https://www.housecallpro.com/features/mobile-app/" rel="noopener" target="_blank">Housecall Pro mobile app</a></li>')
+
+          # 4) Main comparison page.
+          p = "compare.html"
+          replace_once(p, "Compare 6 Mobile Detailing Software Options | DetailerFit", "Compare 7 Mobile Detailing Software Options | DetailerFit")
+          replace_once(p,
+              "Compare QuoteIQ, Mobile Tech RX, ServiceM8, Jobber, Urable and Housecall Pro by pricing, booking, user limits, device fit and workflow.",
+              "Compare QuoteIQ, Mobile Tech RX, ServiceM8, Jobber, Urable, BookingKoala and Housecall Pro by pricing, booking, user limits, device fit and workflow.")
+          replace_once(p, "Compare six software options by pricing, customer self-booking, user capacity, device fit and detailing workflow.", "Compare seven software options by pricing, customer self-booking, user capacity, device fit and detailing workflow.")
+          replace_once(p, "Six software options, compared by the plan detail that actually matters.", "Seven software options, compared by the plan detail that actually matters.")
+          replace_once(p,
+              '<a class="quickpick" href="housecall-pro"><span>DISPATCH</span><b>Housecall Pro</b><small>Booking + field team ops</small></a>',
+              '<a class="quickpick" href="bookingkoala"><span>BOOKING-FIRST</span><b>BookingKoala</b><small>Online booking + conversion</small></a>\n<a class="quickpick" href="housecall-pro"><span>DISPATCH</span><b>Housecall Pro</b><small>Booking + field team ops</small></a>')
+
+          compare_card = f'''<article class="compare-card"><div class="compare-card-head"><div><span class="kicker">BOOKING-FIRST</span><h2>BookingKoala</h2></div><a class="text-link" href="bookingkoala">Read Review</a></div><dl><div><dt>Starts</dt><dd>$27/mo · Starter</dd></div><div><dt>Self-booking</dt><dd>Yes · customizable booking forms</dd></div><div><dt>Users</dt><dd>Up to 5 providers on Starter</dd></div><div><dt>Devices</dt><dd>Web · mobile-friendly booking forms</dd></div></dl><p>Strong when the main goal is turning website traffic into booked mobile wash or detailing jobs.</p><div class="actions"><a class="btn primary" data-vendor="BookingKoala" href="{SIGNUP}" rel="sponsored noopener" target="_blank">Start with BookingKoala</a></div><p class="cta-disclosure small">Affiliate link. DetailerFit may earn a commission at no extra cost to you.</p></article>
+          '''
+          replace_once(p,
+              '<article class="compare-card"><div class="compare-card-head"><div><span class="kicker">BOOKING + DISPATCH</span><h2>Housecall Pro</h2>',
+              compare_card + '<article class="compare-card"><div class="compare-card-head"><div><span class="kicker">BOOKING + DISPATCH</span><h2>Housecall Pro</h2>')
+          replace_once(p,
+              'aria-label="Six software options comparison — scroll horizontally for more columns"',
+              'aria-label="Seven software options comparison — scroll horizontally for more columns"')
+          compare_row = f'''<tr><td><a href="bookingkoala"><b>BookingKoala</b></a></td><td>$27/mo Starter</td><td><b>Yes</b><br/><span class="small">Customizable customer-facing booking forms.</span></td><td>Up to 5 providers on Starter</td><td>Web + mobile-friendly booking forms</td><td>Strong booking-first option with a dedicated mobile car wash use case; less vehicle-specific than an automotive CRM.<div class="actions"><a class="text-link" href="bookingkoala">Read Review</a><a class="btn primary" data-vendor="BookingKoala" href="{SIGNUP}" rel="sponsored noopener" target="_blank">Start with BookingKoala</a></div></td></tr>
+          '''
+          replace_once(p,
+              '<tr><td><a href="housecall-pro"><b>Housecall Pro</b></a></td><td>$79/mo Basic',
+              compare_row + '<tr><td><a href="housecall-pro"><b>Housecall Pro</b></a></td><td>$79/mo Basic')
+
+          # 5) Reviews index card.
+          p = "reviews.html"
+          review_card = f'''<article class="card software-card"><div class="kicker">Best for Booking-first mobile operators</div><h2 class="compact-heading">BookingKoala</h2><p class="price">$27/mo</p><p class="small">Starter · up to 5 providers</p><p>Customer-facing booking forms with a dedicated mobile car wash use case.</p><p class="small"><strong>Watch for:</strong> Less vehicle-specific than an automotive CRM.</p><div class="actions"><a class="btn secondary" href="bookingkoala">Read BookingKoala Review</a><a class="btn primary" data-vendor="BookingKoala" href="{SIGNUP}" rel="sponsored noopener" target="_blank">Start with BookingKoala</a></div><p class="cta-disclosure small">DetailerFit may earn a commission if you sign up through this link, at no extra cost to you. <a href="affiliate-disclosure">Affiliate disclosure</a>.</p></article>'''
+          replace_once(p,
+              '<article class="card software-card"><div class="kicker">Best for Booking &amp; dispatch</div><h2 class="compact-heading">Housecall Pro</h2>',
+              review_card + '<article class="card software-card"><div class="kicker">Best for Booking &amp; dispatch</div><h2 class="compact-heading">Housecall Pro</h2>')
+
+          # 6) Dedicated BookingKoala research page.
+          booking_page = f'''<!doctype html>
+          <html lang="en">
+          <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+          <meta name="theme-color" content="#090d12">
+          <title>BookingKoala for Mobile Detailing (2026) | DetailerFit</title>
+          <meta name="description" content="Research-based BookingKoala review for mobile car wash and detailing businesses: pricing, online booking, provider limits, fit, trade-offs and affiliate links.">
+          <link rel="stylesheet" href="styles.css">
+          <link rel="canonical" href="https://getdetailerfit.com/bookingkoala">
+          <meta property="og:title" content="BookingKoala for Mobile Detailing (2026) | DetailerFit">
+          <meta property="og:description" content="BookingKoala pricing, booking forms, mobile car wash fit and trade-offs for auto detailers.">
+          <meta property="og:type" content="article">
+          <meta property="og:url" content="https://getdetailerfit.com/bookingkoala">
+          <meta name="twitter:card" content="summary">
+          <script type="application/ld+json">{{"@context":"https://schema.org","@graph":[{{"@type":"Article","headline":"BookingKoala for Mobile Detailing (2026)","description":"Research-based review of BookingKoala for mobile car wash and detailing businesses.","datePublished":"2026-09-15","dateModified":"2026-09-15","author":{{"@type":"Organization","name":"DetailerFit","url":"https://getdetailerfit.com/"}},"publisher":{{"@type":"Organization","name":"DetailerFit","url":"https://getdetailerfit.com/"}},"mainEntityOfPage":{{"@type":"WebPage","@id":"https://getdetailerfit.com/bookingkoala"}},"inLanguage":"en-US"}},{{"@type":"BreadcrumbList","itemListElement":[{{"@type":"ListItem","position":1,"name":"Home","item":"https://getdetailerfit.com/"}},{{"@type":"ListItem","position":2,"name":"Reviews","item":"https://getdetailerfit.com/reviews"}},{{"@type":"ListItem","position":3,"name":"BookingKoala","item":"https://getdetailerfit.com/bookingkoala"}}]}}]}}</script>
+          </head>
+          <body><a class="skip-link" href="#main-content">Skip to content</a>
+          <header class="site-header"><div class="wrap nav"><a aria-label="DetailerFit home" class="brand" href="/">Detailer<b>Fit</b></a><button aria-controls="navlinks" aria-expanded="false" class="menuBtn" onclick="toggleMenu(this)" type="button">Menu</button><nav aria-label="Primary navigation" class="navlinks" id="navlinks"><a href="compare">Compare Software</a><a href="reviews">Reviews</a><a href="guides">Guides</a><a href="finder">Software Finder</a><a href="methodology">How We Review</a><a href="about">About</a></nav></div></header>
+          <main id="main-content" tabindex="-1">
+          <section class="heroMini"><div class="wrap"><div class="breadcrumbs"><a href="/">Home</a> / <a href="reviews">Reviews</a> / BookingKoala</div><span class="eyebrow">RESEARCH REVIEW · VERIFIED SEP 15, 2026</span><h1>BookingKoala for Mobile Detailing: Booking-First Software With a $27 Start</h1><p class="lead">BookingKoala is not a vehicle-first detailing CRM. Its appeal is different: a dedicated mobile car wash use case, customer-facing booking forms and a low published entry price for operators who want more jobs to book themselves online.</p></div></section>
+          <section class="section"><div class="wrap article">
+          <aside class="research-context research-block" aria-label="Research transparency"><details open><summary>Research-based · Source check: Sep 15, 2026 · How we researched this</summary><div><strong>Official sources reviewed</strong><span>BookingKoala's Mobile Car Wash Software, Pricing and Features pages.</span></div><div><strong>Hands-on testing</strong><span>Not claimed. This review is based on published vendor documentation.</span></div><div><strong>Affiliate disclosure</strong><span>This page contains BookingKoala affiliate links. DetailerFit may earn a commission at no extra cost to you. The relationship does not determine the conclusion.</span></div><p><a href="methodology">How we review software</a> · <a href="affiliate-disclosure">Affiliate disclosure</a>.</p></details></aside>
+          <section class="review-summary"><div class="summarygrid"><div class="fact"><span>PUBLISHED START</span><b>$27/mo</b></div><div class="fact"><span>STARTER CAPACITY</span><b>Up to 5 providers</b></div><div class="fact"><span>CUSTOMER ONLINE BOOKING</span><b>Yes</b></div><div class="fact"><span>DETAILING-SPECIFIC?</span><b>No, but dedicated mobile car wash use case</b></div></div><p class="verdict"><strong>Quick verdict:</strong> BookingKoala is one of the more interesting booking-first options for a mobile detailer whose biggest problem is converting website visitors into appointments. It is less compelling when VINs, vehicle inspections or deep automotive records are non-negotiable.</p></section>
+          <div class="actions"><a class="btn primary" data-vendor="BookingKoala" href="{SIGNUP}" rel="sponsored noopener" target="_blank">Start with BookingKoala</a><a class="btn secondary" data-vendor="BookingKoala" href="{DEMO}" rel="sponsored noopener" target="_blank">View BookingKoala Demo</a><a class="btn secondary" href="mobile-detailing-scheduling-software">Compare Booking Software</a></div><p class="cta-disclosure small">Affiliate links. DetailerFit may earn a commission if you sign up through these links, at no extra cost to you.</p>
+          <details class="toc"><summary>On this page</summary><nav aria-label="On this page"><ol><li><a href="#verdict">Verdict</a></li><li><a href="#mobile-fit">Why it fits mobile detailing</a></li><li><a href="#pricing">Pricing and provider limits</a></li><li><a href="#strengths">Key strengths</a></li><li><a href="#watchouts">Watch-outs</a></li><li><a href="#who">Who should choose it?</a></li><li><a href="#alternatives">Alternatives</a></li><li><a href="#sources">Official sources</a></li></ol></nav></details>
+          <h2 id="verdict">BookingKoala Verdict for Auto Detailers</h2><p>For a mobile detailing business, BookingKoala makes the most sense when the website is already generating interest but too many prospects still need to call, text or wait for a reply before they can become a booked job. BookingKoala's own mobile car wash page specifically says its booking forms can be used for customers who want to book washes and detailings online.</p><p>That is a different value proposition from an automotive CRM. BookingKoala is strongest at the front of the funnel: getting a customer from intent to an appointment. A detailer that needs richer vehicle history, VIN intake or inspection workflows should compare automotive-focused platforms before deciding.</p>
+          <h2 id="mobile-fit">Why BookingKoala Fits Mobile Detailing</h2><p>BookingKoala publishes a dedicated mobile car wash software use case rather than asking detailers to infer the fit from a generic appointment calendar. The vendor emphasizes customer-facing booking forms, multiple form setups and the ability to use those forms on its own theme or an existing website.</p><p>That matters for mobile detailing because the owner is often polishing, driving or working at a customer's location when a new lead arrives. A booking-first workflow can reduce the amount of back-and-forth required before the appointment reaches the calendar.</p>
+          <h2 id="pricing">Pricing and Provider Limits</h2><p>BookingKoala currently publishes a <strong>$27/month Starter</strong> entry price. Its pricing documentation states that Starter allows up to <strong>five providers</strong>. A provider is the person or team performing the service.</p><p>That entry point is notable for a solo operator or small crew, but price alone should not decide the purchase. Compare the booking workflow you need, team size and whether vehicle-specific records matter more than customer self-booking.</p>
+          <h2 id="strengths">Key Strengths</h2><ul class="list"><li><strong>Booking-first architecture:</strong> customer-facing booking forms are a core part of the platform.</li><li><strong>Relevant vertical positioning:</strong> BookingKoala has a dedicated mobile car wash software page and explicitly mentions online booking for washes and detailings.</li><li><strong>Low published entry price:</strong> Starter begins at $27/month.</li><li><strong>Small-team headroom:</strong> Starter supports up to five providers.</li><li><strong>Website flexibility:</strong> the vendor says booking forms can be used with its theme or installed on an existing website and are mobile-friendly.</li></ul>
+          <h2 id="watchouts">Watch-Outs</h2><ul class="list"><li><strong>Not vehicle-first:</strong> do not assume VIN, inspection or automotive-history depth comparable with specialist detailing platforms.</li><li><strong>Booking strength is not the same as full field-service depth:</strong> if dispatch, technician routing or broader FSM operations dominate your workflow, compare Housecall Pro or Jobber as well.</li><li><strong>Verify current plan packaging:</strong> pricing and feature limits can change, so confirm the official pricing page before subscribing.</li></ul>
+          <h2 id="who">Who Should Choose BookingKoala?</h2><p><strong>Best fit:</strong> solo and small mobile detailing teams that want customers to book online around the clock and care heavily about website conversion.</p><p><strong>Less ideal:</strong> businesses whose software decision is driven primarily by deep vehicle records, inspection workflows, VIN intake or automotive-specific estimating.</p>
+          <div class="actions"><a class="btn primary" data-vendor="BookingKoala" href="{SIGNUP}" rel="sponsored noopener" target="_blank">Start with BookingKoala</a><a class="btn secondary" data-vendor="BookingKoala" href="{DEMO}" rel="sponsored noopener" target="_blank">See the Demo</a></div><p class="cta-disclosure small">Affiliate links. DetailerFit may earn a commission at no extra cost to you. <a href="affiliate-disclosure">How affiliate links work</a>.</p>
+          <h2 id="alternatives">BookingKoala Alternatives for Detailers</h2><div class="grid3"><div class="card flat"><div class="kicker">AUTOMOTIVE CRM</div><h3>QuoteIQ</h3><p class="small">Better fit when detailing-oriented CRM, estimates and internal scheduling matter more.</p><a class="btn ghost" href="quoteiq">Read QuoteIQ →</a></div><div class="card flat"><div class="kicker">AUTOMOTIVE DEPTH</div><h3>OrbisX</h3><p class="small">A deeper automotive all-in-one option for established operations.</p><a class="btn ghost" href="orbisx-review-auto-detailers">Read OrbisX →</a></div><div class="card flat"><div class="kicker">DISPATCH</div><h3>Housecall Pro</h3><p class="small">Worth comparing when multi-tech dispatch and broader field-service operations are the bottleneck.</p><a class="btn ghost" href="housecall-pro">Read Housecall Pro →</a></div></div>
+          <h2 id="sources">Official Sources</h2><div class="sourcebox"><b>BookingKoala</b><br/><a href="https://www.bookingkoala.com/mobile-car-wash-software" rel="noopener" target="_blank">Mobile Car Wash Software</a> · <a href="https://www.bookingkoala.com/pricing/" rel="noopener" target="_blank">Pricing</a> · <a href="https://www.bookingkoala.com/features/" rel="noopener" target="_blank">Features</a></div><p class="small">Last verified September 15, 2026. Vendor pricing and feature packaging can change.</p>
+          </div></section></main>
+          <footer class="footer"><div class="wrap footergrid"><div><a class="brand" href="/">Detailer<b>Fit</b></a><p>Independent research for mobile detailers choosing business software.</p><p>Research-based unless a page is explicitly labeled hands-on tested.</p></div><div><strong>Research</strong><a href="finder">Software Finder</a><a href="compare">Compare tools</a><a href="mobile-detailing-scheduling-software">Scheduling guide</a><a href="best-mobile-detailing-software">Buying guide</a><a href="methodology">How we rank</a><a href="reviews">Software reviews</a></div><div><strong>Company</strong><a href="about">About</a><a href="contact">Contact</a><a href="affiliate-disclosure">Affiliate disclosure</a><a href="privacy">Privacy</a></div></div></footer><script src="app.js"></script>
+          </body></html>'''
+          Path("bookingkoala.html").write_text(booking_page, encoding="utf-8")
+
+          # 7) Sitemap
+          p = "sitemap.xml"
+          replace_once(p,
+              '</urlset>',
+              '  <url><loc>https://getdetailerfit.com/bookingkoala</loc><lastmod>2026-09-15</lastmod></url>\n</urlset>')
+
+          # Guardrails: affiliate URLs must be exact and commercial links must be sponsored.
+          for path in ["bookingkoala.html", "mobile-detailing-scheduling-software.html", "best-mobile-detailing-software.html", "compare.html", "reviews.html"]:
+              text = Path(path).read_text(encoding="utf-8")
+              for url in (SIGNUP, DEMO):
+                  if url in text:
+                      for line in text.splitlines():
+                          if url in line and 'rel="sponsored noopener"' not in line:
+                              raise SystemExit(f"Unsponsored BookingKoala affiliate link in {path}: {line[:180]}")
+
+          print("BookingKoala monetization patch prepared successfully")
+          PY
+
+      - name: Commit changes
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add affiliate-disclosure.html mobile-detailing-scheduling-software.html best-mobile-detailing-software.html compare.html reviews.html bookingkoala.html sitemap.xml
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "Add BookingKoala affiliate funnel"
+          git push

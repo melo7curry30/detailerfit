@@ -1,0 +1,278 @@
+name: DetailerFit DETAILFORGE SEO Internal Links
+
+on:
+  push:
+    paths:
+      - ".github/workflows/detailforge-seo-internal-links.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  detailforge-seo:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Add DETAILFORGE discovery links and sitemap entry
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          ROOT = Path(".")
+          DOMAIN = "https://getdetailerfit.com"
+          SLUG = "detailforge-review-ai-quoting-wrap-ppf"
+          URL = f"{DOMAIN}/{SLUG}"
+          ARTICLE = ROOT / f"{SLUG}.html"
+          WORKFLOW = ROOT / ".github/workflows/detailforge-seo-internal-links.yml"
+          TODAY = "2026-09-15"
+
+          def read(path: Path) -> str:
+              return path.read_text(encoding="utf-8")
+
+          def write(path: Path, text: str):
+              path.write_text(text, encoding="utf-8")
+
+          def insert_before_main_close(text: str, block: str) -> str:
+              idx = text.lower().rfind("</main>")
+              if idx >= 0:
+                  return text[:idx] + "\n" + block + "\n" + text[idx:]
+              idx = text.lower().rfind("</body>")
+              if idx >= 0:
+                  return text[:idx] + "\n" + block + "\n" + text[idx:]
+              return text + "\n" + block + "\n"
+
+          def replace_or_insert_block(path: Path, block_id: str, block: str):
+              if not path.exists():
+                  print(f"Skip missing page: {path.name}")
+                  return
+              text = read(path)
+              wrapped = f"<!-- {block_id} START -->\n{block}\n<!-- {block_id} END -->"
+              pattern = re.compile(
+                  rf"<!-- {re.escape(block_id)} START -->.*?<!-- {re.escape(block_id)} END -->",
+                  re.I | re.S
+              )
+              if pattern.search(text):
+                  text = pattern.sub(wrapped, text, count=1)
+              elif URL not in text and f"/{SLUG}" not in text:
+                  text = insert_before_main_close(text, wrapped)
+              write(path, text)
+
+          if not ARTICLE.exists():
+              raise SystemExit(
+                  f"Missing {ARTICLE.name}. Add the DETAILFORGE article to the repository first."
+              )
+
+          article = read(ARTICLE)
+
+          canonical = f'<link rel="canonical" href="{URL}">'
+          if re.search(r'<link[^>]+rel=["\']canonical["\'][^>]*>', article, flags=re.I):
+              article = re.sub(
+                  r'<link[^>]+rel=["\']canonical["\'][^>]*>',
+                  canonical,
+                  article,
+                  count=1,
+                  flags=re.I,
+              )
+          else:
+              article = article.replace("</head>", f"{canonical}\n</head>", 1)
+
+          if re.search(r'<meta[^>]+property=["\']og:url["\'][^>]*>', article, flags=re.I):
+              article = re.sub(
+                  r'<meta[^>]+property=["\']og:url["\'][^>]*>',
+                  f'<meta property="og:url" content="{URL}">',
+                  article,
+                  count=1,
+                  flags=re.I,
+              )
+
+          article = re.sub(
+              r'href=(["\'])(?!https?://|//|#|mailto:|tel:)([^"\']+?)\.html([?#][^"\']*)?\1',
+              lambda m: f'href={m.group(1)}{m.group(2)}{m.group(3) or ""}{m.group(1)}',
+              article,
+              flags=re.I,
+          )
+
+          write(ARTICLE, article)
+
+          reviews_block = f'''
+          <section class="section" aria-label="New software review">
+            <div class="wrap article">
+              <div class="card flat">
+                <div class="kicker">NEW · AI VISUAL QUOTING</div>
+                <h2>DETAILFORGE Review: AI 3D Quoting for Wrap, PPF &amp; Tint Shops</h2>
+                <p>DETAILFORGE combines a browser-based 3D vehicle configurator, AI-assisted quoting, booking, CRM, payments and shop operations. Our research-based review breaks down pricing, workflow fit, risks and alternatives.</p>
+                <div class="actions">
+                  <a class="btn secondary" href="/{SLUG}">Read the DETAILFORGE Review</a>
+                </div>
+              </div>
+            </div>
+          </section>
+          '''
+          replace_or_insert_block(
+              ROOT / "reviews.html",
+              "DETAILFORGE-REVIEWS-LINK",
+              reviews_block,
+          )
+
+          ai_block = f'''
+          <section class="section" aria-label="Emerging AI visual quoting software">
+            <div class="wrap article">
+              <div class="note">
+                <b>Emerging AI category — visual quoting:</b>
+                DETAILFORGE takes a different approach from AI receptionists and general CRM copilots.
+                It combines 3D vehicle visualization with conversational AI quoting for wrap, PPF,
+                tint, ceramic coating and detailing shops.
+              </div>
+              <div class="actions">
+                <a class="btn secondary" href="/{SLUG}">See our DETAILFORGE Review</a>
+              </div>
+            </div>
+          </section>
+          '''
+          replace_or_insert_block(
+              ROOT / "best-ai-software-auto-detailing.html",
+              "DETAILFORGE-AI-GUIDE-LINK",
+              ai_block,
+          )
+
+          ppf_block = f'''
+          <section class="section" aria-label="Emerging PPF sales software">
+            <div class="wrap article">
+              <div class="card flat">
+                <div class="kicker">EMERGING OPTION · VISUAL SALES</div>
+                <h2>What about DETAILFORGE for PPF shops?</h2>
+                <p>DETAILFORGE is worth watching when the sales bottleneck happens before the job reaches production. Its differentiator is customer-facing 3D vehicle visualization plus AI-assisted quoting tied to the shop's own catalog and pricing. It does not replace dedicated PPF pattern-cutting software, but it can complement a production stack by improving visualization, quoting, booking and front-office workflow.</p>
+                <div class="actions">
+                  <a class="btn secondary" href="/{SLUG}">Read the DETAILFORGE Review</a>
+                </div>
+              </div>
+            </div>
+          </section>
+          '''
+          replace_or_insert_block(
+              ROOT / "best-software-ppf-business.html",
+              "DETAILFORGE-PPF-GUIDE-LINK",
+              ppf_block,
+          )
+
+          tint_block = f'''
+          <section class="section" aria-label="Tint Wiz alternative">
+            <div class="wrap article">
+              <div class="note">
+                <b>Also compare:</b> DETAILFORGE is a newer automotive-appearance platform focused on
+                3D vehicle visualization and AI-assisted quoting alongside CRM, booking and payments.
+                Shops comparing visual sales workflows with a mature film-focused CRM should evaluate both.
+              </div>
+              <div class="actions">
+                <a class="btn secondary" href="/{SLUG}">DETAILFORGE Review</a>
+              </div>
+            </div>
+          </section>
+          '''
+          replace_or_insert_block(
+              ROOT / "tint-wiz-review.html",
+              "DETAILFORGE-TINTWIZ-LINK",
+              tint_block,
+          )
+
+          omniplot_block = f'''
+          <section class="section" aria-label="Complementary PPF software">
+            <div class="wrap article">
+              <div class="note">
+                <b>Complementary workflow:</b> OmniPlot focuses on patterns, nesting and plotter output.
+                DETAILFORGE focuses on customer-facing 3D configuration, AI quoting, booking, CRM and shop operations.
+                A PPF or tint shop could use both rather than treating them as direct substitutes.
+              </div>
+              <div class="actions">
+                <a class="btn secondary" href="/{SLUG}">Read the DETAILFORGE Review</a>
+              </div>
+            </div>
+          </section>
+          '''
+          replace_or_insert_block(
+              ROOT / "omniplot-review-ppf-tint-software.html",
+              "DETAILFORGE-OMNIPLOT-LINK",
+              omniplot_block,
+          )
+
+          sitemap = ROOT / "sitemap.xml"
+          if not sitemap.exists():
+              raise SystemExit("Missing sitemap.xml")
+
+          sm = read(sitemap)
+          sm = re.sub(
+              rf'\s*<url>\s*<loc>[^<]*{re.escape(SLUG)}(?:\.html)?</loc>.*?</url>',
+              "",
+              sm,
+              flags=re.I | re.S,
+          )
+
+          entry = (
+              "  <url>\n"
+              f"    <loc>{URL}</loc>\n"
+              f"    <lastmod>{TODAY}</lastmod>\n"
+              "  </url>\n"
+          )
+
+          if "</urlset>" not in sm:
+              raise SystemExit("sitemap.xml is missing </urlset>")
+
+          sm = sm.replace("</urlset>", entry + "</urlset>", 1)
+          write(sitemap, sm)
+
+          checks = [
+              ("article canonical", URL in read(ARTICLE)),
+              ("reviews internal link", f"/{SLUG}" in read(ROOT / "reviews.html") if (ROOT / "reviews.html").exists() else False),
+              ("AI guide internal link", f"/{SLUG}" in read(ROOT / "best-ai-software-auto-detailing.html") if (ROOT / "best-ai-software-auto-detailing.html").exists() else False),
+              ("PPF guide internal link", f"/{SLUG}" in read(ROOT / "best-software-ppf-business.html") if (ROOT / "best-software-ppf-business.html").exists() else False),
+              ("sitemap canonical entry", f"<loc>{URL}</loc>" in read(sitemap)),
+          ]
+
+          failures = [name for name, ok in checks if not ok]
+          if failures:
+              raise SystemExit("Validation failed: " + ", ".join(failures))
+
+          if read(sitemap).count(f"<loc>{URL}</loc>") != 1:
+              raise SystemExit("Validation failed: DETAILFORGE sitemap URL is duplicated.")
+
+          print("DETAILFORGE SEO/internal-link patch passed.")
+          print("Primary links added/verified:")
+          for name, ok in checks:
+              print(f" - {name}: {'OK' if ok else 'MISSING'}")
+
+          if WORKFLOW.exists():
+              WORKFLOW.unlink()
+          PY
+
+      - name: Show changes
+        shell: bash
+        run: |
+          git diff --check
+          git status --short
+          git diff --stat
+          git diff --             detailforge-review-ai-quoting-wrap-ppf.html             reviews.html             best-ai-software-auto-detailing.html             best-software-ppf-business.html             tint-wiz-review.html             omniplot-review-ppf-tint-software.html             sitemap.xml || true
+
+      - name: Commit and push
+        shell: bash
+        run: |
+          git config user.name "DetailerFit SEO"
+          git config user.email "actions@users.noreply.github.com"
+
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo "No changes needed."
+            exit 0
+          fi
+
+          git commit -m "Add DETAILFORGE internal links and sitemap entry"
+          git push

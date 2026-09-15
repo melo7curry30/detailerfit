@@ -1,0 +1,158 @@
+name: Expand Housecall Pro monetization safely
+
+on:
+  push:
+    paths:
+      - ".github/workflows/detailerfit-housecall-pro-expansion.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  expand-housecall-pro:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 0
+
+      - name: Patch only existing Housecall Pro commercial placements
+        shell: python
+        run: |
+          from pathlib import Path
+
+          AFF = "https://housecallpro.partnerlinks.io/lquesdqg2t22"
+          OFF = "https://www.housecallpro.com/pricing/"
+
+          def read(name):
+              p = Path(name)
+              if not p.exists():
+                  raise SystemExit(f"Missing expected file: {name}")
+              return p, p.read_text(encoding="utf-8")
+
+          def replace_once(text, old, new, label, n=1):
+              c = text.count(old)
+              if c != n:
+                  raise SystemExit(f"{label}: expected {n} match(es), found {c}")
+              return text.replace(old, new)
+
+          def save(path, old, new):
+              if new != old:
+                  path.write_text(new, encoding="utf-8")
+
+          # Overall guide: disclosure only; the HCP CTA is already live.
+          p, oldtext = read("best-auto-detailing-software-2026.html")
+          text = oldtext
+          old = "DetailerFit may earn a commission if you sign up for Mobile Tech RX, DetailPilot, RO App, or Marlie AI through clearly marked links on this page, at no additional cost to you."
+          new = "DetailerFit may earn a commission if you sign up for Mobile Tech RX, DetailPilot, RO App, Marlie AI, or Housecall Pro through clearly marked links on this page, at no additional cost to you."
+          if old in text:
+              text = replace_once(text, old, new, "overall disclosure")
+          elif "Marlie AI, or Housecall Pro through clearly marked links" not in text:
+              raise SystemExit("overall disclosure wording not recognized")
+          save(p, oldtext, text)
+
+          # Booking/scheduling guide: disclosure + one commercial CTA.
+          p, oldtext = read("mobile-detailing-scheduling-software.html")
+          text = oldtext
+          old = "This page contains affiliate links to DetailPilot, OrbisX and QuoteIQ. DetailerFit may earn a commission at no extra cost to you."
+          new = "This page contains affiliate links to DetailPilot, OrbisX, QuoteIQ and Housecall Pro. DetailerFit may earn a commission at no extra cost to you."
+          if old in text:
+              text = replace_once(text, old, new, "scheduling disclosure")
+          elif "DetailPilot, OrbisX, QuoteIQ and Housecall Pro" not in text:
+              raise SystemExit("scheduling disclosure wording not recognized")
+
+          old = '<div class="actions"><a class="btn secondary" href="https://www.housecallpro.com/pricing/" rel="noopener" target="_blank">View Housecall Pro Pricing</a></div>'
+          new = '<div class="actions"><a class="btn primary" data-vendor="Housecall Pro" href="https://housecallpro.partnerlinks.io/lquesdqg2t22" rel="sponsored noopener" target="_blank">View Housecall Pro Pricing</a></div>\n<p class="cta-disclosure small">Affiliate link. DetailerFit may earn a commission if you sign up through this link, at no extra cost to you. <a href="affiliate-disclosure">Affiliate disclosure</a>.</p>'
+          if old in text:
+              text = replace_once(text, old, new, "scheduling CTA")
+          elif AFF not in text:
+              raise SystemExit("scheduling Housecall Pro CTA not recognized")
+          if OFF not in text:
+              raise SystemExit("scheduling official pricing source disappeared")
+          save(p, oldtext, text)
+
+          # Mobile guide: disclosure + direct CTA, while keeping research/comparison links.
+          p, oldtext = read("best-mobile-detailing-software.html")
+          text = oldtext
+          old = "This page includes affiliate or referral links for QuoteIQ, OrbisX, Mobile Tech RX and Marlie AI. DetailerFit may earn a commission if you sign up through those links, at no extra cost to you."
+          new = "This page includes affiliate or referral links for QuoteIQ, OrbisX, Mobile Tech RX, Marlie AI and Housecall Pro. DetailerFit may earn a commission if you sign up through those links, at no extra cost to you."
+          if old in text:
+              text = replace_once(text, old, new, "mobile disclosure")
+          elif "Marlie AI and Housecall Pro" not in text:
+              raise SystemExit("mobile disclosure wording not recognized")
+
+          old = '<div class="actions"><a class="btn secondary" href="housecall-pro">Read Housecall Pro Research Notes</a><a class="btn secondary" href="jobber-vs-housecall-pro-auto-detailing">Jobber vs Housecall Pro</a></div>'
+          new = '<div class="actions"><a class="btn secondary" href="housecall-pro">Read Housecall Pro Research Notes</a><a class="btn secondary" href="jobber-vs-housecall-pro-auto-detailing">Jobber vs Housecall Pro</a><a class="btn primary" data-vendor="Housecall Pro" href="https://housecallpro.partnerlinks.io/lquesdqg2t22" rel="sponsored noopener" target="_blank">Try Housecall Pro</a></div>\n<p class="cta-disclosure small">Affiliate link. DetailerFit may earn a commission if you sign up through this link, at no extra cost to you. <a href="affiliate-disclosure">Affiliate disclosure</a>.</p>'
+          if old in text:
+              text = replace_once(text, old, new, "mobile CTA")
+          elif AFF not in text:
+              raise SystemExit("mobile Housecall Pro CTA not recognized")
+          save(p, oldtext, text)
+
+          # Main comparison: exactly two HCP commercial buttons.
+          p, oldtext = read("compare.html")
+          text = oldtext
+          old = '<a class="btn primary" data-vendor="Housecall Pro" href="https://www.housecallpro.com/pricing/" rel="noopener">Visit Housecall Pro Website</a>'
+          new = '<a class="btn primary" data-vendor="Housecall Pro" href="https://housecallpro.partnerlinks.io/lquesdqg2t22" rel="sponsored noopener" target="_blank">Visit Housecall Pro Website</a>'
+          co, cn = text.count(old), text.count(new)
+          if co == 2:
+              text = text.replace(old, new)
+          elif not (co == 0 and cn == 2):
+              raise SystemExit(f"compare CTA pattern mismatch: old={co}, new={cn}")
+          save(p, oldtext, text)
+
+          # Calculator already uses the HCP affiliate URL in JS; fix disclosure only.
+          p, oldtext = read("software-cost-calculator.html")
+          text = oldtext
+          old = "QuoteIQ and Mobile Tech RX are current affiliate relationships. Affiliate status does not change the cost math or ordering."
+          new = "QuoteIQ, Mobile Tech RX and Housecall Pro are current affiliate relationships. Affiliate status does not change the cost math or ordering."
+          if old in text:
+              text = replace_once(text, old, new, "calculator disclosure")
+          elif "QuoteIQ, Mobile Tech RX and Housecall Pro are current affiliate relationships" not in text:
+              raise SystemExit("calculator disclosure wording not recognized")
+          save(p, oldtext, text)
+
+          # Safety validation.
+          expected = {
+              "best-auto-detailing-software-2026.html": 1,
+              "mobile-detailing-scheduling-software.html": 1,
+              "best-mobile-detailing-software.html": 1,
+              "compare.html": 2,
+          }
+          for name, minimum in expected.items():
+              t = Path(name).read_text(encoding="utf-8")
+              if t.count(AFF) < minimum:
+                  raise SystemExit(f"{name}: not enough Housecall Pro affiliate links")
+              for chunk in t.split("<a ")[1:]:
+                  tag = "<a " + chunk.split(">", 1)[0] + ">"
+                  if AFF in tag:
+                      low = tag.lower()
+                      if 'data-vendor="Housecall Pro"' not in tag or "sponsored" not in low or "noopener" not in low:
+                          raise SystemExit(f"{name}: unsafe Housecall Pro affiliate anchor")
+
+          js = Path("cost-calculator.js").read_text(encoding="utf-8")
+          marker = "'Housecall Pro': {url:'https://housecallpro.partnerlinks.io/lquesdqg2t22', rel:'sponsored noopener', target:'_blank'}"
+          if marker not in js:
+              raise SystemExit("cost-calculator.js Housecall Pro affiliate mapping missing")
+
+          print("PASS: scoped Housecall Pro expansion validated")
+
+      - name: Commit website changes
+        shell: bash
+        env:
+          TARGET_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          set -euo pipefail
+          FILES=(best-auto-detailing-software-2026.html mobile-detailing-scheduling-software.html best-mobile-detailing-software.html compare.html software-cost-calculator.html)
+          if git diff --quiet -- "${FILES[@]}"; then
+            echo "Nothing to commit. Already current."
+            exit 0
+          fi
+          git diff --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- "${FILES[@]}"
+          git commit -m "Expand Housecall Pro affiliate placements"
+          git push origin "HEAD:${TARGET_BRANCH}"

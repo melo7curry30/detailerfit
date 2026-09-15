@@ -1,0 +1,731 @@
+name: DetailerFit - Expand AI Receptionist Affiliate Revenue Paths
+
+on:
+  push:
+    paths:
+      - ".github/workflows/detailerfit-ai-receptionist-affiliate.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: detailerfit-ai-receptionist-affiliate
+  cancel-in-progress: false
+
+jobs:
+  implement:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out current default branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 0
+
+      - name: Expand AI Receptionist monetization safely
+        shell: python
+        run: |
+          from pathlib import Path
+          from html.parser import HTMLParser
+          import json
+          import re
+          import xml.etree.ElementTree as ET
+
+          ROOT = Path(".")
+          AFFILIATE_URL = "https://ai-receptionist.com?via=detailerfit56"
+          OFFICIAL_URL = "https://ai-receptionist.com/"
+          PRICING_URL = "https://ai-receptionist.com/pricing/"
+          HELP_URL = "https://ai-receptionist.com/help/"
+          AFFILIATE_TERMS_URL = "https://ai-receptionist.com/legal/affiliate-terms/"
+          SLUG = "/ai-receptionist-review-auto-detailers"
+          CANONICAL = "https://getdetailerfit.com" + SLUG
+          MARKER = "<!-- DETAILERFIT-AI-RECEPTIONIST-V2 -->"
+          DISCLOSURE_MARKER = "<!-- DETAILERFIT-AI-RECEPTIONIST-DISCLOSURE-V2 -->"
+          SOURCE_DATE = "September 15, 2026"
+          ISO_DATE = "2026-09-15"
+
+          required = [
+              "reviews.html",
+              "best-ai-receptionists-auto-detailing.html",
+              "affiliate-disclosure.html",
+              "sitemap.xml",
+              "styles.css",
+              "app.js",
+          ]
+          for filename in required:
+              if not (ROOT / filename).is_file():
+                  raise RuntimeError(f"Required file missing: {filename}")
+
+          optional_targets = [
+              "best-ai-software-auto-detailing.html",
+              "best-auto-detailing-software-2026.html",
+              "guides.html",
+          ]
+
+          def read(name):
+              return (ROOT / name).read_text(encoding="utf-8")
+
+          original = {name: read(name) for name in required}
+          for name in optional_targets:
+              if (ROOT / name).is_file():
+                  original[name] = read(name)
+
+          changes = {}
+
+          def current(name):
+              if name in changes:
+                  return changes[name]
+              path = ROOT / name
+              return path.read_text(encoding="utf-8") if path.is_file() else None
+
+          def insert_before_last(text, closing_tag, addition):
+              pos = text.lower().rfind(closing_tag.lower())
+              if pos < 0:
+                  raise RuntimeError(f"Required closing tag missing: {closing_tag}")
+              return text[:pos] + addition + "\n" + text[pos:]
+
+          def affiliate_cta(label):
+              return (
+                  '<a class="btn primary" data-vendor="AI Receptionist" '
+                  f'href="{AFFILIATE_URL}" rel="sponsored noopener" '
+                  f'target="_blank">{label}</a>'
+              )
+
+          disclosure = (
+              '<p class="cta-disclosure small">'
+              'DetailerFit may earn a commission if you sign up through this link, '
+              'at no extra cost to you. '
+              '<a href="/affiliate-disclosure">Affiliate disclosure</a>.'
+              '</p>'
+          )
+
+          # ------------------------------------------------------------
+          # 1) Upgrade every existing exact AI Receptionist affiliate CTA.
+          #    Preserve visible anchor text and unrelated attributes.
+          # ------------------------------------------------------------
+          def upgrade_affiliate_anchors(text, filename):
+              pattern = re.compile(
+                  r'<a\b(?P<attrs>[^>]*\bhref=["\']'
+                  + re.escape(AFFILIATE_URL)
+                  + r'["\'][^>]*)>',
+                  re.I,
+              )
+
+              def repl(match):
+                  attrs = match.group("attrs")
+
+                  # data-vendor
+                  if re.search(r'\bdata-vendor\s*=', attrs, flags=re.I):
+                      attrs = re.sub(
+                          r'\sdata-vendor\s*=\s*["\'][^"\']*["\']',
+                          ' data-vendor="AI Receptionist"',
+                          attrs,
+                          count=1,
+                          flags=re.I,
+                      )
+                  else:
+                      attrs += ' data-vendor="AI Receptionist"'
+
+                  # target
+                  if re.search(r'\btarget\s*=', attrs, flags=re.I):
+                      attrs = re.sub(
+                          r'\starget\s*=\s*["\'][^"\']*["\']',
+                          ' target="_blank"',
+                          attrs,
+                          count=1,
+                          flags=re.I,
+                      )
+                  else:
+                      attrs += ' target="_blank"'
+
+                  # rel tokens
+                  rel_match = re.search(
+                      r'\brel\s*=\s*["\']([^"\']*)["\']',
+                      attrs,
+                      flags=re.I,
+                  )
+                  if rel_match:
+                      tokens = rel_match.group(1).split()
+                      lowered = {t.lower() for t in tokens}
+                      for token in ("sponsored", "noopener"):
+                          if token not in lowered:
+                              tokens.append(token)
+                      replacement = 'rel="' + " ".join(tokens) + '"'
+                      attrs = (
+                          attrs[:rel_match.start()]
+                          + replacement
+                          + attrs[rel_match.end():]
+                      )
+                  else:
+                      attrs += ' rel="sponsored noopener"'
+
+                  return "<a" + attrs + ">"
+
+              updated, count = pattern.subn(repl, text)
+              return updated, count
+
+          all_html = sorted(ROOT.glob("*.html"))
+          upgraded_files = []
+          for path in all_html:
+              text = current(path.name)
+              if not text or AFFILIATE_URL not in text:
+                  continue
+              updated, n = upgrade_affiliate_anchors(text, path.name)
+              if n and updated != text:
+                  changes[path.name] = updated
+                  upgraded_files.append(path.name)
+
+          # ------------------------------------------------------------
+          # 2) Ensure the main AI receptionist comparison has the affiliate
+          #    option even if an older site snapshot is active.
+          # ------------------------------------------------------------
+          name = "best-ai-receptionists-auto-detailing.html"
+          text = current(name)
+
+          if AFFILIATE_URL not in text:
+              section9 = re.search(
+                  r'(<h2\b[^>]*id=["\']section-9["\'][^>]*>'
+                  r'Other AI Receptionist Options Worth Watching</h2>)',
+                  text,
+                  flags=re.I,
+              )
+              if not section9:
+                  raise RuntimeError(
+                      "Could not find the AI receptionist watchlist insertion point."
+                  )
+
+              block = f"""
+          {MARKER}
+          <h3>AI Receptionist — Affiliate Option to Test</h3>
+          <p>If you want a dedicated AI receptionist without replacing your CRM, AI Receptionist is another option to evaluate. We have not moved it into the ranked picks above. Test it with your real detailing calls, service rules, appointment flow and escalation needs before buying.</p>
+          <div class="actions">
+          {affiliate_cta("Try AI Receptionist")}
+          </div>
+          {disclosure}
+          """
+              insert_at = section9.end()
+              text = text[:insert_at] + "\n" + block + text[insert_at:]
+              changes[name] = text
+
+          # Ensure an untracked official source exists.
+          text = current(name)
+          if OFFICIAL_URL not in text:
+              source_box = text.lower().rfind("</div>")
+              # Safer fallback: append a small source note before </main>.
+              source_note = f"""
+          {MARKER}
+          <section class="section tight"><div class="wrap article">
+          <p class="small">AI Receptionist source: <a href="{OFFICIAL_URL}" rel="noopener" target="_blank">official site</a>. Source check: {SOURCE_DATE}.</p>
+          </div></section>
+          """
+              text = insert_before_last(text, "</main>", source_note)
+              changes[name] = text
+
+          # ------------------------------------------------------------
+          # 3) Dedicated research-based review page.
+          #    Current official pricing/features checked Sep 15, 2026.
+          # ------------------------------------------------------------
+          shell = original["reviews.html"]
+          header_match = re.search(r"<header\b[\s\S]*?</header>", shell, flags=re.I)
+          footer_match = re.search(r"<footer\b[\s\S]*?</footer>", shell, flags=re.I)
+          if not header_match or not footer_match:
+              raise RuntimeError("Could not reuse current DetailerFit header/footer.")
+
+          header = header_match.group(0)
+          footer = footer_match.group(0)
+
+          schema = {
+              "@context": "https://schema.org",
+              "@graph": [
+                  {
+                      "@type": "Article",
+                      "@id": CANONICAL + "#article",
+                      "headline": "AI Receptionist Review for Auto Detailers (2026)",
+                      "description": (
+                          "Research-based AI-Receptionist.com review for auto detailers, "
+                          "covering pricing, call handling, appointment scheduling, "
+                          "transcripts, transfers and best-fit use cases."
+                      ),
+                      "dateModified": ISO_DATE,
+                      "author": {
+                          "@type": "Organization",
+                          "name": "DetailerFit",
+                          "url": "https://getdetailerfit.com/",
+                      },
+                      "publisher": {
+                          "@type": "Organization",
+                          "name": "DetailerFit",
+                          "url": "https://getdetailerfit.com/",
+                      },
+                      "mainEntityOfPage": {
+                          "@type": "WebPage",
+                          "@id": CANONICAL,
+                      },
+                      "inLanguage": "en-US",
+                  },
+                  {
+                      "@type": "BreadcrumbList",
+                      "itemListElement": [
+                          {
+                              "@type": "ListItem",
+                              "position": 1,
+                              "name": "Home",
+                              "item": "https://getdetailerfit.com/",
+                          },
+                          {
+                              "@type": "ListItem",
+                              "position": 2,
+                              "name": "Reviews",
+                              "item": "https://getdetailerfit.com/reviews",
+                          },
+                          {
+                              "@type": "ListItem",
+                              "position": 3,
+                              "name": "AI Receptionist Review",
+                              "item": CANONICAL,
+                          },
+                      ],
+                  },
+                  {
+                      "@type": "FAQPage",
+                      "mainEntity": [
+                          {
+                              "@type": "Question",
+                              "name": "How much does AI Receptionist cost?",
+                              "acceptedAnswer": {
+                                  "@type": "Answer",
+                                  "text": (
+                                      "Its U.S. pricing page listed Essential at $14/month, "
+                                      "Starter at $39/month, Solopreneur at $99/month and "
+                                      "Business at $199/month when checked September 15, 2026."
+                                  ),
+                              },
+                          },
+                          {
+                              "@type": "Question",
+                              "name": "Can AI Receptionist schedule appointments?",
+                              "acceptedAnswer": {
+                                  "@type": "Answer",
+                                  "text": (
+                                      "Yes. Google Calendar appointment scheduling is listed "
+                                      "on Starter and higher plans."
+                                  ),
+                              },
+                          },
+                      ],
+                  },
+              ],
+          }
+
+          review = f"""<!doctype html>
+          <html lang="en">
+          <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+          <meta name="theme-color" content="#090d12">
+          <title>AI Receptionist Review for Auto Detailers (2026) | DetailerFit</title>
+          <meta name="description" content="Research-based AI Receptionist review for auto detailers: current pricing, call transfers, transcripts, appointment scheduling, fit, pros and limitations.">
+          <link rel="stylesheet" href="/styles.css">
+          <link rel="canonical" href="{CANONICAL}">
+          <meta property="og:title" content="AI Receptionist Review for Auto Detailers (2026)">
+          <meta property="og:description" content="Research-based review of AI-Receptionist.com for detailing businesses, including pricing, call handling and booking fit.">
+          <meta property="og:type" content="article">
+          <meta property="og:url" content="{CANONICAL}">
+          <meta name="twitter:card" content="summary">
+          <script type="application/ld+json">{json.dumps(schema, separators=(",", ":"))}</script>
+          </head>
+          <body>
+          <a class="skip-link" href="#main-content">Skip to content</a>
+          {header}
+          {MARKER}
+          <main id="main-content" tabindex="-1">
+          <section class="heroMini"><div class="wrap">
+          <div class="breadcrumbs"><a href="/">Home</a> / <a href="/reviews">Reviews</a> / AI Receptionist</div>
+          <span class="eyebrow">AI PHONE RECEPTIONIST · RESEARCH-BASED · {SOURCE_DATE}</span>
+          <h1>AI Receptionist Review for Auto Detailers</h1>
+          <p class="lead">AI-Receptionist.com is a dedicated phone-answering layer rather than a full detailing CRM. It is most relevant when missed calls, call routing and appointment handling are the bottleneck.</p>
+          <div class="actions">
+          {affiliate_cta("Start AI Receptionist Trial")}
+          <a class="btn secondary" href="/best-ai-receptionists-auto-detailing">Compare AI Receptionists</a>
+          </div>
+          {disclosure}
+          </div></section>
+
+          <section class="section"><div class="wrap article">
+          <aside class="research-context research-block" aria-label="Research transparency">
+          <details open>
+          <summary>Research-based · Source check: {SOURCE_DATE} · How we researched this</summary>
+          <div><strong>Research basis</strong><span>Current AI-Receptionist.com pricing and help documentation.</span></div>
+          <div><strong>Hands-on testing</strong><span>Not claimed for this review.</span></div>
+          <p><a href="/methodology">How we review software</a> · <a href="/affiliate-disclosure">Affiliate disclosure</a>.</p>
+          </details>
+          </aside>
+
+          <h2>What AI Receptionist does</h2>
+          <p>The published feature set centers on 24/7 call answering, spam filtering, transfers, voicemail, call transcripts and a knowledge base. Higher plans add more capacity and business features.</p>
+          <p>This is a phone/front-desk product, not a complete detailing operating system. If you need estimates, invoices, vehicle history and job workflow in one database, compare a full CRM alongside it.</p>
+
+          <h2>Current published pricing</h2>
+          <div class="tablewrap" role="region" tabindex="0" aria-label="AI Receptionist pricing">
+          <table>
+          <thead><tr><th>Plan</th><th>Monthly price</th><th>Included voice minutes</th><th>Key published fit</th></tr></thead>
+          <tbody>
+          <tr><td>Essential</td><td>$14</td><td>60</td><td>Basic answering, filtering, transfers, voicemail and transcripts</td></tr>
+          <tr><td>Starter</td><td>$39</td><td>60</td><td>Adds advanced AI and Google Calendar scheduling</td></tr>
+          <tr><td>Solopreneur</td><td>$99</td><td>200</td><td>More call capacity and transfer contacts</td></tr>
+          <tr><td>Business</td><td>$199</td><td>400</td><td>Team accounts, SIP/VoIP and advanced analytics</td></tr>
+          </tbody>
+          </table>
+          </div>
+          <p class="small">Published U.S. monthly pricing checked {SOURCE_DATE}. Extra usage and plan terms can change; verify current checkout pricing.</p>
+
+          <h2>Appointment scheduling</h2>
+          <p>Google Calendar integration is listed on Starter, Solopreneur and Business. For a mobile detailer, that makes Starter the first plan to inspect if the goal is for the receptionist to move beyond message-taking into appointment scheduling.</p>
+
+          <h2>Call handling and follow-up</h2>
+          <p>The current pricing page lists call transfers, voicemail, text and audio transcripts, real-time notifications and multilingual support across the product. It also documents post-call actions on eligible plans, which can send summaries or alerts to registered contacts after a call.</p>
+
+          <h2>Best fit for auto detailers</h2>
+          <ul class="list">
+          <li>You miss calls while working on vehicles.</li>
+          <li>You want a dedicated phone layer without replacing your current CRM.</li>
+          <li>You want calls transferred or summarized when human attention is needed.</li>
+          <li>You want Google Calendar scheduling on an eligible plan.</li>
+          </ul>
+
+          <h2>Potential limitations</h2>
+          <ul class="list">
+          <li>It is not a detailing-specific CRM or shop-management system.</li>
+          <li>Appointment scheduling is not listed on the Essential plan.</li>
+          <li>Included call minutes vary by plan, so real usage matters when comparing total cost.</li>
+          <li>Complex ceramic, correction, tint or PPF inquiries still need safe pricing and escalation rules.</li>
+          </ul>
+
+          <div class="verdict"><p><strong>DetailerFit assessment:</strong> AI Receptionist is worth testing as a low-friction phone layer when missed calls are the problem and your existing CRM already handles operations. We would not replace a strong detailing CRM solely to gain phone coverage.</p></div>
+
+          <div class="actions">
+          {affiliate_cta("Try AI Receptionist")}
+          <a class="btn secondary" href="/best-ai-receptionists-auto-detailing">See the AI Receptionist Comparison</a>
+          </div>
+          {disclosure}
+
+          <h2>Official sources</h2>
+          <div class="sourcebox">
+          <a href="{PRICING_URL}" rel="noopener" target="_blank">AI Receptionist pricing</a><br>
+          <a href="{HELP_URL}" rel="noopener" target="_blank">AI Receptionist help center</a><br>
+          <a href="{OFFICIAL_URL}" rel="noopener" target="_blank">AI Receptionist official site</a>
+          </div>
+          <p class="small">Source check: {SOURCE_DATE}. Confirm current pricing, limits, integrations and trial terms with the vendor before subscribing.</p>
+
+          <h2>Final check before subscribing</h2>
+          <p>Forward a real business line or test number during the trial and run the calls that matter: a basic detail, a high-ticket coating inquiry, a reschedule, a service-area question and a caller who needs a human. Judge the product on how safely it handles those scenarios, not just on whether it answers the phone.</p>
+
+          <div class="actions">
+          {affiliate_cta("Start the Trial")}
+          <a class="btn secondary" href="/finder">Use the Software Finder</a>
+          </div>
+          {disclosure}
+          </div></section>
+          </main>
+          {footer}
+          <script src="/app.js"></script>
+          </body>
+          </html>
+          """
+
+          review_path = ROOT / "ai-receptionist-review-auto-detailers.html"
+          if not review_path.exists():
+              changes[review_path.name] = review
+          else:
+              existing = read(review_path.name)
+              if MARKER not in existing:
+                  raise RuntimeError(
+                      "An unrelated ai-receptionist-review-auto-detailers.html already exists."
+                  )
+
+          # ------------------------------------------------------------
+          # 4) Additive placements on relevant pages only.
+          # ------------------------------------------------------------
+          placements = {
+              "reviews.html": (
+                  "AI PHONE RECEPTIONIST",
+                  "AI Receptionist",
+                  "A dedicated phone-answering option for shops that want call coverage, transfers and appointment scheduling without replacing their current detailing CRM.",
+                  "Read the AI Receptionist review",
+              ),
+              "best-ai-software-auto-detailing.html": (
+                  "PHONE + FRONT DESK",
+                  "AI Receptionist for missed-call coverage",
+                  "Consider AI Receptionist when phone coverage is the main problem. It is a dedicated receptionist layer, not a full detailing CRM, so compare it separately from the ranked operating-system tools above.",
+                  "Read the AI Receptionist review",
+              ),
+              "best-auto-detailing-software-2026.html": (
+                  "ADD-ON · PHONE COVERAGE",
+                  "Already have a CRM but still miss calls?",
+                  "AI Receptionist can be evaluated as a separate phone layer rather than a replacement for your detailing software. This addition does not change the ranked software picks above.",
+                  "Evaluate AI Receptionist",
+              ),
+              "guides.html": (
+                  "AI PHONE GUIDE",
+                  "AI Receptionist review",
+                  "See our research-based review of AI-Receptionist.com for call answering, transfers, transcripts, scheduling and small-business fit.",
+                  "Read the review",
+              ),
+          }
+
+          for filename, (kicker, heading, paragraph, label) in placements.items():
+              if not (ROOT / filename).is_file():
+                  continue
+              text = current(filename)
+              page_marker = f"{MARKER}-{filename}"
+              if page_marker in text:
+                  continue
+
+              block = f"""
+          {page_marker}
+          <section class="section tight" aria-label="AI Receptionist option">
+          <div class="wrap article"><div class="card">
+          <div class="kicker">{kicker}</div>
+          <h2>{heading}</h2>
+          <p>{paragraph}</p>
+          <p class="small">Research checked {SOURCE_DATE}. Confirm current plan limits and call usage before subscribing.</p>
+          <div class="actions">
+          <a class="btn secondary" href="{SLUG}">{label}</a>
+          {affiliate_cta("Visit AI Receptionist")}
+          </div>
+          {disclosure}
+          </div></div></section>
+          """
+              changes[filename] = insert_before_last(text, "</main>", block)
+
+          # ------------------------------------------------------------
+          # 5) Affiliate disclosure: additive relationship note.
+          # ------------------------------------------------------------
+          text = current("affiliate-disclosure.html")
+          if DISCLOSURE_MARKER not in text:
+              block = f"""
+          {DISCLOSURE_MARKER}
+          <section class="section tight"><div class="wrap article">
+          <div class="note"><b>AI Receptionist affiliate relationship:</b> DetailerFit may earn a commission from qualifying AI-Receptionist.com signups made through clearly marked affiliate links. This commercial relationship does not buy ranking position or a positive editorial conclusion.</div>
+          </div></section>
+          """
+              changes["affiliate-disclosure.html"] = insert_before_last(
+                  text, "</main>", block
+              )
+
+          # ------------------------------------------------------------
+          # 6) Sitemap.
+          # ------------------------------------------------------------
+          sitemap = current("sitemap.xml")
+          ET.fromstring(sitemap)
+          if CANONICAL not in re.findall(r"<loc>(.*?)</loc>", sitemap, flags=re.I):
+              sitemap = insert_before_last(
+                  sitemap,
+                  "</urlset>",
+                  f"  <url><loc>{CANONICAL}</loc><lastmod>{ISO_DATE}</lastmod></url>",
+              )
+              ET.fromstring(sitemap)
+              changes["sitemap.xml"] = sitemap
+
+          # ------------------------------------------------------------
+          # 7) Validation before writing.
+          # ------------------------------------------------------------
+          class Elements(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.links = []
+                  self.canonicals = []
+                  self.h1_count = 0
+
+              def handle_starttag(self, tag, attrs):
+                  a = dict(attrs)
+                  if tag.lower() == "a":
+                      self.links.append(a)
+                  if tag.lower() == "link" and a.get("rel") == "canonical":
+                      self.canonicals.append(a.get("href"))
+                  if tag.lower() == "h1":
+                      self.h1_count += 1
+
+          def parse_html(text):
+              parser = Elements()
+              parser.feed(text)
+              return parser
+
+          final_review = changes.get(
+              "ai-receptionist-review-auto-detailers.html",
+              review_path.read_text(encoding="utf-8") if review_path.exists() else "",
+          )
+          parsed_review = parse_html(final_review)
+
+          if parsed_review.canonicals != [CANONICAL]:
+              raise RuntimeError("Dedicated AI Receptionist review canonical is invalid.")
+          if parsed_review.h1_count != 1:
+              raise RuntimeError("Dedicated AI Receptionist review must have one H1.")
+          if sum(a.get("href") == AFFILIATE_URL for a in parsed_review.links) != 3:
+              raise RuntimeError("Expected exactly three tracked affiliate CTAs on the review page.")
+          if final_review.count("at no extra cost to you") < 3:
+              raise RuntimeError("Each review CTA requires nearby affiliate disclosure.")
+          for required_text in [
+              "$14",
+              "$39",
+              "$99",
+              "$199",
+              "Google Calendar",
+              PRICING_URL,
+              HELP_URL,
+          ]:
+              if required_text not in final_review:
+                  raise RuntimeError(f"Review validation missing: {required_text}")
+
+          # Validate all exact affiliate links in all resulting HTML files.
+          resulting_html = {}
+          for path in all_html:
+              resulting_html[path.name] = current(path.name)
+          resulting_html["ai-receptionist-review-auto-detailers.html"] = final_review
+
+          affiliate_count = 0
+          for filename, text in resulting_html.items():
+              if not text or AFFILIATE_URL not in text:
+                  continue
+              parsed = parse_html(text)
+              for anchor in parsed.links:
+                  if anchor.get("href") != AFFILIATE_URL:
+                      continue
+                  affiliate_count += 1
+                  rel_tokens = set((anchor.get("rel") or "").lower().split())
+                  if not {"sponsored", "noopener"}.issubset(rel_tokens):
+                      raise RuntimeError(f"Missing sponsored/noopener in {filename}")
+                  if anchor.get("data-vendor") != "AI Receptionist":
+                      raise RuntimeError(f"Missing data-vendor in {filename}")
+                  if anchor.get("target") != "_blank":
+                      raise RuntimeError(f"Missing target=_blank in {filename}")
+
+          if affiliate_count < 4:
+              raise RuntimeError(
+                  f"Expected multiple AI Receptionist affiliate paths; found {affiliate_count}"
+              )
+
+          final_sitemap = changes.get("sitemap.xml", original["sitemap.xml"])
+          if final_sitemap.count(CANONICAL) != 1:
+              raise RuntimeError("Review URL must appear exactly once in sitemap.")
+          ET.fromstring(final_sitemap)
+
+          # Preserve shared design / behavior files.
+          if current("styles.css") != original["styles.css"]:
+              raise RuntimeError("styles.css changed unexpectedly.")
+          if current("app.js") != original["app.js"]:
+              raise RuntimeError("app.js changed unexpectedly.")
+
+          # Existing anchor tags on additive placement pages remain in order.
+          for filename in placements:
+              if filename not in changes or filename not in original:
+                  continue
+              before = original[filename]
+              after = changes[filename]
+              cursor = 0
+              for anchor in re.findall(r"<a\b[^>]*>", before, flags=re.I):
+                  # Existing AI Receptionist anchor may have been upgraded with vendor metadata;
+                  # skip exact-string preservation only for that one affiliate URL.
+                  if AFFILIATE_URL in anchor:
+                      continue
+                  pos = after.find(anchor, cursor)
+                  if pos < 0:
+                      raise RuntimeError(f"Existing anchor changed or removed: {filename}")
+                  cursor = pos + len(anchor)
+
+          # Write only after validation.
+          for filename, text in changes.items():
+              (ROOT / filename).write_text(text, encoding="utf-8")
+
+          print("Written files:")
+          for filename in sorted(changes):
+              print(" -", filename)
+          print(f"PASS: {affiliate_count} tracked AI Receptionist CTA(s) validated")
+          print("PASS: rel=sponsored noopener + data-vendor + target=_blank")
+          print("PASS: dedicated review page + official sources + sitemap")
+          print("PASS: existing rankings preserved; placements are additive")
+          print("UNCHANGED: styles.css and app.js")
+
+      - name: Commit website changes
+        shell: bash
+        env:
+          TARGET_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add -- \
+            ai-receptionist-review-auto-detailers.html \
+            best-ai-receptionists-auto-detailing.html \
+            reviews.html \
+            affiliate-disclosure.html \
+            sitemap.xml
+
+          for f in \
+            best-ai-software-auto-detailing.html \
+            best-auto-detailing-software-2026.html \
+            guides.html
+          do
+            if [ -f "$f" ]; then
+              git add -- "$f"
+            fi
+          done
+
+          # Include any other existing page where only the exact affiliate
+          # anchor was upgraded with compliance metadata.
+          while IFS= read -r f; do
+            [ -n "$f" ] && git add -- "$f"
+          done < <(
+            grep -rl --include='*.html' \
+              'https://ai-receptionist.com?via=detailerfit56' . \
+              | sed 's#^\./##'
+          )
+
+          if git diff --cached --quiet; then
+            echo "No new changes. AI Receptionist monetization is already current."
+            exit 0
+          fi
+
+          git diff --check
+          git commit -m "Expand AI Receptionist affiliate revenue paths"
+          git push origin "HEAD:${TARGET_BRANCH}"
+
+      - name: Write result summary
+        shell: bash
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<'TEXT'
+          ## AI Receptionist affiliate implementation
+
+          Affiliate URL:
+          `https://ai-receptionist.com?via=detailerfit56`
+
+          Added / upgraded:
+          - Existing exact AI Receptionist affiliate CTA(s) normalized for compliance
+          - `/ai-receptionist-review-auto-detailers` research-based review
+          - Additional relevant discovery/revenue paths on Reviews, AI software,
+            best-software and Guides pages when present
+          - Affiliate disclosure relationship note
+          - Sitemap entry
+
+          Current product facts used on the dedicated review:
+          - Essential: $14/mo, 60 included voice minutes
+          - Starter: $39/mo, Google Calendar scheduling
+          - Solopreneur: $99/mo, 200 included voice minutes
+          - Business: $199/mo, 400 included voice minutes
+          - Source check: September 15, 2026
+
+          Safeguards:
+          - Existing rankings are not changed
+          - Existing unrelated anchors are preserved
+          - Official source links remain untracked editorial links
+          - `styles.css` and `app.js` are unchanged
+          - All tracked CTAs require:
+            - `rel="sponsored noopener"`
+            - `data-vendor="AI Receptionist"`
+            - `target="_blank"`
+          TEXT

@@ -1,0 +1,523 @@
+name: DetailerFit - Add TrueReview Affiliate Revenue Path
+
+on:
+  push:
+    paths:
+      - ".github/workflows/detailerfit-truereview-affiliate.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: detailerfit-truereview-update
+  cancel-in-progress: false
+
+jobs:
+  implement:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out current default branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 1
+
+      - name: Add TrueReview review and monetization paths safely
+        shell: python
+        run: |
+          from pathlib import Path
+          from html.parser import HTMLParser
+          import json
+          import re
+          import xml.etree.ElementTree as ET
+
+          ROOT = Path(".")
+          AFFILIATE_URL = "https://truereview.co/?via=ryo"
+          SLUG = "/truereview-review-auto-detailers"
+          CANONICAL = "https://getdetailerfit.com" + SLUG
+          MARKER = "<!-- DETAILERFIT-TRUEREVIEW-V1 -->"
+          SOURCE_DATE = "September 15, 2026"
+          ISO_DATE = "2026-09-15"
+
+          REQUIRED = [
+              "reviews.html",
+              "affiliate-disclosure.html",
+              "sitemap.xml",
+              "styles.css",
+              "app.js",
+          ]
+          OPTIONAL_PLACEMENTS = [
+              "best-auto-detailing-software-2026.html",
+              "best-ai-software-auto-detailing.html",
+              "guides.html",
+          ]
+
+          for name in REQUIRED:
+              if not (ROOT / name).is_file():
+                  raise RuntimeError(f"Expected file missing: {name}")
+
+          def read(name):
+              return (ROOT / name).read_text(encoding="utf-8")
+
+          def write(name, text):
+              (ROOT / name).write_text(text, encoding="utf-8")
+
+          def insert_before_last(text, closing_tag, addition):
+              pos = text.lower().rfind(closing_tag.lower())
+              if pos < 0:
+                  raise RuntimeError(f"Required closing tag missing: {closing_tag}")
+              return text[:pos] + addition + "\n" + text[pos:]
+
+          def cta(label):
+              return (
+                  '<a class="btn primary" data-vendor="TrueReview" '
+                  f'href="{AFFILIATE_URL}" rel="sponsored noopener" '
+                  f'target="_blank">{label}</a>'
+              )
+
+          DISCLOSURE = (
+              '<p class="cta-disclosure small">'
+              'DetailerFit may earn a commission if you sign up through '
+              'this link, at no extra cost to you. '
+              '<a href="/affiliate-disclosure">Affiliate disclosure</a>.'
+              '</p>'
+          )
+
+          original = {name: read(name) for name in REQUIRED}
+          for name in OPTIONAL_PLACEMENTS:
+              if (ROOT / name).is_file():
+                  original[name] = read(name)
+
+          changes = {}
+
+          # ------------------------------------------------------------
+          # 1) Create a dedicated research-based TrueReview review page.
+          #    Reuse the current DetailerFit header/footer and shared CSS/JS.
+          # ------------------------------------------------------------
+          base = original["reviews.html"]
+          header = re.search(r"<header\b[\s\S]*?</header>", base, re.I)
+          footer = re.search(r"<footer\b[\s\S]*?</footer>", base, re.I)
+          if not header or not footer:
+              raise RuntimeError("Could not reuse the current DetailerFit header/footer.")
+
+          title = "TrueReview Review (2026): Review Management for Auto Detailers | DetailerFit"
+          description = (
+              "Research-based TrueReview review for auto detailers: pricing, SMS and email review requests, "
+              "Google review monitoring, AI responses, integrations, pros, cons and best-fit use cases."
+          )
+
+          schema = {
+              "@context": "https://schema.org",
+              "@graph": [
+                  {
+                      "@type": "Article",
+                      "@id": CANONICAL + "#article",
+                      "headline": "TrueReview Review (2026): Review Management for Auto Detailers",
+                      "description": description,
+                      "dateModified": ISO_DATE,
+                      "author": {
+                          "@type": "Organization",
+                          "name": "DetailerFit",
+                          "url": "https://getdetailerfit.com/",
+                      },
+                      "publisher": {
+                          "@type": "Organization",
+                          "name": "DetailerFit",
+                          "url": "https://getdetailerfit.com/",
+                      },
+                      "mainEntityOfPage": {"@type": "WebPage", "@id": CANONICAL},
+                      "inLanguage": "en-US",
+                  },
+                  {
+                      "@type": "BreadcrumbList",
+                      "itemListElement": [
+                          {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://getdetailerfit.com/"},
+                          {"@type": "ListItem", "position": 2, "name": "Reviews", "item": "https://getdetailerfit.com/reviews"},
+                          {"@type": "ListItem", "position": 3, "name": "TrueReview Review", "item": CANONICAL},
+                      ],
+                  },
+                  {
+                      "@type": "FAQPage",
+                      "mainEntity": [
+                          {
+                              "@type": "Question",
+                              "name": "How much does TrueReview cost?",
+                              "acceptedAnswer": {
+                                  "@type": "Answer",
+                                  "text": "At the September 15, 2026 source check, TrueReview listed monthly prices of $49 for Starter, $99 for Small Business and $299 for Premium, with lower equivalent monthly pricing on annual billing."
+                              },
+                          },
+                          {
+                              "@type": "Question",
+                              "name": "Can auto detailers use TrueReview to request Google reviews?",
+                              "acceptedAnswer": {
+                                  "@type": "Answer",
+                                  "text": "Yes. TrueReview documents SMS and email review-request workflows, supported review-source monitoring and Google review tools. The exact plan determines request volume and automation features."
+                              },
+                          },
+                          {
+                              "@type": "Question",
+                              "name": "Does TrueReview replace detailing CRM or booking software?",
+                              "acceptedAnswer": {
+                                  "@type": "Answer",
+                                  "text": "No. DetailerFit treats TrueReview as a reputation and review-management layer, not a replacement for core scheduling, quoting, invoicing or vehicle-management software."
+                              },
+                          },
+                      ],
+                  },
+              ],
+          }
+
+          review = f'''<!doctype html>
+          <html lang="en">
+          <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+          <meta name="theme-color" content="#090d12">
+          <title>{title}</title>
+          <meta name="description" content="{description}">
+          <link rel="canonical" href="{CANONICAL}">
+          <link rel="stylesheet" href="/styles.css">
+          <meta property="og:title" content="{title}">
+          <meta property="og:description" content="{description}">
+          <meta property="og:type" content="article">
+          <meta property="og:url" content="{CANONICAL}">
+          <meta name="twitter:card" content="summary">
+          <meta name="twitter:title" content="{title}">
+          <meta name="twitter:description" content="{description}">
+          <script type="application/ld+json">{json.dumps(schema, separators=(",", ":"))}</script>
+          </head>
+          <body>
+          <a class="skip-link" href="#main-content">Skip to content</a>
+          {header.group(0)}
+          <main id="main-content" tabindex="-1">
+          {MARKER}
+          <section class="heroMini"><div class="wrap">
+          <div class="breadcrumbs"><a href="/">Home</a> / <a href="/reviews">Reviews</a> / TrueReview</div>
+          <span class="eyebrow">REPUTATION MANAGEMENT</span>
+          <h1>TrueReview Review (2026): Is It Useful for Auto Detailers?</h1>
+          <p class="lead">TrueReview focuses on generating, monitoring and responding to customer reviews. For detailers, the main question is whether a dedicated reputation tool adds enough value beyond the review-request features already built into some CRMs.</p>
+          <div class="actions">{cta("Start a TrueReview Trial")}<a class="btn secondary" href="/reviews">Compare more software</a></div>
+          {DISCLOSURE}
+          </div></section>
+
+          <section class="section"><div class="wrap article">
+          <aside aria-label="Research transparency" class="research-context research-block">
+          <details open><summary>Research-based · Source check: {SOURCE_DATE}</summary>
+          <div><strong>Research-based review</strong><span>Based on TrueReview's published product, feature and pricing pages. Hands-on testing is not claimed.</span></div>
+          <p><a href="/methodology">How we review software</a> · <a href="/affiliate-disclosure">Affiliate disclosure</a>. Confirm current terms with the vendor.</p>
+          </details></aside>
+
+          <h2>What TrueReview does</h2>
+          <p>TrueReview is a review-management platform built around customer review requests, review monitoring and response workflows. Its published tools include email and SMS review requests, follow-up sequences, review-source monitoring, surveys, shareable links, review widgets, team access and AI-assisted review responses.</p>
+          <p>For an auto detailing business, the obvious use case is the post-service moment: after a completed detail, coating, tint, PPF or wrap job, the shop can trigger a structured request rather than relying on staff to remember to ask every customer manually.</p>
+
+          <h2>Current pricing</h2>
+          <div class="tableWrap"><table>
+          <thead><tr><th>Plan</th><th>Monthly billing</th><th>Annual equivalent</th><th>Published request volume</th></tr></thead>
+          <tbody>
+          <tr><td>Starter</td><td>$49/mo</td><td>$29/mo</td><td>250 review requests/month</td></tr>
+          <tr><td>Small Business</td><td>$99/mo</td><td>$59/mo</td><td>500 review requests/month</td></tr>
+          <tr><td>Premium</td><td>$299/mo</td><td>$179/mo</td><td>2,500 review requests/month</td></tr>
+          </tbody></table></div>
+          <p class="small">Pricing source check: {SOURCE_DATE}. TrueReview advertises a 14-day free trial and lower effective monthly pricing for annual billing. Verify current billing terms before subscribing.</p>
+          <div class="actions">{cta("See TrueReview Plans")}</div>
+          {DISCLOSURE}
+
+          <h2>What changes between plans?</h2>
+          <p><strong>Starter</strong> is the lower-cost entry point and centers on email review requests, one location and one campaign. <strong>Small Business</strong> adds SMS plus email workflows, surveys, broader review-source monitoring and more AI functionality. <strong>Premium</strong> raises request volume, supports multiple locations, unlimited campaigns and broader team and automation features.</p>
+          <p>The practical breakpoint for many detailers is SMS. If text-based review requests matter, compare the Small Business plan against the review automation already included in your existing CRM before paying for a second platform.</p>
+
+          <h2>Review requests and automation</h2>
+          <p>TrueReview publishes SMS and email request workflows, follow-up sequences and detailed request status tracking. It also supports CRM-triggered automation through integrations such as Zapier, which can reduce the need for staff to manually send each request after a job.</p>
+          <p>For a busy detailing shop, automation matters more than the existence of a review link. The value comes from consistently asking the right customers at the right point in the workflow without adding another recurring task for the owner.</p>
+
+          <h2>Monitoring, responses and AI tools</h2>
+          <p>TrueReview can monitor supported review sources and centralize review-response work. Published AI features include review-response generation, automated replies on supported reviews, tagging/filtering and Review Radar tools for identifying potential policy issues in incoming Google reviews.</p>
+          <p>These features are most relevant once a shop has enough review volume that reading, sorting and answering every review manually becomes time-consuming.</p>
+
+          <h2>Pros for auto detailers</h2>
+          <ul class="list">
+          <li>Dedicated workflow for asking customers for reviews after completed jobs</li>
+          <li>SMS and email automation on higher plans</li>
+          <li>Central monitoring of supported review sources</li>
+          <li>AI-assisted and automated review responses</li>
+          <li>Surveys and direct-feedback options on qualifying plans</li>
+          <li>Widgets and shareable links for using review content across marketing channels</li>
+          <li>CRM automation options through integrations</li>
+          </ul>
+
+          <h2>Cons and trade-offs</h2>
+          <ul class="list">
+          <li>It is an additional subscription on top of your core detailing software</li>
+          <li>The lower Starter tier is more limited than the SMS-enabled plans</li>
+          <li>It does not replace scheduling, quoting, invoicing or vehicle-management software</li>
+          <li>Some detailers may already have sufficient review-request automation in their CRM</li>
+          <li>Premium pricing is difficult to justify for a small single-location shop unless review volume and workflow complexity are high</li>
+          </ul>
+
+          <h2>Who should consider TrueReview?</h2>
+          <p>TrueReview is most interesting for detailing businesses that already have a workable operating system for bookings and payments but want a more deliberate reputation-growth process. It becomes easier to justify when review generation is inconsistent, the owner forgets to follow up, or multiple review sources and responses are becoming hard to manage.</p>
+
+          <h2>Who should skip it?</h2>
+          <p>If your current CRM already sends effective review requests automatically and review volume is manageable, adding a second tool may create more software cost than value. Very new operators may get more immediate ROI from fixing booking, estimating, payments or lead capture first.</p>
+
+          <h2>Final verdict</h2>
+          <div class="verdict"><p><strong>TrueReview is a focused reputation-management add-on rather than an all-in-one detailing platform.</strong> Its strongest fit is a shop that already has core operations covered and wants a more systematic way to request, monitor and respond to reviews. Compare the Small Business plan especially if SMS automation is the feature you need.</p></div>
+          <div class="actions">{cta("Try TrueReview")}</div>
+          {DISCLOSURE}
+
+          <h2>Official sources</h2>
+          <div class="sourcebox">
+          <a href="https://www.truereview.co/pricing" rel="noopener" target="_blank">TrueReview pricing</a><br>
+          <a href="https://www.truereview.co/features/request-reviews-with-sms" rel="noopener" target="_blank">SMS review requests</a><br>
+          <a href="https://www.truereview.co/features/review-request-email" rel="noopener" target="_blank">Email review requests</a><br>
+          <a href="https://www.truereview.co/features/automatically-reply-to-google-reviews" rel="noopener" target="_blank">Automated review replies</a><br>
+          <a href="https://www.truereview.co/features/review-insights" rel="noopener" target="_blank">Review analytics and management features</a>
+          </div>
+          <p class="small">Source check: {SOURCE_DATE}. Product features and pricing can change. Confirm current terms with TrueReview before buying.</p>
+          </div></section>
+          </main>
+          {footer.group(0)}
+          <script src="/app.js"></script>
+          </body>
+          </html>
+          '''
+
+          review_path = ROOT / "truereview-review-auto-detailers.html"
+          if not review_path.exists():
+              changes[review_path.name] = review
+          else:
+              existing = read(review_path.name)
+              if MARKER not in existing:
+                  raise RuntimeError(
+                      "An unrelated truereview-review-auto-detailers.html already exists; refusing to overwrite it."
+                  )
+
+          # ------------------------------------------------------------
+          # 2) Add relevant discovery/revenue blocks without replacing
+          #    existing rankings, cards, links, SEO metadata, CSS or JS.
+          # ------------------------------------------------------------
+          placements = {
+              "reviews.html": (
+                  "TrueReview for review generation and reputation management",
+                  "TrueReview is a dedicated review-management layer for businesses that want more structured email/SMS review requests, monitoring and responses. It complements rather than replaces your core detailing CRM.",
+                  "REPUTATION MANAGEMENT",
+              ),
+              "best-auto-detailing-software-2026.html": (
+                  "Reputation add-on: TrueReview",
+                  "If your booking and payment workflow is already covered but review generation is inconsistent, TrueReview is an additional reputation-management tool to evaluate. It is not a replacement for your main detailing software.",
+                  "REVIEW GROWTH",
+              ),
+              "best-ai-software-auto-detailing.html": (
+                  "TrueReview for AI-assisted review management",
+                  "TrueReview combines review-request automation with AI-assisted responses and review-management tools. For detailers, it is most relevant after the core CRM, booking and payment stack is already working.",
+                  "AI + REPUTATION",
+              ),
+              "guides.html": (
+                  "Build a review-growth system with TrueReview",
+                  "See how TrueReview's review requests, monitoring and AI response tools fit a detailing business, including where a dedicated review platform may duplicate features you already pay for.",
+                  "REPUTATION GUIDE",
+              ),
+          }
+
+          for name, (heading, paragraph, kicker) in placements.items():
+              if name not in original:
+                  continue
+              current = original[name]
+              if MARKER in current:
+                  continue
+              block = f'''
+          {MARKER}
+          <section class="section tight" aria-labelledby="truereview-option-{name.replace('.', '-')}">
+          <div class="wrap article"><div class="card">
+          <div class="kicker">{kicker}</div>
+          <h2 id="truereview-option-{name.replace('.', '-')}">{heading}</h2>
+          <p>{paragraph}</p>
+          <p class="small">Research checked {SOURCE_DATE}. Confirm current plan features and pricing before subscribing.</p>
+          <div class="actions">
+          <a class="btn secondary" href="{SLUG}">Read the TrueReview review</a>
+          {cta("Visit TrueReview")}
+          </div>
+          {DISCLOSURE}
+          </div></div></section>
+          '''
+              changes[name] = insert_before_last(current, "</main>", block)
+
+          # ------------------------------------------------------------
+          # 3) Affiliate disclosure: additive block only.
+          # ------------------------------------------------------------
+          disclosure_file = original["affiliate-disclosure.html"]
+          if MARKER not in disclosure_file:
+              disclosure_block = f'''
+          {MARKER}
+          <section class="section tight" aria-labelledby="truereview-affiliate-relationship">
+          <div class="wrap article"><div class="card">
+          <div class="kicker">AFFILIATE RELATIONSHIP</div>
+          <h2 id="truereview-affiliate-relationship">TrueReview</h2>
+          <p>DetailerFit participates in the TrueReview affiliate program. DetailerFit may earn a commission when a reader signs up through a tracked TrueReview link, at no extra cost to the reader. Affiliate compensation does not change our research standards or conclusions.</p>
+          </div></div></section>
+          '''
+              changes["affiliate-disclosure.html"] = insert_before_last(
+                  disclosure_file, "</main>", disclosure_block
+              )
+
+          # ------------------------------------------------------------
+          # 4) Sitemap: add the dedicated review once.
+          # ------------------------------------------------------------
+          sitemap = original["sitemap.xml"]
+          ET.fromstring(sitemap)
+          if CANONICAL not in sitemap:
+              sitemap = insert_before_last(
+                  sitemap,
+                  "</urlset>",
+                  f"  <url><loc>{CANONICAL}</loc><lastmod>{ISO_DATE}</lastmod></url>",
+              )
+              ET.fromstring(sitemap)
+              changes["sitemap.xml"] = sitemap
+
+          # ------------------------------------------------------------
+          # 5) Validation.
+          # ------------------------------------------------------------
+          class Elements(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.links = []
+                  self.canonicals = []
+                  self.h1 = 0
+
+              def handle_starttag(self, tag, attrs):
+                  a = dict(attrs)
+                  if tag == "a":
+                      self.links.append(a)
+                  elif tag == "link" and a.get("rel") == "canonical":
+                      self.canonicals.append(a.get("href"))
+                  elif tag == "h1":
+                      self.h1 += 1
+
+          def parse_html(text):
+              p = Elements()
+              p.feed(text)
+              return p
+
+          def current_text(name):
+              return changes.get(name, read(name) if (ROOT / name).is_file() else "")
+
+          for name, content in changes.items():
+              if not name.endswith(".html"):
+                  continue
+              parsed = parse_html(content)
+              for a in parsed.links:
+                  if a.get("href") != AFFILIATE_URL:
+                      continue
+                  rel_tokens = set((a.get("rel") or "").split())
+                  if not {"sponsored", "noopener"}.issubset(rel_tokens):
+                      raise RuntimeError(f"Missing sponsored/noopener on TrueReview CTA: {name}")
+                  if a.get("data-vendor") != "TrueReview":
+                      raise RuntimeError(f"Missing data-vendor on TrueReview CTA: {name}")
+                  if a.get("target") != "_blank":
+                      raise RuntimeError(f"Missing target=_blank on TrueReview CTA: {name}")
+
+          final_review = changes.get(
+              "truereview-review-auto-detailers.html",
+              read("truereview-review-auto-detailers.html") if review_path.exists() else "",
+          )
+          parsed_review = parse_html(final_review)
+          if parsed_review.canonicals != [CANONICAL]:
+              raise RuntimeError("Invalid TrueReview review canonical.")
+          if parsed_review.h1 != 1:
+              raise RuntimeError("TrueReview review must contain exactly one H1.")
+          if sum(a.get("href") == AFFILIATE_URL for a in parsed_review.links) != 3:
+              raise RuntimeError("Expected exactly three tracked TrueReview CTAs on the review page.")
+          if final_review.count("at no extra cost to you") < 3:
+              raise RuntimeError("Each review-page affiliate CTA needs a nearby disclosure.")
+          if 'href="https://www.truereview.co/pricing"' not in final_review:
+              raise RuntimeError("Official TrueReview pricing source is missing.")
+
+          final_sitemap = changes.get("sitemap.xml", original["sitemap.xml"])
+          if final_sitemap.count(CANONICAL) != 1:
+              raise RuntimeError("TrueReview canonical must appear exactly once in sitemap.xml.")
+          ET.fromstring(final_sitemap)
+
+          if current_text("styles.css") != original["styles.css"]:
+              raise RuntimeError("styles.css changed unexpectedly.")
+          if current_text("app.js") != original["app.js"]:
+              raise RuntimeError("app.js changed unexpectedly.")
+
+          # Write only after all validations pass.
+          for name, content in changes.items():
+              write(name, content)
+
+          print("Written files:")
+          for name in changes:
+              print(" -", name)
+          print("PASS: TrueReview URL + sponsored/noopener + vendor + target validated")
+          print("PASS: three review-page affiliate CTAs + local disclosures")
+          print("PASS: dedicated review canonical, H1, schema and official sources")
+          print("PASS: sitemap XML")
+          print("UNCHANGED: styles.css and app.js")
+
+      - name: Commit website changes
+        shell: bash
+        env:
+          TARGET_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add -- \
+            truereview-review-auto-detailers.html \
+            reviews.html \
+            affiliate-disclosure.html \
+            sitemap.xml
+
+          for f in \
+            best-auto-detailing-software-2026.html \
+            best-ai-software-auto-detailing.html \
+            guides.html
+          do
+            if [ -f "$f" ]; then
+              git add -- "$f"
+            fi
+          done
+
+          if git diff --cached --quiet; then
+            echo "No new changes. TrueReview implementation already exists."
+            exit 0
+          fi
+
+          git diff --check
+          git commit -m "Add TrueReview review and affiliate revenue paths"
+          git push origin "HEAD:${TARGET_BRANCH}"
+
+      - name: Write result summary
+        shell: bash
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<'TEXT'
+          ## TrueReview affiliate implementation
+
+          Affiliate URL:
+          `https://truereview.co/?via=ryo`
+
+          Added safely:
+          - `/truereview-review-auto-detailers` research-based review page
+          - Revenue/discovery placement on `/reviews`
+          - Optional relevant placements on best-software, AI-software and guides pages when those files exist
+          - TrueReview relationship on `/affiliate-disclosure`
+          - Sitemap entry
+
+          Validation:
+          - `rel="sponsored noopener"`
+          - `data-vendor="TrueReview"`
+          - `target="_blank"`
+          - Local affiliate disclosure near tracked CTAs
+          - Exactly three tracked CTAs on the dedicated review page
+          - Official TrueReview source links remain untracked editorial links
+          - Shared `styles.css` and `app.js` remain unchanged
+          - Existing page structure is preserved; additions are inserted before `</main>`
+          TEXT

@@ -1,0 +1,184 @@
+name: DetailerFit GA4 Implementation
+
+on:
+  push:
+    paths:
+      - ".github/workflows/detailerfit-ga4-implementation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  ga4:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install GA4 safely
+        shell: python
+        run: |
+          from pathlib import Path
+
+          MEASUREMENT_ID = "G-1MS4N4L2J1"
+
+          app_path = Path("app.js")
+          privacy_path = Path("privacy.html")
+
+          if not app_path.exists():
+              raise RuntimeError("app.js not found")
+          if not privacy_path.exists():
+              raise RuntimeError("privacy.html not found")
+
+          app = app_path.read_text(encoding="utf-8")
+
+          ga4_marker = "// DetailerFit GA4 bootstrap v1."
+          if ga4_marker not in app:
+              anchor = "// DetailerFit conversion telemetry."
+              if anchor not in app:
+                  raise RuntimeError("Telemetry anchor not found in app.js; refusing an unsafe patch.")
+
+              ga4_bootstrap = """// DetailerFit GA4 bootstrap v1.
+          // One shared loader keeps GA4 consistent across every page that already loads app.js.
+          const DF_GA4_MEASUREMENT_ID='G-1MS4N4L2J1';
+          window.dataLayer=window.dataLayer||[];
+          window.gtag=window.gtag||function(){window.dataLayer.push(arguments);};
+
+          if(!document.querySelector(`script[data-detailerfit-ga4="${DF_GA4_MEASUREMENT_ID}"]`)){
+            const ga4=document.createElement('script');
+            ga4.async=true;
+            ga4.src=`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(DF_GA4_MEASUREMENT_ID)}`;
+            ga4.dataset.detailerfitGa4=DF_GA4_MEASUREMENT_ID;
+            document.head.appendChild(ga4);
+
+            window.gtag('js',new Date());
+            window.gtag('config',DF_GA4_MEASUREMENT_ID);
+          }
+
+
+          """
+              app = app.replace(anchor, ga4_bootstrap + anchor, 1)
+              app_path.write_text(app, encoding="utf-8")
+              print("Added GA4 bootstrap to app.js.")
+          else:
+              print("GA4 bootstrap already present; app.js left unchanged.")
+
+          privacy = privacy_path.read_text(encoding="utf-8")
+
+          old_date = '<p class="lead">Last updated: September 6, 2026.</p>'
+          new_date = '<p class="lead">Last updated: September 15, 2026.</p>'
+          if old_date in privacy:
+              privacy = privacy.replace(old_date, new_date, 1)
+
+          old_collection = (
+              "<h2 id=\"section-1\">Current data collection</h2>"
+              "<p>This MVP is a static informational website. The on-page Software Finder runs in your browser "
+              "and does not send your quiz answers to DetailerFit.</p>"
+          )
+          new_collection = (
+              "<h2 id=\"section-1\">Current data collection</h2>"
+              "<p>DetailerFit is a static informational website. The on-page Software Finder runs in your browser "
+              "and does not send your quiz answers to DetailerFit. DetailerFit also uses the analytics described below "
+              "to understand site usage and outbound CTA interactions.</p>"
+          )
+          if old_collection in privacy:
+              privacy = privacy.replace(old_collection, new_collection, 1)
+
+          old_analytics = (
+              "<h2 id=\"section-3\">Analytics and cookies</h2>"
+              "<p>DetailerFit does not currently run its own advertising cookies or behavioral advertising in this MVP. "
+              "If analytics, email signup, advertising or additional tracking are added, this policy will be updated before "
+              "those features are relied on.</p>"
+          )
+          new_analytics = (
+              "<h2 id=\"section-3\">Analytics and cookies</h2>"
+              "<p>DetailerFit uses Google Analytics 4 (GA4) and Cloudflare Web Analytics to understand traffic and engagement. "
+              "GA4 may use cookies or similar technologies and process usage information such as page views, device/browser details, "
+              "referral information and interaction events. DetailerFit's custom events distinguish sponsored affiliate clicks from "
+              "ordinary vendor outbound clicks and may include the vendor name, clicked URL/host, link text and CTA position. "
+              "DetailerFit does not send Software Finder answer values as custom analytics parameters. Google and Cloudflare process "
+              "analytics data under their own privacy terms.</p>"
+          )
+          if old_analytics in privacy:
+              privacy = privacy.replace(old_analytics, new_analytics, 1)
+
+          old_changes = (
+              "<h2 id=\"section-6\">Changes</h2>"
+              "<p>This policy may change as the site adds analytics, forms, newsletters or additional monetization. "
+              "The updated date will be shown above.</p>"
+          )
+          new_changes = (
+              "<h2 id=\"section-6\">Changes</h2>"
+              "<p>This policy may change as the site adds forms, newsletters, advertising, new analytics features or additional "
+              "monetization. The updated date will be shown above.</p>"
+          )
+          if old_changes in privacy:
+              privacy = privacy.replace(old_changes, new_changes, 1)
+
+          privacy_path.write_text(privacy, encoding="utf-8")
+
+          audit = f"""# DetailerFit GA4 Implementation — 2026-09-15
+
+          ## GA4 web stream
+          Measurement ID: `{MEASUREMENT_ID}`
+
+          ## Implementation
+          - GA4 is loaded once from `app.js`, so existing pages that already load the shared script inherit analytics without duplicating Google tags across every HTML file.
+          - Standard GA4 page measurement is initialized with `gtag('config', ...)`.
+          - Existing custom event routing remains intact:
+            - `affiliate_click` = sponsored/revenue vendor CTA.
+            - `vendor_outbound_click` = non-sponsored vendor/official-site CTA.
+            - `tool_click` = Finder / Cost Calculator navigation.
+          - Existing custom event payloads include page path/title and, where applicable, vendor, clicked URL/host, link text, CTA position and monetization state.
+          - `privacy.html` is updated to disclose GA4 and the custom outbound-click telemetry.
+
+          ## Guardrails
+          - No ranking, editorial conclusion, affiliate URL, pricing content, CSS or page structure is changed.
+          - No duplicate Google tag is inserted into individual HTML pages.
+          - Do not treat GA4 data as complete until the deployed tag is verified in Realtime/DebugView.
+          - To analyze `vendor`, `cta_position`, `link_host` or `monetized` as reusable GA4 dimensions, register the relevant event-scoped custom dimensions in GA4 after events begin arriving.
+          """
+          Path("GA4-IMPLEMENTATION-2026-09-15.md").write_text(audit, encoding="utf-8")
+
+          # Safety checks
+          app_check = app_path.read_text(encoding="utf-8")
+          if app_check.count("DetailerFit GA4 bootstrap v1.") != 1:
+              raise RuntimeError("GA4 bootstrap marker count must equal 1.")
+          if MEASUREMENT_ID not in app_check:
+              raise RuntimeError("Measurement ID missing from app.js.")
+          if "vendor_outbound_click" not in app_check or "affiliate_click" not in app_check:
+              raise RuntimeError("Existing click taxonomy is missing; refusing to continue.")
+
+          privacy_check = privacy_path.read_text(encoding="utf-8")
+          for required in ["Google Analytics 4 (GA4)", "Cloudflare Web Analytics", "affiliate clicks", "vendor outbound clicks"]:
+              if required not in privacy_check:
+                  raise RuntimeError(f"Privacy policy missing required disclosure text: {required}")
+
+          print("GA4 implementation patch applied successfully.")
+
+
+      - name: Validate implementation
+        shell: bash
+        run: |
+          node --check app.js
+          grep -q "G-1MS4N4L2J1" app.js
+          grep -q "DetailerFit GA4 bootstrap v1" app.js
+          grep -q "affiliate_click" app.js
+          grep -q "vendor_outbound_click" app.js
+          grep -q "Google Analytics 4 (GA4)" privacy.html
+          git diff --check
+          git status --short
+
+      - name: Commit and push
+        shell: bash
+        run: |
+          if git diff --quiet && [ -z "$(git status --porcelain --untracked-files=normal)" ]; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app.js privacy.html GA4-IMPLEMENTATION-2026-09-15.md
+          git commit -m "Connect DetailerFit to GA4"
+          git push

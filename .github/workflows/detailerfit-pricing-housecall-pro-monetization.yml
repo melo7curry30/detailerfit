@@ -1,0 +1,113 @@
+name: DetailerFit Pricing Index Housecall Pro Monetization
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: detailerfit-pricing-housecall-pro-monetization
+  cancel-in-progress: false
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Add Housecall Pro revenue exit to pricing index
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          page_path = Path("auto-detailing-software-pricing.html")
+          if not page_path.exists():
+              raise SystemExit("auto-detailing-software-pricing.html was not found")
+
+          text = page_path.read_text(encoding="utf-8")
+          original = text
+
+          affiliate_url = "https://housecallpro.partnerlinks.io/lquesdqg2t22"
+
+          housecall_card = '''<div class="card flat"><h3>Housecall Pro</h3><p class="small">Broad booking, scheduling and dispatch for service businesses.</p><p><a class="text-link" href="housecall-pro">Read Housecall Pro research →</a></p><div class="actions"><a class="btn primary" data-vendor="Housecall Pro" data-cta-position="pricing-index-affiliate-grid" href="https://housecallpro.partnerlinks.io/lquesdqg2t22" rel="sponsored noopener" target="_blank">See Current Housecall Pro Offer</a></div></div>'''
+
+          detailpilot_card = '''<div class="card flat"><h3>DetailPilot</h3><p class="small">Detailing-native free-to-paid path.</p><div class="actions"><a class="btn primary" data-vendor="DetailPilot" href="https://detailpilot.com/?via=ryo" rel="sponsored noopener" target="_blank">Try DetailPilot Free</a></div></div>'''
+
+          if affiliate_url not in text:
+              if detailpilot_card not in text:
+                  raise SystemExit("Expected DetailPilot affiliate card was not found; refusing a blind edit")
+              text = text.replace(
+                  detailpilot_card,
+                  detailpilot_card + "\n" + housecall_card,
+                  1,
+              )
+
+          if text != original:
+              page_path.write_text(text, encoding="utf-8")
+
+          final = page_path.read_text(encoding="utf-8")
+
+          # Monetization/tracking guardrails.
+          if final.count(affiliate_url) != 1:
+              raise SystemExit(
+                  f"Expected exactly one Housecall Pro affiliate URL in pricing index; found {final.count(affiliate_url)}"
+              )
+
+          required = [
+              '<h3>Housecall Pro</h3>',
+              'href="housecall-pro"',
+              'data-vendor="Housecall Pro"',
+              'data-cta-position="pricing-index-affiliate-grid"',
+              'rel="sponsored noopener"',
+              'target="_blank"',
+              '>See Current Housecall Pro Offer</a>',
+              'href="https://www.housecallpro.com/pricing/" rel="noopener" target="_blank">Official source →</a>',
+              '<strong>Housecall Pro</strong> — <a href="https://www.housecallpro.com/pricing/" rel="noopener" target="_blank">Official pricing / product source</a>',
+              'Sorted alphabetically so commercial relationships do not determine placement.',
+          ]
+          missing = [item for item in required if item not in final]
+          if missing:
+              raise SystemExit("Validation failed; missing expected guardrails: " + " | ".join(missing))
+
+          # The pricing table's official source must remain non-affiliate.
+          row_start = final.find('<td><strong>Housecall Pro</strong>')
+          row_end = final.find('</tr>', row_start)
+          if row_start == -1 or row_end == -1:
+              raise SystemExit("Housecall Pro pricing-table row could not be located")
+          housecall_row = final[row_start:row_end]
+          if affiliate_url in housecall_row:
+              raise SystemExit("Affiliate URL leaked into the neutral pricing table")
+          if 'https://www.housecallpro.com/pricing/' not in housecall_row:
+              raise SystemExit("Housecall Pro official pricing source was altered or removed")
+
+          print("Housecall Pro pricing-index monetization patch validated successfully.")
+          PY
+
+      - name: Validate diff
+        shell: bash
+        run: |
+          git diff --check
+          echo "Changed files:"
+          git status --short
+          echo "--- Pricing index diff ---"
+          git diff -- auto-detailing-software-pricing.html
+
+      - name: Commit and push
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "No changes needed. The patch is already applied."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add auto-detailing-software-pricing.html
+          git commit -m "Add Housecall Pro revenue exit to pricing index"
+          git push origin HEAD:main

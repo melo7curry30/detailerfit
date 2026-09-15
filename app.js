@@ -30,6 +30,65 @@ document.addEventListener('keydown',(e)=>{
   }
 });
 
+
+// DetailerFit conversion telemetry.
+// If GA4/gtag is installed later, these events start flowing automatically.
+// dataLayer is also populated for Google Tag Manager compatibility.
+function dfTrackEvent(eventName, params={}){
+  const payload={
+    ...params,
+    page_path: location.pathname,
+    page_title: document.title
+  };
+
+  window.dataLayer=window.dataLayer||[];
+  window.dataLayer.push({event:eventName,...payload});
+
+  if(typeof window.gtag==='function'){
+    window.gtag('event',eventName,{
+      ...payload,
+      transport_type:'beacon'
+    });
+  }
+}
+
+function dfLinkContext(link){
+  if(link.dataset.ctaPosition)return link.dataset.ctaPosition;
+  if(link.closest('.heroMini'))return 'hero';
+  if(link.closest('.revenue-decision-cta'))return 'decision';
+  if(link.closest('.review-summary'))return 'summary';
+
+  const section=link.closest('section');
+  const heading=section?.querySelector('h2[id],h3[id]');
+  if(heading?.id)return heading.id;
+
+  if(link.closest('footer'))return 'footer';
+  return 'inline';
+}
+
+document.addEventListener('click',(e)=>{
+  const link=e.target.closest?.('a[href]');
+  if(!link)return;
+
+  const vendor=(link.dataset.vendor||'').trim();
+  if(vendor){
+    dfTrackEvent('affiliate_click',{
+      vendor,
+      link_url:link.href,
+      link_text:(link.textContent||'').trim().slice(0,120),
+      cta_position:dfLinkContext(link)
+    });
+    return;
+  }
+
+  const href=(link.getAttribute('href')||'').replace(/^\//,'').replace(/\.html(?=($|[?#]))/i,'');
+  if(href==='finder'||href.startsWith('finder?')){
+    dfTrackEvent('tool_click',{tool_name:'finder',link_text:(link.textContent||'').trim().slice(0,120)});
+  }else if(href==='software-cost-calculator'||href.startsWith('software-cost-calculator?')){
+    dfTrackEvent('tool_click',{tool_name:'cost_calculator',link_text:(link.textContent||'').trim().slice(0,120)});
+  }
+});
+
 document.addEventListener('DOMContentLoaded',()=>{
   const reducedMotion=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
   const resultScrollBehavior=reducedMotion?'auto':'smooth';

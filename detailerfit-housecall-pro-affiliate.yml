@@ -1,0 +1,194 @@
+name: Apply Housecall Pro affiliate CTA safely
+
+on:
+  push:
+    paths:
+      - ".github/workflows/detailerfit-housecall-pro-affiliate.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply-housecall-pro:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out current default branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 0
+
+      - name: Patch only the remaining Housecall Pro revenue CTA
+        shell: python
+        run: |
+          import re
+          from pathlib import Path
+
+          TARGET = Path("best-auto-detailing-software-2026.html")
+          AFFILIATE_URL = "https://housecallpro.partnerlinks.io/lquesdqg2t22"
+          OFFICIAL_PRICING = "https://www.housecallpro.com/pricing/"
+
+          if not TARGET.exists():
+              raise SystemExit(f"Missing expected file: {TARGET}")
+
+          original = TARGET.read_text(encoding="utf-8")
+          text = original
+
+          anchor_re = re.compile(r"<a\b[^>]*>", re.I)
+
+          def attrs(tag):
+              return {
+                  k.lower(): v
+                  for k, _, v in re.findall(
+                      r"([:\w-]+)\s*=\s*([\"'])(.*?)\2",
+                      tag,
+                      flags=re.I | re.S,
+                  )
+              }
+
+          def patch_anchor(match):
+              tag = match.group(0)
+              a = attrs(tag)
+
+              # Only the commercial CTA on the 2026 best-software page.
+              # Official-source pricing links are intentionally left untouched.
+              if a.get("data-vendor") != "Housecall Pro":
+                  return tag
+              if a.get("href") not in (OFFICIAL_PRICING, AFFILIATE_URL):
+                  return tag
+
+              new = re.sub(
+                  r"\bhref\s*=\s*([\"']).*?\1",
+                  f'href="{AFFILIATE_URL}"',
+                  tag,
+                  count=1,
+                  flags=re.I | re.S,
+              )
+
+              rel_match = re.search(r"\brel\s*=\s*([\"'])(.*?)\1", new, flags=re.I | re.S)
+              if rel_match:
+                  tokens = rel_match.group(2).split()
+                  lowered = {t.lower() for t in tokens}
+                  for required in ("sponsored", "noopener"):
+                      if required not in lowered:
+                          tokens.append(required)
+                          lowered.add(required)
+                  replacement = 'rel="' + " ".join(tokens) + '"'
+                  new = new[:rel_match.start()] + replacement + new[rel_match.end():]
+              else:
+                  new = new[:-1] + ' rel="sponsored noopener">'
+
+              return new
+
+          text = anchor_re.sub(patch_anchor, text)
+
+          # Validation: exactly one revenue CTA on this page should now use the
+          # DetailerFit Housecall Pro tracking URL.
+          affiliate_ctas = []
+          official_source_links = []
+          for tag in anchor_re.findall(text):
+              a = attrs(tag)
+              if a.get("data-vendor") == "Housecall Pro" and a.get("href") == AFFILIATE_URL:
+                  affiliate_ctas.append(tag)
+              if a.get("href") == OFFICIAL_PRICING and a.get("data-vendor") != "Housecall Pro":
+                  official_source_links.append(tag)
+
+          if len(affiliate_ctas) != 1:
+              raise SystemExit(
+                  f"Expected exactly 1 Housecall Pro affiliate CTA in {TARGET}; "
+                  f"found {len(affiliate_ctas)}. Refusing to make a broad edit."
+              )
+
+          cta = affiliate_ctas[0]
+          cta_attrs = attrs(cta)
+          rel_tokens = set(cta_attrs.get("rel", "").lower().split())
+          if not {"sponsored", "noopener"}.issubset(rel_tokens):
+              raise SystemExit("Housecall Pro CTA is missing sponsored/noopener rel tokens")
+          if cta_attrs.get("data-vendor") != "Housecall Pro":
+              raise SystemExit('Housecall Pro CTA is missing data-vendor="Housecall Pro"')
+
+          # Keep at least one clean official pricing source link for editorial sourcing.
+          if not official_source_links:
+              raise SystemExit(
+                  "No independent official Housecall Pro pricing source remains. "
+                  "Refusing to overwrite source/reference links."
+              )
+
+          if text != original:
+              TARGET.write_text(text, encoding="utf-8")
+              print(f"Updated: {TARGET}")
+          else:
+              print("No change needed: Housecall Pro affiliate CTA is already correct.")
+
+          print("PASS: affiliate CTA uses DetailerFit tracking URL")
+          print("PASS: rel includes sponsored + noopener")
+          print("PASS: data-vendor remains Housecall Pro")
+          print("PASS: official pricing source link remains untouched")
+
+      - name: Verify existing priority Housecall Pro pages
+        shell: python
+        run: |
+          from pathlib import Path
+
+          AFFILIATE_URL = "https://housecallpro.partnerlinks.io/lquesdqg2t22"
+          checks = {
+              "housecall-pro.html": 1,
+              "jobber-vs-housecall-pro-auto-detailing.html": 2,
+              "best-auto-detailing-software-2026.html": 1,
+          }
+
+          for filename, minimum in checks.items():
+              path = Path(filename)
+              if not path.exists():
+                  raise SystemExit(f"Missing expected priority page: {filename}")
+              text = path.read_text(encoding="utf-8")
+              count = text.count(AFFILIATE_URL)
+              if count < minimum:
+                  raise SystemExit(
+                      f"{filename}: expected at least {minimum} Housecall Pro affiliate "
+                      f"link(s), found {count}"
+                  )
+              print(f"PASS: {filename} -> {count} tracked link(s)")
+
+      - name: Commit website change
+        shell: bash
+        env:
+          TARGET_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          set -euo pipefail
+
+          if git diff --quiet -- best-auto-detailing-software-2026.html; then
+            echo "Nothing to commit. Housecall Pro monetization is already current."
+            exit 0
+          fi
+
+          git diff --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- best-auto-detailing-software-2026.html
+          git commit -m "Monetize remaining Housecall Pro CTA"
+          git push origin "HEAD:${TARGET_BRANCH}"
+
+      - name: Write result summary
+        shell: bash
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<'TEXT'
+          ## Housecall Pro monetization patch
+
+          Tracking URL:
+          `https://housecallpro.partnerlinks.io/lquesdqg2t22`
+
+          Verified priority pages:
+          - `/housecall-pro`
+          - `/jobber-vs-housecall-pro-auto-detailing`
+          - `/best-auto-detailing-software-2026`
+
+          Safety rules:
+          - Only the remaining commercial CTA on `best-auto-detailing-software-2026.html` can be changed.
+          - Official Housecall Pro pricing/source links remain editorial source links.
+          - `data-vendor="Housecall Pro"` is retained.
+          - Revenue CTA includes `rel="sponsored noopener"`.
+          - No CSS, JavaScript, layout, SEO metadata, or unrelated affiliate links are modified.
+          TEXT

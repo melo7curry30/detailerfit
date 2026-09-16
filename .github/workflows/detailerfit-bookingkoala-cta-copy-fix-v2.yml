@@ -1,0 +1,117 @@
+name: DetailerFit BookingKoala CTA Copy Fix v2
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix-bookingkoala-cta-copy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Update BookingKoala CTA labels
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          TARGET = "https://bookingkoala.com/30-days/?aff=Ryo_Y_tsT"
+          NEW_COPY = "Start 30-Day Free Trial"
+
+          files = [
+              Path("bookingkoala.html"),
+              Path("best-mobile-detailing-software.html"),
+              Path("mobile-detailing-scheduling-software.html"),
+          ]
+
+          anchor_re = re.compile(
+              r'(<a\b[^>]*\bhref=(["\'])'
+              + re.escape(TARGET)
+              + r'\2[^>]*>)(.*?)(</a>)',
+              flags=re.IGNORECASE | re.DOTALL
+          )
+
+          changed = []
+
+          def fix_anchor(match):
+              open_tag, _, label, close_tag = match.groups()
+              visible_text = re.sub(r"<[^>]+>", "", label, flags=re.DOTALL).strip()
+
+              # Only replace misleading BookingKoala "Demo" wording.
+              if "demo" not in visible_text.lower():
+                  return match.group(0)
+
+              return open_tag + NEW_COPY + close_tag
+
+          for path in files:
+              if not path.exists():
+                  raise SystemExit(f"Required file not found: {path}")
+
+              original = path.read_text(encoding="utf-8")
+              updated = anchor_re.sub(fix_anchor, original)
+
+              if updated != original:
+                  path.write_text(updated, encoding="utf-8")
+                  changed.append(str(path))
+
+          # Verify no Demo-labeled CTA remains for the exact BookingKoala affiliate URL.
+          problems = []
+
+          for path in files:
+              text = path.read_text(encoding="utf-8")
+
+              for match in anchor_re.finditer(text):
+                  visible_text = re.sub(
+                      r"<[^>]+>", "", match.group(3), flags=re.DOTALL
+                  ).strip()
+
+                  if "demo" in visible_text.lower():
+                      problems.append(f"{path}: {visible_text}")
+
+          if problems:
+              raise SystemExit(
+                  "BookingKoala Demo wording still remains:\n"
+                  + "\n".join(problems)
+              )
+
+          print("BookingKoala CTA copy verification passed.")
+          print("Affiliate URL:", TARGET)
+          print("Replacement copy:", NEW_COPY)
+
+          if changed:
+              print("Changed files:")
+              for path in changed:
+                  print(" -", path)
+          else:
+              print("No HTML changes were necessary.")
+          PY
+
+      - name: Show changes
+        shell: bash
+        run: |
+          git diff --stat
+          git diff -- bookingkoala.html best-mobile-detailing-software.html mobile-detailing-scheduling-software.html || true
+
+      - name: Commit HTML changes
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add bookingkoala.html best-mobile-detailing-software.html mobile-detailing-scheduling-software.html
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+
+          git commit -m "Clarify BookingKoala 30-day trial CTA"
+          git push

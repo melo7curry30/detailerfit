@@ -1,0 +1,132 @@
+name: DetailerFit BookingKoala CTA Copy Fix
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix-bookingkoala-cta-copy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Replace misleading BookingKoala demo CTA copy
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          TARGET = "https://bookingkoala.com/30-days/?aff=Ryo_Y_tsT"
+          NEW_COPY = "Start 30-Day Free Trial"
+
+          changed = []
+
+          # Only touch BookingKoala affiliate anchors that already point to the verified
+          # 30-day affiliate landing page. Other vendors' "Demo" CTAs are untouched.
+          anchor_re = re.compile(
+              r'(<a\b[^>]*\bhref=(["\'])'
+              + re.escape(TARGET)
+              + r'\2[^>]*>)(.*?)(</a>)',
+              flags=re.IGNORECASE | re.DOTALL
+          )
+
+          def fix_anchor(match):
+              open_tag, _, label, close_tag = match.groups()
+              if "demo" not in re.sub(r"<[^>]+>", "", label, flags=re.DOTALL).lower():
+                  return match.group(0)
+              return open_tag + NEW_COPY + close_tag
+
+          for path in sorted(Path(".").rglob("*.html")):
+              if ".github" in path.parts:
+                  continue
+
+              original = path.read_text(encoding="utf-8")
+              updated = anchor_re.sub(fix_anchor, original)
+
+              if updated != original:
+                  path.write_text(updated, encoding="utf-8")
+                  changed.append(str(path))
+
+          # Prevent future regression if the older BookingKoala monetization workflow
+          # is ever re-run.
+          old_workflow = Path(".github/workflows/detailerfit-bookingkoala-monetization.yml")
+          if old_workflow.exists():
+              original = old_workflow.read_text(encoding="utf-8")
+              updated = original.replace(
+                  'SIGNUP = "https://bookingkoala.com/signup/?aff=Ryo_Y_tsT"',
+                  f'SIGNUP = "{TARGET}"'
+              ).replace(
+                  'DEMO = "https://bookingkoala.com/demo/?aff=Ryo_Y_tsT"',
+                  f'DEMO = "{TARGET}"'
+              )
+
+              for old_copy in (
+                  "View BookingKoala Demo",
+                  "See BookingKoala Demo",
+                  "See the Demo",
+                  "View Demo",
+              ):
+                  updated = updated.replace(old_copy, NEW_COPY)
+
+              if updated != original:
+                  old_workflow.write_text(updated, encoding="utf-8")
+                  changed.append(str(old_workflow))
+
+          # Verification: no live HTML anchor to the BookingKoala 30-day affiliate
+          # URL may still be labeled as a demo.
+          problems = []
+          for path in sorted(Path(".").rglob("*.html")):
+              if ".github" in path.parts:
+                  continue
+
+              text = path.read_text(encoding="utf-8")
+              for match in anchor_re.finditer(text):
+                  label = re.sub(r"<[^>]+>", "", match.group(3), flags=re.DOTALL).strip()
+                  if "demo" in label.lower():
+                      problems.append(f"{path}: {label}")
+
+          if problems:
+              raise SystemExit(
+                  "BookingKoala demo wording still remains:\n" + "\n".join(problems)
+              )
+
+          print("BookingKoala CTA copy check passed.")
+          print("Verified landing page:", TARGET)
+          print("Replacement copy:", NEW_COPY)
+
+          if changed:
+              print("Changed files:")
+              for item in changed:
+                  print(" -", item)
+          else:
+              print("No changes were necessary.")
+          PY
+
+      - name: Show changes
+        shell: bash
+        run: |
+          git diff --stat
+          git diff -- bookingkoala.html || true
+
+      - name: Commit changes
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add -- '*.html' '.github/workflows/detailerfit-bookingkoala-monetization.yml'
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+
+          git commit -m "Clarify BookingKoala 30-day trial CTA"
+          git push

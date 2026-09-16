@@ -1,0 +1,145 @@
+name: DetailerFit Monetization Audit Cleanup V2
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Apply safe cleanup
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          names = [
+              "software-cost-calculator.html",
+              "auto-detailing-software-pricing.html",
+              "affiliate-disclosure.html",
+          ]
+          for name in names:
+              if not Path(name).is_file():
+                  raise RuntimeError(f"Missing required file: {name}")
+
+          original = {name: Path(name).read_text(encoding="utf-8") for name in names}
+          changed = dict(original)
+
+          # Future-proof the Cost Calculator disclosure.
+          calc = changed["software-cost-calculator.html"]
+          old = ("QuoteIQ, Mobile Tech RX and Housecall Pro are current affiliate relationships. "
+                 "Affiliate status does not change the cost math or ordering.")
+          new = ("DetailerFit has affiliate relationships with some vendors shown on this page. "
+                 "Affiliate status does not change the cost math or ordering.")
+          if old in calc:
+              calc = calc.replace(old, new, 1)
+          elif new not in calc:
+              raise RuntimeError("Cost Calculator disclosure text not recognized.")
+
+          def add_position(html, position):
+              anchor = re.compile(r"<a\b[^>]*>", re.I)
+              def patch(m):
+                  tag = m.group(0)
+                  rel = re.search(r"rel=[\"']([^\"']*)[\"']", tag, re.I)
+                  if not rel or "sponsored" not in rel.group(1).lower().split():
+                      return tag
+                  if "data-cta-position=" in tag:
+                      return tag
+                  href = re.search(r"\shref=", tag, re.I)
+                  if href:
+                      i = href.start()
+                      return tag[:i] + f' data-cta-position="{position}"' + tag[i:]
+                  return tag[:-1] + f' data-cta-position="{position}">'
+              return anchor.sub(patch, html)
+
+          calc = add_position(calc, "cost-calculator-page")
+          changed["software-cost-calculator.html"] = calc
+
+          # Normalize the Pricing Index affiliate-grid CTA context.
+          pricing = changed["auto-detailing-software-pricing.html"]
+          heading = "<h2>Affiliate relationships in this index</h2>"
+          if heading not in pricing:
+              raise RuntimeError("Pricing Index affiliate section not found.")
+          prefix, section = pricing.split(heading, 1)
+          section = add_position(section, "pricing-index-affiliate-grid")
+          changed["auto-detailing-software-pricing.html"] = prefix + heading + section
+
+          # Update Affiliate Disclosure freshness.
+          disclosure = changed["affiliate-disclosure.html"]
+          if "Disclosure list updated September 15, 2026." in disclosure:
+              disclosure = disclosure.replace(
+                  "Disclosure list updated September 15, 2026.",
+                  "Disclosure list updated September 17, 2026.",
+                  1,
+              )
+          elif "Disclosure list updated September 17, 2026." not in disclosure:
+              raise RuntimeError("Affiliate Disclosure date marker not found.")
+          changed["affiliate-disclosure.html"] = disclosure
+
+          # Guardrails.
+          if "Affiliate status does not change the cost math or ordering." not in changed["software-cost-calculator.html"]:
+              raise RuntimeError("Calculator editorial guardrail missing.")
+          if "This is a pricing index, not a ranking." not in changed["auto-detailing-software-pricing.html"]:
+              raise RuntimeError("Pricing Index editorial guardrail missing.")
+
+          # Validate all static sponsored links in the two edited sections.
+          for tag in re.findall(r"<a\b[^>]*>", changed["software-cost-calculator.html"], re.I):
+              rel = re.search(r"rel=[\"']([^\"']*)[\"']", tag, re.I)
+              if rel and "sponsored" in rel.group(1).lower().split():
+                  if "data-cta-position=" not in tag:
+                      raise RuntimeError("Calculator sponsored CTA lacks position metadata.")
+
+          _, affiliate_section = changed["auto-detailing-software-pricing.html"].split(heading, 1)
+          count = 0
+          for tag in re.findall(r"<a\b[^>]*>", affiliate_section, re.I):
+              rel = re.search(r"rel=[\"']([^\"']*)[\"']", tag, re.I)
+              if rel and "sponsored" in rel.group(1).lower().split():
+                  count += 1
+                  if 'data-cta-position="pricing-index-affiliate-grid"' not in tag:
+                      raise RuntimeError("Pricing Index sponsored CTA lacks position metadata.")
+          if count == 0:
+              raise RuntimeError("No Pricing Index sponsored CTA found.")
+
+          written = []
+          for name in names:
+              if changed[name] != original[name]:
+                  Path(name).write_text(changed[name], encoding="utf-8")
+                  written.append(name)
+
+          print("Changed:", ", ".join(written) if written else "none")
+          print("PASS: monetization audit cleanup V2")
+          print("NOTE: Dynamic calculator JS was intentionally left untouched; the failed V1 assumed an outdated CTA structure.")
+
+      - name: Validate diff
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff -- software-cost-calculator.html auto-detailing-software-pricing.html affiliate-disclosure.html
+          git diff --check
+
+      - name: Commit and push
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add -- software-cost-calculator.html auto-detailing-software-pricing.html affiliate-disclosure.html
+
+          if git diff --cached --quiet; then
+            echo "Already clean; nothing to commit."
+            exit 0
+          fi
+
+          git diff --cached --check
+          git commit -m "Finish monetization audit cleanup"
+          git push

@@ -1,0 +1,162 @@
+name: DetailerFit BookingKoala Affiliate URL Fix
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch-bookingkoala:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Update BookingKoala affiliate links safely
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          TARGET = "https://bookingkoala.com/30-days/?aff=Ryo_Y_tsT"
+
+          booking_page = Path("bookingkoala.html")
+          if not booking_page.exists():
+              raise SystemExit("bookingkoala.html was not found. Stopping without changes.")
+
+          changed = []
+          affiliate_anchor_re = re.compile(
+              r'<a\b[^>]*\bhref=(["\'])(https?://(?:www\.)?bookingkoala\.com/[^"\']*[?&]aff=Ryo_Y_tsT[^"\']*)\1[^>]*>',
+              re.IGNORECASE
+          )
+
+          def normalize_anchor(match):
+              tag = match.group(0)
+
+              # Use the exact affiliate URL supplied by the site owner.
+              tag = re.sub(
+                  r'\bhref=(["\'])https?://(?:www\.)?bookingkoala\.com/[^"\']*[?&]aff=Ryo_Y_tsT[^"\']*\1',
+                  f'href="{TARGET}"',
+                  tag,
+                  flags=re.IGNORECASE
+              )
+
+              # Keep affiliate links explicitly sponsored.
+              rel_match = re.search(r'\brel=(["\'])(.*?)\1', tag, flags=re.IGNORECASE)
+              if rel_match:
+                  values = rel_match.group(2).split()
+                  for value in ("sponsored", "noopener"):
+                      if value not in values:
+                          values.append(value)
+                  replacement = 'rel="' + " ".join(values) + '"'
+                  tag = tag[:rel_match.start()] + replacement + tag[rel_match.end():]
+              else:
+                  tag = tag[:-1] + ' rel="sponsored noopener">'
+
+              # Preserve DetailerFit vendor click tracking.
+              vendor_match = re.search(r'\bdata-vendor=(["\'])(.*?)\1', tag, flags=re.IGNORECASE)
+              if vendor_match:
+                  tag = (
+                      tag[:vendor_match.start()]
+                      + 'data-vendor="BookingKoala"'
+                      + tag[vendor_match.end():]
+                  )
+              else:
+                  tag = tag[:-1] + ' data-vendor="BookingKoala">'
+
+              return tag
+
+          # Update all published HTML pages, but never touch .github workflow source here.
+          for path in sorted(Path(".").rglob("*.html")):
+              if ".github" in path.parts:
+                  continue
+
+              original = path.read_text(encoding="utf-8")
+              updated = affiliate_anchor_re.sub(normalize_anchor, original)
+
+              if updated != original:
+                  path.write_text(updated, encoding="utf-8")
+                  changed.append(str(path))
+
+          # Verify the live review source now uses only the exact supplied affiliate URL.
+          booking_text = booking_page.read_text(encoding="utf-8")
+
+          remaining_owner_aff = re.findall(
+              r'https?://(?:www\.)?bookingkoala\.com/[^"\'<>\s]*[?&]aff=Ryo_Y_tsT[^"\'<>\s]*',
+              booking_text,
+              flags=re.IGNORECASE
+          )
+          wrong = [url for url in remaining_owner_aff if url != TARGET]
+          if wrong:
+              raise SystemExit(
+                  "Old BookingKoala affiliate URL still remains in bookingkoala.html: "
+                  + ", ".join(sorted(set(wrong)))
+              )
+
+          if TARGET not in booking_text:
+              raise SystemExit("Exact BookingKoala affiliate URL was not found after patching.")
+
+          # Validate every exact BookingKoala affiliate CTA on every HTML page.
+          problems = []
+          target_anchor_re = re.compile(
+              r'<a\b[^>]*\bhref=(["\'])'
+              + re.escape(TARGET)
+              + r'\1[^>]*>',
+              re.IGNORECASE
+          )
+
+          for path in sorted(Path(".").rglob("*.html")):
+              if ".github" in path.parts:
+                  continue
+              text = path.read_text(encoding="utf-8")
+              for tag_match in target_anchor_re.finditer(text):
+                  tag = tag_match.group(0)
+                  if not re.search(r'\bdata-vendor=(["\'])BookingKoala\1', tag, re.IGNORECASE):
+                      problems.append(f"{path}: missing data-vendor")
+                  rel = re.search(r'\brel=(["\'])(.*?)\1', tag, re.IGNORECASE)
+                  if not rel:
+                      problems.append(f"{path}: missing rel")
+                  else:
+                      rel_values = set(rel.group(2).split())
+                      if not {"sponsored", "noopener"}.issubset(rel_values):
+                          problems.append(f"{path}: rel must contain sponsored noopener")
+
+          if problems:
+              raise SystemExit("\n".join(problems))
+
+          print("BookingKoala affiliate URL normalized successfully.")
+          print("Exact affiliate URL:", TARGET)
+          if changed:
+              print("Changed files:")
+              for path in changed:
+                  print(" -", path)
+          else:
+              print("No HTML changes were necessary.")
+          PY
+
+      - name: Show diff
+        shell: bash
+        run: |
+          git diff --stat
+          git diff -- bookingkoala.html || true
+
+      - name: Commit changes
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add -- '*.html'
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+
+          git commit -m "Fix BookingKoala affiliate URL"
+          git push

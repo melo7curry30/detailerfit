@@ -1,0 +1,292 @@
+name: DetailerFit Monetization Audit Cleanup
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: detailerfit-monetization-audit-cleanup
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Apply monetization audit cleanup
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          ROOT = Path(".")
+
+          REQUIRED = [
+              "software-cost-calculator.html",
+              "cost-calculator.js",
+              "auto-detailing-software-pricing.html",
+              "affiliate-disclosure.html",
+          ]
+
+          for name in REQUIRED:
+              if not (ROOT / name).is_file():
+                  raise RuntimeError(f"Required file missing: {name}")
+
+          original = {
+              name: (ROOT / name).read_text(encoding="utf-8")
+              for name in REQUIRED
+          }
+
+          changes = dict(original)
+
+          # ------------------------------------------------------------------
+          # 1) Cost Calculator disclosure:
+          # Replace the stale vendor-name list with future-proof neutral wording.
+          # ------------------------------------------------------------------
+          calc = changes["software-cost-calculator.html"]
+
+          old_disclosure = (
+              'QuoteIQ, Mobile Tech RX and Housecall Pro are current affiliate relationships. '
+              'Affiliate status does not change the cost math or ordering.'
+          )
+          new_disclosure = (
+              'DetailerFit has affiliate relationships with some vendors shown on this page. '
+              'Affiliate status does not change the cost math or ordering.'
+          )
+
+          if old_disclosure in calc:
+              calc = calc.replace(old_disclosure, new_disclosure, 1)
+          elif new_disclosure not in calc:
+              raise RuntimeError(
+                  "Could not find the expected Cost Calculator affiliate disclosure text."
+              )
+
+          # Add explicit CTA-position metadata to every sponsored CTA that is
+          # statically rendered on the Cost Calculator page.
+          def add_position_to_sponsored_anchors(html, position):
+              pattern = re.compile(r'<a\b[^>]*\brel=["\'][^"\']*\bsponsored\b[^"\']*["\'][^>]*>', re.I)
+
+              def patch(match):
+                  tag = match.group(0)
+                  if re.search(r'\bdata-cta-position=', tag, re.I):
+                      return tag
+
+                  # Insert before href when possible for readability.
+                  href_match = re.search(r'\shref=', tag, re.I)
+                  if href_match:
+                      i = href_match.start()
+                      return tag[:i] + f' data-cta-position="{position}"' + tag[i:]
+
+                  return tag[:-1] + f' data-cta-position="{position}">'
+
+              return pattern.sub(patch, html)
+
+          calc = add_position_to_sponsored_anchors(
+              calc,
+              "cost-calculator-page"
+          )
+          changes["software-cost-calculator.html"] = calc
+
+          # ------------------------------------------------------------------
+          # 2) Dynamic Cost Calculator result CTA:
+          # Add explicit result-context tracking.
+          # ------------------------------------------------------------------
+          calc_js = changes["cost-calculator.js"]
+
+          old_dynamic = (
+              '<a class=\\"btn primary\\" data-vendor=\\"${r.name}\\" '
+              'href=\\"${vendorMap[r.name].url}\\" rel=\\"${vendorMap[r.name].rel}\\"'
+          )
+          new_dynamic = (
+              '<a class=\\"btn primary\\" data-vendor=\\"${r.name}\\" '
+              'data-cta-position=\\"cost-calculator-result\\" '
+              'href=\\"${vendorMap[r.name].url}\\" rel=\\"${vendorMap[r.name].rel}\\"'
+          )
+
+          if old_dynamic in calc_js:
+              calc_js = calc_js.replace(old_dynamic, new_dynamic, 1)
+          elif 'data-cta-position=\\"cost-calculator-result\\"' not in calc_js:
+              raise RuntimeError(
+                  "Could not find the expected dynamic Cost Calculator vendor CTA."
+              )
+
+          changes["cost-calculator.js"] = calc_js
+
+          # ------------------------------------------------------------------
+          # 3) Pricing Index affiliate grid:
+          # Add explicit CTA-position metadata to sponsored links that lack it.
+          # ------------------------------------------------------------------
+          pricing = changes["auto-detailing-software-pricing.html"]
+
+          # Scope the change to the affiliate relationship section when present.
+          section_heading = '<h2>Affiliate relationships in this index</h2>'
+          if section_heading not in pricing:
+              raise RuntimeError("Pricing Index affiliate relationship section not found.")
+
+          prefix, affiliate_section = pricing.split(section_heading, 1)
+          affiliate_section = add_position_to_sponsored_anchors(
+              affiliate_section,
+              "pricing-index-affiliate-grid"
+          )
+          pricing = prefix + section_heading + affiliate_section
+          changes["auto-detailing-software-pricing.html"] = pricing
+
+          # ------------------------------------------------------------------
+          # 4) Affiliate Disclosure freshness:
+          # Update the disclosure-list date only. Do not change rankings,
+          # relationships, editorial policy, or individual vendor statements.
+          # ------------------------------------------------------------------
+          disclosure = changes["affiliate-disclosure.html"]
+
+          if "Disclosure list updated September 15, 2026." in disclosure:
+              disclosure = disclosure.replace(
+                  "Disclosure list updated September 15, 2026.",
+                  "Disclosure list updated September 17, 2026.",
+                  1
+              )
+          elif "Disclosure list updated September 17, 2026." not in disclosure:
+              raise RuntimeError("Affiliate Disclosure update-date marker not found.")
+
+          changes["affiliate-disclosure.html"] = disclosure
+
+          # ------------------------------------------------------------------
+          # Validation
+          # ------------------------------------------------------------------
+          # Cost Calculator disclosure must be generic/future-proof.
+          if old_disclosure in changes["software-cost-calculator.html"]:
+              raise RuntimeError("Stale Cost Calculator affiliate vendor list still present.")
+
+          if new_disclosure not in changes["software-cost-calculator.html"]:
+              raise RuntimeError("New Cost Calculator affiliate disclosure missing.")
+
+          # Dynamic result CTA must carry explicit position context.
+          if 'data-cta-position=\\"cost-calculator-result\\"' not in changes["cost-calculator.js"]:
+              raise RuntimeError("Dynamic Cost Calculator result CTA position missing.")
+
+          # Every sponsored link in Cost Calculator HTML must now have position metadata.
+          for tag in re.findall(r'<a\b[^>]*>', changes["software-cost-calculator.html"], flags=re.I):
+              rel = re.search(r'\brel=["\']([^"\']*)["\']', tag, flags=re.I)
+              if rel and "sponsored" in rel.group(1).lower().split():
+                  if not re.search(r'\bdata-cta-position=', tag, flags=re.I):
+                      raise RuntimeError(
+                          f"Sponsored Cost Calculator link missing data-cta-position: {tag}"
+                      )
+
+          # Every sponsored link inside the Pricing Index affiliate section
+          # must have the pricing-index context.
+          pricing_after = changes["auto-detailing-software-pricing.html"]
+          _, pricing_affiliate_after = pricing_after.split(section_heading, 1)
+
+          sponsored_count = 0
+          for tag in re.findall(r'<a\b[^>]*>', pricing_affiliate_after, flags=re.I):
+              rel = re.search(r'\brel=["\']([^"\']*)["\']', tag, flags=re.I)
+              if rel and "sponsored" in rel.group(1).lower().split():
+                  sponsored_count += 1
+                  position = re.search(
+                      r'\bdata-cta-position=["\']([^"\']+)["\']',
+                      tag,
+                      flags=re.I
+                  )
+                  if not position or position.group(1) != "pricing-index-affiliate-grid":
+                      raise RuntimeError(
+                          f"Pricing Index sponsored CTA missing expected position: {tag}"
+                      )
+
+          if sponsored_count < 1:
+              raise RuntimeError("No sponsored CTAs found in Pricing Index affiliate section.")
+
+          # Freshness date.
+          if "Disclosure list updated September 17, 2026." not in changes["affiliate-disclosure.html"]:
+              raise RuntimeError("Affiliate Disclosure freshness date was not updated.")
+
+          # Guardrails: do not alter known editorial ranking strings.
+          ranking_guardrails = [
+              ("auto-detailing-software-pricing.html", "This is a pricing index, not a ranking."),
+              ("software-cost-calculator.html", "Affiliate status does not change the cost math or ordering."),
+          ]
+          for filename, text in ranking_guardrails:
+              if text not in changes[filename]:
+                  raise RuntimeError(f"Editorial guardrail missing after edit: {filename}")
+
+          # Write only files that actually changed.
+          written = []
+          for filename, after in changes.items():
+              before = original[filename]
+              if after != before:
+                  (ROOT / filename).write_text(after, encoding="utf-8")
+                  written.append(filename)
+
+          print("Files changed:")
+          for filename in written:
+              print(" -", filename)
+
+          print("PASS: Cost Calculator disclosure synchronized")
+          print("PASS: Cost Calculator static sponsored CTA positions normalized")
+          print("PASS: Cost Calculator dynamic result CTA position added")
+          print("PASS: Pricing Index affiliate-grid CTA positions normalized")
+          print("PASS: Affiliate Disclosure date updated to September 17, 2026")
+          print("UNCHANGED: rankings, pricing math, vendor destinations, CSS, research conclusions")
+
+      - name: Show and validate diff
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff -- \
+            software-cost-calculator.html \
+            cost-calculator.js \
+            auto-detailing-software-pricing.html \
+            affiliate-disclosure.html
+          git diff --check
+
+      - name: Commit cleanup
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add -- \
+            software-cost-calculator.html \
+            cost-calculator.js \
+            auto-detailing-software-pricing.html \
+            affiliate-disclosure.html
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit. Monetization audit cleanup is already applied."
+            exit 0
+          fi
+
+          git diff --cached --check
+          git commit -m "Finish monetization audit cleanup"
+          git push
+
+      - name: Write summary
+        shell: bash
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<'TEXT'
+          ## DetailerFit monetization audit cleanup
+
+          Completed:
+          - Cost Calculator affiliate disclosure made future-proof
+          - Cost Calculator static sponsored CTAs now carry explicit position metadata
+          - Dynamic Cost Calculator result CTAs now use `cost-calculator-result`
+          - Pricing Index sponsored CTAs now use `pricing-index-affiliate-grid`
+          - Affiliate Disclosure list date updated to September 17, 2026
+
+          Guardrails:
+          - rankings unchanged
+          - pricing math unchanged
+          - affiliate/vendor destinations unchanged
+          - CSS unchanged
+          - research conclusions unchanged
+          - no workflow files modified during execution
+          TEXT

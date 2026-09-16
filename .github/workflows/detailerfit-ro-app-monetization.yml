@@ -1,0 +1,458 @@
+name: DetailerFit RO App Monetization
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: detailerfit-ro-app-monetization
+  cancel-in-progress: false
+
+jobs:
+  implement:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Add RO App review and affiliate revenue paths
+        shell: python
+        run: |
+          from pathlib import Path
+          from html.parser import HTMLParser
+          import json
+          import re
+          import xml.etree.ElementTree as ET
+
+          ROOT = Path('.')
+          AFFILIATE_URL = 'https://roapp.io/?r=F93fGI7J03NeoBhRoLloNZhVcWNYieiR'
+          PAGE_FILE = 'ro-app-review-auto-detailers.html'
+          SLUG = '/ro-app-review-auto-detailers'
+          CANONICAL = 'https://getdetailerfit.com' + SLUG
+          MARKER = '<!-- DETAILERFIT-RO-APP-V1 -->'
+          DISCLOSURE_MARKER = '<!-- DETAILERFIT-RO-APP-DISCLOSURE-V1 -->'
+          SOURCE_DATE = 'September 17, 2026'
+          ISO_DATE = '2026-09-17'
+
+          REQUIRED = ['reviews.html', 'affiliate-disclosure.html', 'sitemap.xml', 'styles.css', 'app.js']
+          OPTIONAL = [
+              'best-mobile-detailing-software.html',
+              'best-auto-detailing-software-2026.html',
+              'best-crm-solo-mobile-detailers.html',
+              'guides.html',
+          ]
+
+          for name in REQUIRED:
+              if not (ROOT / name).is_file():
+                  raise RuntimeError(f'Required file missing: {name}')
+
+          def read(name):
+              return (ROOT / name).read_text(encoding='utf-8')
+
+          def write(name, text):
+              (ROOT / name).write_text(text, encoding='utf-8')
+
+          def insert_before_last(text, closing_tag, addition):
+              pos = text.lower().rfind(closing_tag.lower())
+              if pos < 0:
+                  raise RuntimeError(f'Required closing tag missing: {closing_tag}')
+              return text[:pos] + addition + '\n' + text[pos:]
+
+          def tracked_cta(label, position):
+              return (
+                  '<a class="btn primary" data-vendor="RO App" '
+                  f'href="{AFFILIATE_URL}" rel="sponsored noopener" '
+                  f'target="_blank" data-cta-position="{position}">{label}</a>'
+              )
+
+          local_disclosure = (
+              '<p class="cta-disclosure small">'
+              'DetailerFit may earn a referral reward or commission if you sign up through this link, '
+              'at no extra cost to you. <a href="/affiliate-disclosure">Affiliate disclosure</a>.</p>'
+          )
+
+          original = {name: read(name) for name in REQUIRED}
+          for name in OPTIONAL:
+              if (ROOT / name).is_file():
+                  original[name] = read(name)
+          if (ROOT / PAGE_FILE).is_file():
+              original[PAGE_FILE] = read(PAGE_FILE)
+
+          changes = {}
+
+          def current(name):
+              if name in changes:
+                  return changes[name]
+              p = ROOT / name
+              return p.read_text(encoding='utf-8') if p.is_file() else None
+
+          # Dedicated review page. Build it only if it does not already exist.
+          if not (ROOT / PAGE_FILE).is_file():
+              base = original['reviews.html']
+              header_match = re.search(r'<header\b[\s\S]*?</header>', base, flags=re.I)
+              footer_match = re.search(r'<footer\b[\s\S]*?</footer>', base, flags=re.I)
+              if not header_match or not footer_match:
+                  raise RuntimeError('Could not reuse current DetailerFit header/footer.')
+
+              header = header_match.group(0)
+              footer = footer_match.group(0)
+
+              schema = {
+                  '@context': 'https://schema.org',
+                  '@graph': [
+                      {
+                          '@type': 'Article',
+                          '@id': CANONICAL + '#article',
+                          'headline': 'RO App Review for Auto Detailers (2026)',
+                          'description': 'Research-based RO App review for auto detailers covering online booking, scheduling, customer and vehicle history, invoicing, payments and limitations.',
+                          'dateModified': ISO_DATE,
+                          'mainEntityOfPage': {'@type': 'WebPage', '@id': CANONICAL},
+                          'author': {'@type': 'Organization', 'name': 'DetailerFit', 'url': 'https://getdetailerfit.com/'},
+                          'publisher': {'@type': 'Organization', 'name': 'DetailerFit', 'url': 'https://getdetailerfit.com/'},
+                          'inLanguage': 'en-US',
+                      },
+                      {
+                          '@type': 'BreadcrumbList',
+                          'itemListElement': [
+                              {'@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://getdetailerfit.com/'},
+                              {'@type': 'ListItem', 'position': 2, 'name': 'Reviews', 'item': 'https://getdetailerfit.com/reviews'},
+                              {'@type': 'ListItem', 'position': 3, 'name': 'RO App Review', 'item': CANONICAL},
+                          ],
+                      },
+                  ],
+              }
+
+              page = f'''<!doctype html>
+          <html lang="en">
+          <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+          <meta name="theme-color" content="#090d12">
+          <title>RO App Review for Auto Detailers (2026) | DetailerFit</title>
+          <meta name="description" content="Research-based RO App review for auto detailers: booking, scheduling, customer and vehicle history, invoicing, payments, fit and limitations.">
+          <link rel="canonical" href="{CANONICAL}">
+          <link rel="stylesheet" href="/styles.css">
+          <meta property="og:title" content="RO App Review for Auto Detailers (2026)">
+          <meta property="og:description" content="Evaluate RO App for detailing studios and mobile detailers: booking, scheduling, vehicle history, invoicing, payments and business-management fit.">
+          <meta property="og:type" content="article">
+          <meta property="og:url" content="{CANONICAL}">
+          <meta name="twitter:card" content="summary">
+          <script type="application/ld+json">{json.dumps(schema, separators=(',', ':'))}</script>
+          </head>
+          <body>
+          <a class="skip-link" href="#main-content">Skip to content</a>
+          {header}
+          {MARKER}
+          <main id="main-content" tabindex="-1">
+          <section class="heroMini"><div class="wrap">
+          <div class="breadcrumbs"><a href="/">Home</a> / <a href="/reviews">Reviews</a> / RO App</div>
+          <span class="eyebrow">DETAILING OPERATIONS · BOOKING + JOB MANAGEMENT · RESEARCH-BASED · {SOURCE_DATE}</span>
+          <h1>RO App Review for Auto Detailers</h1>
+          <p class="lead">RO App is business-management software with a dedicated car-detailing use case. Its official detailing workflow connects online bookings, scheduling, customer and vehicle history, invoicing and payments.</p>
+          <div class="actions">
+          {tracked_cta('Explore RO App', 'ro-app-review-hero')}
+          <a class="btn secondary" href="/best-mobile-detailing-software">Compare Mobile Detailing Software</a>
+          </div>
+          {local_disclosure}
+          </div></section>
+
+          <section class="section"><div class="wrap article">
+          <aside class="research-context research-block" aria-label="Research transparency"><details open>
+          <summary>Research-based · Source check: {SOURCE_DATE} · How we researched this</summary>
+          <div><strong>Research basis</strong><span>RO App official car-detailing, features and pricing pages.</span></div>
+          <div><strong>Hands-on testing</strong><span>Not claimed for this review.</span></div>
+          <p><a href="/methodology">How we review software</a> · <a href="/affiliate-disclosure">Affiliate disclosure</a>.</p>
+          </details></aside>
+
+          <h2>Quick verdict</h2>
+          <div class="verdict">
+          <p><strong>Best fit:</strong> detailers that want online booking, scheduling, customer and vehicle history, invoicing and payment workflow connected in one operational system.</p>
+          <p><strong>Compare alternatives first if:</strong> your priority is a very lightweight booking tool, a marketing-first CRM, or a narrowly specialized estimating or inspection workflow.</p>
+          </div>
+
+          <h2>What RO App does for a detailing business</h2>
+          <p>RO App's official car-detailing page describes a workflow from enquiry to paid job. Customers can book online, jobs can be organized in a diary, customer and vehicle history can stay together, and invoices and payments can be handled when work is complete.</p>
+
+          <h3>Online booking and scheduling</h3>
+          <p>RO App documents 24/7 booking, scheduling and automatic reminders. This can reduce manual back-and-forth for mobile detailers and busy studios.</p>
+
+          <h3>Customer and vehicle history</h3>
+          <p>The detailing-specific page emphasizes keeping customer and vehicle history together, which is more relevant to detailing operations than a generic contact-only CRM when repeat service and vehicle context matter.</p>
+
+          <h3>Jobs, invoicing and payments</h3>
+          <p>RO App also positions jobs, scheduling, customer communication, inventory and payments inside the same broader system. The practical value is fewer handoffs between disconnected tools.</p>
+
+          <h3>Mobile operations and automation</h3>
+          <p>RO App says its platform can be used from mobile apps and includes automation and built-in AI. Test the exact mobile workflow your business relies on before migrating from an existing stack.</p>
+
+          <div class="actions">
+          {tracked_cta('Try RO App', 'ro-app-review-mid')}
+          <a class="btn secondary" href="/finder">Use the Software Finder</a>
+          </div>
+          {local_disclosure}
+
+          <h2>Pricing note</h2>
+          <p>RO App introduced an updated plan structure in September 2026. Because pricing can vary by plan, region and current offer, this review does not hard-code a monthly price that may go stale. Check the official pricing page for the current plan required by your workflow.</p>
+
+          <h2>Where RO App may be weaker</h2>
+          <p>An all-in-one operations platform can be more system than a new solo operator needs. A detailer whose only pain point is simple online booking, lead follow-up or quoting may prefer a narrower tool. Specialty PPF, tint or deep inspection workflows should be verified directly rather than assumed.</p>
+
+          <h2>Official sources</h2>
+          <div class="sourcebox">
+          <a href="https://roapp.io/" rel="noopener" target="_blank">RO App — Official site</a><br>
+          <a href="https://roapp.io/car-detailing-software-20122/" rel="noopener" target="_blank">RO App — Car Detailing Software</a><br>
+          <a href="https://roapp.io/pricing/" rel="noopener" target="_blank">RO App — Pricing</a><br>
+          <a href="https://roapp.io/features/" rel="noopener" target="_blank">RO App — Features</a>
+          </div>
+          <p class="small">Source check: {SOURCE_DATE}. Product features, integrations, regional availability and pricing can change. Verify current terms directly with RO App before purchase.</p>
+
+          <h2>Bottom line</h2>
+          <p>RO App is worth evaluating when the goal is to connect booking, job scheduling, customer and vehicle history, invoicing and payments rather than solving only one narrow workflow.</p>
+          <div class="actions">
+          {tracked_cta('Visit RO App', 'ro-app-review-bottom')}
+          <a class="btn secondary" href="/compare">Compare Software</a>
+          </div>
+          {local_disclosure}
+          </div></section>
+          </main>
+          {footer}
+          <script src="/app.js"></script>
+          </body>
+          </html>
+          '''
+              changes[PAGE_FILE] = page
+
+          # Additive placements only — do not change rankings.
+          placements = {
+              'reviews.html': (
+                  'DETAILING OPERATIONS',
+                  'RO App for booking, jobs and vehicle history',
+                  'RO App publishes a dedicated car-detailing workflow covering online booking, scheduling, customer and vehicle history, invoicing and payments.',
+                  'Read RO App Review',
+              ),
+              'best-mobile-detailing-software.html': (
+                  'ADDITIONAL OPTION — NOT PART OF THE RANKING ABOVE',
+                  'RO App for mobile detailing operations',
+                  'RO App connects online booking, scheduling, customer and vehicle history, invoicing and payments. Evaluate it separately if you want a broader operating system.',
+                  'See RO App Research',
+              ),
+              'best-auto-detailing-software-2026.html': (
+                  'ADDITIONAL OPTION — NOT PART OF THE RANKING ABOVE',
+                  'RO App for end-to-end detailing workflow',
+                  'RO App is another detailing-capable business-management option with documented booking, scheduling, vehicle history, invoicing and payment workflows.',
+                  'Read RO App Review',
+              ),
+              'best-crm-solo-mobile-detailers.html': (
+                  'ADDITIONAL OPTION — NOT PART OF THE RANKING ABOVE',
+                  'RO App for customer + vehicle workflow',
+                  'RO App combines CRM-style customer records with vehicle history, booking, jobs, invoicing and payments. Compare it separately from the ranked CRM list above.',
+                  'Evaluate RO App',
+              ),
+              'guides.html': (
+                  'DETAILING SOFTWARE RESEARCH',
+                  'RO App review for auto detailers',
+                  'Research RO App for online booking, scheduling, customer and vehicle history, invoicing, payments and mobile detailing operations.',
+                  'Read the RO App review',
+              ),
+          }
+
+          for filename, (kicker, heading, paragraph, label) in placements.items():
+              if not (ROOT / filename).is_file():
+                  continue
+              text = current(filename)
+              page_marker = f'{MARKER}-{filename}'
+              if page_marker in text:
+                  continue
+
+              block = f'''
+          {page_marker}
+          <section class="section tight" aria-labelledby="ro-app-option-{filename.replace('.', '-')}">
+          <div class="wrap article"><div class="card">
+          <div class="kicker">{kicker}</div>
+          <h2 id="ro-app-option-{filename.replace('.', '-')}">{heading}</h2>
+          <p>{paragraph}</p>
+          <p class="small">Research checked {SOURCE_DATE}. Confirm current plan and regional terms directly with RO App.</p>
+          <div class="actions">
+          <a class="btn secondary" href="{SLUG}">{label}</a>
+          {tracked_cta('Visit RO App', filename.replace('.html', ''))}
+          </div>
+          {local_disclosure}
+          </div></div></section>
+          '''
+              changes[filename] = insert_before_last(text, '</main>', block)
+
+          # Affiliate disclosure.
+          disclosure = current('affiliate-disclosure.html')
+          if DISCLOSURE_MARKER not in disclosure:
+              disclosure_block = f'''
+          {DISCLOSURE_MARKER}
+          <section class="section tight" aria-labelledby="ro-app-affiliate-relationship">
+          <div class="wrap article"><div class="note">
+          <h2 id="ro-app-affiliate-relationship">RO App referral relationship</h2>
+          <p>DetailerFit may earn a referral reward or commission from qualifying RO App signups or purchases made through clearly marked RO App referral links, at no extra cost to the reader. Referral compensation does not buy ranking position or change our editorial conclusions.</p>
+          </div></div></section>
+          '''
+              changes['affiliate-disclosure.html'] = insert_before_last(disclosure, '</main>', disclosure_block)
+
+          # Sitemap.
+          sitemap = current('sitemap.xml')
+          ET.fromstring(sitemap)
+          locs = re.findall(r'<loc>\s*(.*?)\s*</loc>', sitemap, flags=re.I)
+          if CANONICAL not in locs:
+              sitemap = insert_before_last(
+                  sitemap,
+                  '</urlset>',
+                  f'  <url><loc>{CANONICAL}</loc><lastmod>{ISO_DATE}</lastmod></url>',
+              )
+              ET.fromstring(sitemap)
+              changes['sitemap.xml'] = sitemap
+
+          # Validation.
+          class Elements(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.links = []
+                  self.canonicals = []
+                  self.h1_count = 0
+
+              def handle_starttag(self, tag, attrs):
+                  attrs = dict(attrs)
+                  tag = tag.lower()
+                  if tag == 'a':
+                      self.links.append(attrs)
+                  elif tag == 'link' and attrs.get('rel') == 'canonical':
+                      self.canonicals.append(attrs.get('href'))
+                  elif tag == 'h1':
+                      self.h1_count += 1
+
+          page_text = current(PAGE_FILE)
+          if page_text is None:
+              raise RuntimeError('RO App review page was not created.')
+
+          parser = Elements()
+          parser.feed(page_text)
+          if parser.h1_count != 1:
+              raise RuntimeError(f'RO App page must have exactly one H1; found {parser.h1_count}')
+          if parser.canonicals != [CANONICAL]:
+              raise RuntimeError(f'Unexpected canonical: {parser.canonicals}')
+
+          tracked = [x for x in parser.links if x.get('href') == AFFILIATE_URL]
+          if len(tracked) != 3:
+              raise RuntimeError(f'Dedicated RO App review must contain exactly 3 referral CTAs; found {len(tracked)}')
+
+          def validate_link(link, where):
+              rel = set((link.get('rel') or '').split())
+              if 'sponsored' not in rel or 'noopener' not in rel:
+                  raise RuntimeError(f'{where}: missing sponsored/noopener')
+              if link.get('data-vendor') != 'RO App':
+                  raise RuntimeError(f'{where}: wrong data-vendor')
+              if link.get('target') != '_blank':
+                  raise RuntimeError(f'{where}: missing target=_blank')
+
+          for link in tracked:
+              validate_link(link, PAGE_FILE)
+
+          for filename in placements:
+              if not (ROOT / filename).is_file():
+                  continue
+              parser = Elements()
+              parser.feed(current(filename))
+              links = [x for x in parser.links if x.get('href') == AFFILIATE_URL]
+              if not links:
+                  raise RuntimeError(f'{filename}: RO App referral link missing')
+              for link in links:
+                  validate_link(link, filename)
+
+          # Preserve existing ranked lists exactly.
+          for filename in placements:
+              if filename not in original or filename not in changes:
+                  continue
+              ranked = re.search(r'(<ol class=["\']list["\']>[\s\S]*?</ol>)', original[filename], flags=re.I)
+              if ranked and ranked.group(1) not in changes[filename]:
+                  raise RuntimeError(f'Existing ranked list changed in {filename}')
+
+          if current('styles.css') != original['styles.css']:
+              raise RuntimeError('styles.css changed unexpectedly')
+          if current('app.js') != original['app.js']:
+              raise RuntimeError('app.js changed unexpectedly')
+
+          for filename, text in changes.items():
+              write(filename, text)
+
+          print('Written files:')
+          for filename in sorted(changes):
+              print(' -', filename)
+          print('PASS: RO App review + affiliate placements validated')
+          print('PASS: exact referral URL preserved')
+          print('PASS: existing rankings preserved')
+          print('UNCHANGED: styles.css and app.js')
+      - name: Show changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --stat
+          git diff --check
+
+      - name: Commit website changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add -- \
+            ro-app-review-auto-detailers.html \
+            reviews.html \
+            affiliate-disclosure.html \
+            sitemap.xml
+
+          for f in \
+            best-mobile-detailing-software.html \
+            best-auto-detailing-software-2026.html \
+            best-crm-solo-mobile-detailers.html \
+            guides.html
+          do
+            if [ -f "$f" ]; then
+              git add -- "$f"
+            fi
+          done
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit. RO App implementation already exists."
+            exit 0
+          fi
+
+          git diff --cached --check
+          git commit -m "Add RO App review and affiliate revenue paths"
+          git push
+
+      - name: Write result summary
+        shell: bash
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<'TEXT'
+          ## RO App monetization implementation
+
+          Referral URL:
+          `https://roapp.io/?r=F93fGI7J03NeoBhRoLloNZhVcWNYieiR`
+
+          Added safely:
+          - `/ro-app-review-auto-detailers` research-based review
+          - RO App placement on Reviews
+          - Additive placements on mobile-software, best-software, CRM and Guides pages when present
+          - RO App relationship on Affiliate Disclosure
+          - Sitemap entry
+
+          Safeguards:
+          - Existing ranked picks are not changed
+          - Exact referral URL is preserved
+          - `rel="sponsored noopener"`
+          - `data-vendor="RO App"`
+          - `target="_blank"`
+          - `styles.css` and `app.js` remain unchanged
+          TEXT

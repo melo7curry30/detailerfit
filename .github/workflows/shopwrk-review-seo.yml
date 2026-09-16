@@ -1,0 +1,141 @@
+name: DetailerFit ShopWrk Review SEO Wiring
+
+on:
+  push:
+    paths:
+      - ".github/workflows/shopwrk-review-seo.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  wire-shopwrk-review:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Wire review into site
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          ROOT = Path('.')
+          DOMAIN = 'https://getdetailerfit.com'
+          SLUG = 'shopwrk-review'
+          URL = f'{DOMAIN}/{SLUG}'
+          PAGE = ROOT / f'{SLUG}.html'
+          WORKFLOW = ROOT / '.github/workflows/shopwrk-review-seo.yml'
+          TODAY = '2026-09-16'
+
+          def read(p): return p.read_text(encoding='utf-8')
+          def write(p, text): p.write_text(text, encoding='utf-8')
+
+          def insert_before_main_close(text, block):
+              idx = text.lower().rfind('</main>')
+              if idx >= 0: return text[:idx] + '\n' + block + '\n' + text[idx:]
+              idx = text.lower().rfind('</body>')
+              if idx >= 0: return text[:idx] + '\n' + block + '\n' + text[idx:]
+              return text + '\n' + block + '\n'
+
+          def upsert_block(path, block_id, block):
+              if not path.exists():
+                  print(f'Skip missing: {path.name}')
+                  return
+              text = read(path)
+              wrapped = f'<!-- {block_id} START -->\n{block}\n<!-- {block_id} END -->'
+              pat = re.compile(rf'<!-- {re.escape(block_id)} START -->.*?<!-- {re.escape(block_id)} END -->', re.I | re.S)
+              if pat.search(text):
+                  text = pat.sub(wrapped, text, count=1)
+              elif f'/{SLUG}' not in text and URL not in text:
+                  text = insert_before_main_close(text, wrapped)
+              write(path, text)
+
+          if not PAGE.exists():
+              raise SystemExit('Missing shopwrk-review.html. Add the article to the repo root first.')
+
+          text = read(PAGE)
+          canonical = f'<link rel="canonical" href="{URL}">'
+          if re.search(r'<link[^>]+rel=["\']canonical["\'][^>]*>', text, re.I):
+              text = re.sub(r'<link[^>]+rel=["\']canonical["\'][^>]*>', canonical, text, count=1, flags=re.I)
+          else:
+              text = text.replace('</head>', canonical + '\n</head>', 1)
+          if re.search(r'<meta[^>]+property=["\']og:url["\'][^>]*>', text, re.I):
+              text = re.sub(r'<meta[^>]+property=["\']og:url["\'][^>]*>', f'<meta property="og:url" content="{URL}">', text, count=1, flags=re.I)
+          text = re.sub(r'href=(["\'])(?!https?://|//|#|mailto:|tel:)([^"\']+?)\.html([?#][^"\']*)?\1', lambda m: f'href={m.group(1)}{m.group(2)}{m.group(3) or ""}{m.group(1)}', text, flags=re.I)
+          write(PAGE, text)
+
+          reviews_block = f'''<section class="section" aria-label="ShopWrk review"><div class="wrap article"><div class="card"><div class="kicker">NEW · AI FRONT OFFICE</div><h2><a href="/{SLUG}">ShopWrk Review (2026)</a></h2><p>ShopWrk combines an AI lead closer, voice agent and ads agent with CRM, unified inbox, booking, estimates, payments, inventory, team operations and marketing for tint, PPF, wrap, ceramic and detailing shops.</p><a class="text-link" href="/{SLUG}">Read the ShopWrk review</a></div></div></section>'''
+          upsert_block(ROOT / 'reviews.html', 'SHOPWRK-REVIEWS-HUB', reviews_block)
+
+          ai_block = f'''<section class="section" aria-label="ShopWrk AI software note"><div class="wrap article"><div class="note"><b>Emerging AI front-office platform:</b> ShopWrk is built around AI lead closing, voice calls and ad operations, with a broader shop OS underneath. Pricing is not clearly public, so buyers should demo it and request complete costs.</div><div class="actions"><a class="btn secondary" href="/{SLUG}">Read our ShopWrk Review</a></div></div></section>'''
+          upsert_block(ROOT / 'best-ai-software-auto-detailing.html', 'SHOPWRK-FROM-AI', ai_block)
+
+          software_block = f'''<section class="section" aria-label="ShopWrk software alternative"><div class="wrap article"><div class="note"><b>AI-first alternative:</b> ShopWrk targets tint, PPF, wrap, ceramic and detailing shops with AI lead response, voice, CRM, booking, payments, marketing and operations in one system.</div><div class="actions"><a class="btn secondary" href="/{SLUG}">ShopWrk Review</a></div></div></section>'''
+          upsert_block(ROOT / 'best-auto-detailing-software-2026.html', 'SHOPWRK-FROM-BEST-SOFTWARE', software_block)
+
+          ppf_block = f'''<section class="section" aria-label="ShopWrk for PPF shops"><div class="wrap article"><div class="note"><b>Also compare ShopWrk:</b> Its AI-first front office is designed to answer leads and calls, quote from shop pricing, collect deposits and connect the sale to scheduling and operations.</div><div class="actions"><a class="btn secondary" href="/{SLUG}">ShopWrk Review</a></div></div></section>'''
+          upsert_block(ROOT / 'best-software-ppf-business.html', 'SHOPWRK-FROM-PPF', ppf_block)
+
+          wrap_block = f'''<section class="section" aria-label="ShopWrk for wrap shops"><div class="wrap article"><div class="note"><b>AI-first wrap-shop option:</b> ShopWrk targets wrap alongside PPF, tint, ceramic and detailing, with a unified inbox, AI lead closer, phone agent, estimates, deposits and operations.</div><div class="actions"><a class="btn secondary" href="/{SLUG}">Read the ShopWrk Review</a></div></div></section>'''
+          upsert_block(ROOT / 'best-car-wrap-software.html', 'SHOPWRK-FROM-WRAP', wrap_block)
+
+          salesthumb_block = f'''<section class="section" aria-label="ShopWrk alternative"><div class="wrap article"><div class="note"><b>Another AI-first contender:</b> ShopWrk goes especially hard on lead closing, phone and ad automation, while SalesThumb publishes a more explicit tier structure for its AI capabilities.</div><div class="actions"><a class="btn secondary" href="/{SLUG}">ShopWrk Review</a></div></div></section>'''
+          upsert_block(ROOT / 'salesthumb-review.html', 'SHOPWRK-FROM-SALESTHUMB', salesthumb_block)
+
+          tint_block = f'''<section class="section" aria-label="ShopWrk alternative"><div class="wrap article"><div class="note"><b>AI-first tint-shop alternative:</b> ShopWrk combines lead response, voice, social messaging and shop-management workflows for businesses that want more automation around the front office.</div><div class="actions"><a class="btn secondary" href="/{SLUG}">ShopWrk Review</a></div></div></section>'''
+          upsert_block(ROOT / 'tint-wiz-review.html', 'SHOPWRK-FROM-TINTWIZ', tint_block)
+
+          sitemap = ROOT / 'sitemap.xml'
+          if not sitemap.exists(): raise SystemExit('Missing sitemap.xml')
+          sm = read(sitemap)
+          sm = re.sub(rf'\s*<url>\s*<loc>[^<]*{re.escape(SLUG)}(?:\.html)?</loc>.*?</url>', '', sm, flags=re.I | re.S)
+          entry = '  <url>\n' + f'    <loc>{URL}</loc>\n' + f'    <lastmod>{TODAY}</lastmod>\n' + '  </url>\n'
+          if '</urlset>' not in sm: raise SystemExit('sitemap.xml missing </urlset>')
+          sm = sm.replace('</urlset>', entry + '</urlset>', 1)
+          write(sitemap, sm)
+
+          failures = []
+          page_now = read(PAGE)
+          if read(sitemap).count(f'<loc>{URL}</loc>') != 1: failures.append('sitemap canonical entry missing or duplicated')
+          if URL not in page_now: failures.append('article canonical URL missing')
+          rel_html = [h for h in re.findall(r'href=["\']([^"\']+)["\']', page_now, flags=re.I) if '.html' in h and not h.startswith(('http://','https://'))]
+          if rel_html: failures.append('relative .html links remain: ' + ', '.join(rel_html[:5]))
+          for p in [ROOT/'reviews.html', ROOT/'best-ai-software-auto-detailing.html', ROOT/'best-auto-detailing-software-2026.html']:
+              if p.exists() and f'/{SLUG}' not in read(p): failures.append(f'{p.name} missing ShopWrk internal link')
+          if failures:
+              print('VALIDATION FAILED')
+              for f in failures: print(' -', f)
+              raise SystemExit(1)
+          print('ShopWrk review SEO wiring passed.')
+          print(f'Canonical: {URL}')
+          print('Sitemap: OK')
+          print('Internal discovery links: OK')
+          if WORKFLOW.exists(): WORKFLOW.unlink()
+          PY
+
+      - name: Show changes
+        shell: bash
+        run: |
+          git diff --check
+          git status --short
+          git diff --stat
+
+      - name: Commit and push
+        shell: bash
+        run: |
+          git config user.name "DetailerFit SEO"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes needed."
+            exit 0
+          fi
+          git commit -m "Publish ShopWrk review and wire internal links"
+          git push

@@ -279,11 +279,24 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('requirementSummary').textContent = requirementText;
   }
 
+  const invalidateResults = () => {
+    const section = document.getElementById('resultsSection');
+    const cards = document.getElementById('costResults');
+    const summary = document.getElementById('requirementSummary');
+    if (section && !section.hidden) section.hidden = true;
+    if (cards) cards.innerHTML = '';
+    if (summary) summary.textContent = 'Inputs changed — calculate again to refresh these results.';
+  };
+
+  form.addEventListener('input', invalidateResults);
+  form.addEventListener('change', invalidateResults);
+
   form.addEventListener('submit', (e)=>{
     e.preventDefault();
     calculate();
     document.getElementById('resultsSection').scrollIntoView({behavior:resultScrollBehavior,block:'start'});
   });
 
-  calculate();
+  // Do not pre-render default-input results. This prevents stale cards from
+  // being mistaken for results after the form has been edited.
 });

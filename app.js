@@ -416,6 +416,18 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(name==='Housecall Pro')return hcpPlan(team,needs);
   };
 
+  // DETAILERFIT-DECISION-FLOW-2026-09-17
+  const invalidateFinderResults=()=>{
+    const box=document.getElementById('resultsBox');
+    const resultList=document.getElementById('finderResults');
+    const budgetMessage=document.getElementById('finderBudgetMessage');
+    if(box) box.style.display='none';
+    if(resultList) resultList.innerHTML='';
+    if(budgetMessage) budgetMessage.innerHTML='';
+  };
+  form.addEventListener('input',invalidateFinderResults);
+  form.addEventListener('change',invalidateFinderResults);
+
   form.addEventListener('submit',e=>{
     e.preventDefault();
     Object.values(tools).forEach(x=>x.s=0);
@@ -484,11 +496,19 @@ document.addEventListener('DOMContentLoaded',()=>{
       const gap=knownCost?Math.max(0,p.cost-budget):Infinity;
       if(inBudget)t.s+=4;
       else if(knownCost)t.s-=3;
-      return {name,...t,plan:p,inBudget,gap};
+
+      // A shortlist match must satisfy hard workflow requirements we can verify.
+      // Mobile Tech RX remains researchable, but native customer-facing
+      // self-booking and route-optimization are not treated as confirmed.
+      const hardMismatch = name==='Mobile Tech RX' &&
+        (booking==='yes' || needs.includes('scale'));
+
+      return {name,...t,plan:p,inBudget,gap,hardMismatch};
     });
 
-    const anyInBudget=entries.some(x=>x.inBudget);
-    entries.sort((a,b)=>{
+    const eligibleEntries=entries.filter(x=>!x.hardMismatch);
+    const anyInBudget=eligibleEntries.some(x=>x.inBudget);
+    eligibleEntries.sort((a,b)=>{
       if(anyInBudget&&a.inBudget!==b.inBudget)return a.inBudget?-1:1;
       if(!anyInBudget&&a.gap!==b.gap)return a.gap-b.gap;
       if(b.s!==a.s)return b.s-a.s;
@@ -497,12 +517,18 @@ document.addEventListener('DOMContentLoaded',()=>{
       return ac-bc;
     });
 
-    const ranked=entries.slice(0,3);
+    // When at least one verified plan fits the stated budget, keep the
+    // shortlist inside that budget. Only show over-budget alternatives when
+    // no verified in-budget configuration exists.
+    const ranked=(anyInBudget
+      ? eligibleEntries.filter(x=>x.inBudget)
+      : eligibleEntries
+    ).slice(0,3);
     const budgetMessage=document.getElementById('finderBudgetMessage');
     if(anyInBudget){
       budgetMessage.innerHTML=`<div class="note goodnote"><b>Budget check:</b> At least one shortlisted configuration fits your stated $${budget.toFixed(0)}/month budget using published flexible monthly pricing.</div>`;
     }else{
-      const firstKnown=entries.find(x=>Number.isFinite(x.plan.cost));
+      const firstKnown=eligibleEntries.find(x=>Number.isFinite(x.plan.cost));
       budgetMessage.innerHTML=`<div class="warning"><b>No exact budget fit found.</b> Your stated requirements push the first known matching configurations above $${budget.toFixed(0)}/month. The ranking below starts with the closest published price match; consider changing a requirement before buying.${firstKnown?` Closest known monthly configuration: ${firstKnown.name} ${firstKnown.plan.plan} at about $${firstKnown.plan.cost.toFixed(2).replace('.00','')}/mo.`:''}</div>`;
     }
 

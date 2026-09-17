@@ -1,0 +1,339 @@
+name: DetailerFit Decision Flow Completion 2026-09-17
+
+on:
+  push:
+    paths:
+      - ".github/workflows/detailerfit-decision-flow-completion-2026-09-17.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  complete-decision-flow:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out current DetailerFit source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply verified decision-flow improvements
+        shell: bash
+        run: |
+          set -euo pipefail
+          python <<'PY'
+          from pathlib import Path
+          import re
+
+          ROOT = Path('.')
+          WORKFLOW = ROOT / '.github/workflows/detailerfit-decision-flow-completion-2026-09-17.yml'
+          changed = []
+
+          def load(name):
+              p = ROOT / name
+              if not p.exists():
+                  raise SystemExit(f'Missing required file: {name}')
+              return p, p.read_text(encoding='utf-8')
+
+          def write_if_changed(path, before, after):
+              if before != after:
+                  path.write_text(after, encoding='utf-8')
+                  changed.append(path.as_posix())
+
+          def replace_once(name, old, new, marker=None):
+              p, text = load(name)
+              if marker and marker in text:
+                  return
+              if text.count(old) != 1:
+                  raise SystemExit(
+                      f'{name}: expected exactly one patch anchor, found {text.count(old)}. '
+                      'Source changed; refusing to guess.'
+                  )
+              out = text.replace(old, new, 1)
+              write_if_changed(p, text, out)
+
+          def insert_before_main_close(name, marker, block, required=True):
+              p = ROOT / name
+              if not p.exists():
+                  if required:
+                      raise SystemExit(f'Missing required file: {name}')
+                  print(f'SKIP optional page not present: {name}')
+                  return False
+              text = p.read_text(encoding='utf-8')
+              if marker in text:
+                  return True
+              if text.count('</main>') != 1:
+                  raise SystemExit(f'{name}: expected one </main>; refusing to guess insertion point.')
+              out = text.replace('</main>', block.rstrip() + '\n</main>', 1)
+              write_if_changed(p, text, out)
+              return True
+
+          # ---------------------------------------------------------------
+          # 1) Cost Calculator: prevent stale/default results from remaining
+          #    visible after the user changes inputs. The formula itself is
+          #    preserved; results are now rendered only after explicit submit.
+          # ---------------------------------------------------------------
+          replace_once(
+              'cost-calculator.js',
+              """  form.addEventListener('submit', (e)=>{\n    e.preventDefault();\n    calculate();\n    document.getElementById('resultsSection').scrollIntoView({behavior:resultScrollBehavior,block:'start'});\n  });\n\n  calculate();\n});""",
+              """  const invalidateResults = () => {\n    const section = document.getElementById('resultsSection');\n    const cards = document.getElementById('costResults');\n    const summary = document.getElementById('requirementSummary');\n    if (section && !section.hidden) section.hidden = true;\n    if (cards) cards.innerHTML = '';\n    if (summary) summary.textContent = 'Inputs changed — calculate again to refresh these results.';\n  };\n\n  form.addEventListener('input', invalidateResults);\n  form.addEventListener('change', invalidateResults);\n\n  form.addEventListener('submit', (e)=>{\n    e.preventDefault();\n    calculate();\n    document.getElementById('resultsSection').scrollIntoView({behavior:resultScrollBehavior,block:'start'});\n  });\n\n  // Do not pre-render default-input results. This prevents stale cards from\n  // being mistaken for results after the form has been edited.\n});""",
+              marker='Inputs changed — calculate again to refresh these results.'
+          )
+
+          # ---------------------------------------------------------------
+          # 2) Finder: prevent stale result cards; apply budget as a hard
+          #    shortlist constraint whenever verified in-budget options exist;
+          #    and do not call Mobile Tech RX a matched result when native
+          #    self-booking / route-dispatch workflow remains unverified.
+          # ---------------------------------------------------------------
+          p, text = load('app.js')
+          if 'DETAILERFIT-DECISION-FLOW-2026-09-17' not in text:
+              anchor = """  form.addEventListener('submit',e=>{\n    e.preventDefault();\n    Object.values(tools).forEach(x=>x.s=0);"""
+              replacement = """  // DETAILERFIT-DECISION-FLOW-2026-09-17\n  const invalidateFinderResults=()=>{\n    const box=document.getElementById('resultsBox');\n    const resultList=document.getElementById('finderResults');\n    const budgetMessage=document.getElementById('finderBudgetMessage');\n    if(box) box.style.display='none';\n    if(resultList) resultList.innerHTML='';\n    if(budgetMessage) budgetMessage.innerHTML='';\n  };\n  form.addEventListener('input',invalidateFinderResults);\n  form.addEventListener('change',invalidateFinderResults);\n\n  form.addEventListener('submit',e=>{\n    e.preventDefault();\n    Object.values(tools).forEach(x=>x.s=0);"""
+              if text.count(anchor) != 1:
+                  raise SystemExit('app.js: Finder submit anchor changed; refusing to guess.')
+              text = text.replace(anchor, replacement, 1)
+
+              old_return = """      const gap=knownCost?Math.max(0,p.cost-budget):Infinity;\n      if(inBudget)t.s+=4;\n      else if(knownCost)t.s-=3;\n      return {name,...t,plan:p,inBudget,gap};"""
+              new_return = """      const gap=knownCost?Math.max(0,p.cost-budget):Infinity;\n      if(inBudget)t.s+=4;\n      else if(knownCost)t.s-=3;\n\n      // A shortlist match must satisfy hard workflow requirements we can verify.\n      // Mobile Tech RX remains researchable, but native customer-facing\n      // self-booking and route-optimization are not treated as confirmed.\n      const hardMismatch = name==='Mobile Tech RX' &&\n        (booking==='yes' || needs.includes('scale'));\n\n      return {name,...t,plan:p,inBudget,gap,hardMismatch};"""
+              if text.count(old_return) != 1:
+                  raise SystemExit('app.js: Finder entry anchor changed; refusing to guess.')
+              text = text.replace(old_return, new_return, 1)
+
+              old_rank = """    const anyInBudget=entries.some(x=>x.inBudget);\n    entries.sort((a,b)=>{\n      if(anyInBudget&&a.inBudget!==b.inBudget)return a.inBudget?-1:1;\n      if(!anyInBudget&&a.gap!==b.gap)return a.gap-b.gap;\n      if(b.s!==a.s)return b.s-a.s;\n      const ac=Number.isFinite(a.plan.cost)?a.plan.cost:999999;\n      const bc=Number.isFinite(b.plan.cost)?b.plan.cost:999999;\n      return ac-bc;\n    });\n\n    const ranked=entries.slice(0,3);"""
+              new_rank = """    const eligibleEntries=entries.filter(x=>!x.hardMismatch);\n    const anyInBudget=eligibleEntries.some(x=>x.inBudget);\n    eligibleEntries.sort((a,b)=>{\n      if(anyInBudget&&a.inBudget!==b.inBudget)return a.inBudget?-1:1;\n      if(!anyInBudget&&a.gap!==b.gap)return a.gap-b.gap;\n      if(b.s!==a.s)return b.s-a.s;\n      const ac=Number.isFinite(a.plan.cost)?a.plan.cost:999999;\n      const bc=Number.isFinite(b.plan.cost)?b.plan.cost:999999;\n      return ac-bc;\n    });\n\n    // When at least one verified plan fits the stated budget, keep the\n    // shortlist inside that budget. Only show over-budget alternatives when\n    // no verified in-budget configuration exists.\n    const ranked=(anyInBudget\n      ? eligibleEntries.filter(x=>x.inBudget)\n      : eligibleEntries\n    ).slice(0,3);"""
+              if text.count(old_rank) != 1:
+                  raise SystemExit('app.js: Finder ranking anchor changed; refusing to guess.')
+              text = text.replace(old_rank, new_rank, 1)
+              text = text.replace('const firstKnown=entries.find(x=>Number.isFinite(x.plan.cost));',
+                                  'const firstKnown=eligibleEntries.find(x=>Number.isFinite(x.plan.cost));', 1)
+              p.write_text(text, encoding='utf-8')
+              changed.append('app.js')
+
+          # Clarify budget semantics beside the Finder budget input.
+          p, text = load('finder.html')
+          marker='DETAILERFIT-BUDGET-RULE-2026-09-17'
+          if marker not in text:
+              old='<span class="qhelp">We use flexible monthly pricing when a vendor publishes it.</span>'
+              new='''<span class="qhelp">We use flexible monthly pricing when a vendor publishes it. <span class="small" data-note="DETAILERFIT-BUDGET-RULE-2026-09-17">If at least one verified configuration fits your budget, the shortlist stays within it; if none fit, we show the closest over-budget options and label them clearly.</span></span>'''
+              if text.count(old) != 1:
+                  raise SystemExit('finder.html: budget help anchor changed; refusing to guess.')
+              out=text.replace(old,new,1)
+              write_if_changed(p,text,out)
+
+          # ---------------------------------------------------------------
+          # 3) Review-page decision support. Add only verified, source-linked
+          #    purchase-decision information; do not alter rankings or CTAs.
+          # ---------------------------------------------------------------
+          servicem8_block = r'''
+          <!-- DETAILERFIT-DECISION-SUPPORT-2026-09-17 -->
+          <section class="section decision-support" id="decision-support">
+          <div class="wrap article">
+          <div class="card">
+          <div class="kicker">DECISION SUPPORT · VERIFIED SEP 17, 2026</div>
+          <h2>Switching, automation, team fit and mobile reality</h2>
+          <h3>Switching from another tool</h3>
+          <p>ServiceM8 documents bulk client/contact importing by CSV and supported accounting integrations. Before deleting an account, download an account backup: ServiceM8 says cancelled account data is permanently removed, and the backup is for reference rather than a full restore into another ServiceM8 account.</p>
+          <p class="small"><a href="https://support.servicem8.com/questions/general/best-way-import-contacts-servicem8" rel="noopener" target="_blank">Official import guidance</a> · <a href="https://support.servicem8.com/help-center/tips-trick-more/more/how-to-download-a-backup-of-your-servicem8-data" rel="noopener" target="_blank">Official backup guidance</a> · <a href="https://support.servicem8.com/help-center/tips-trick-more/more/how-to-cancel-my-account" rel="noopener" target="_blank">Official cancellation guidance</a></p>
+          <h3>What actually gets automated?</h3>
+          <p>ServiceM8's Quote Follow-Up Automation can send scheduled SMS/email follow-ups after a quote is sent. Follow-up steps stop when the quote is accepted or the job state changes, so the workflow can chase an open estimate without continuing after the customer has moved forward.</p>
+          <p class="small"><a href="https://support.servicem8.com/help-center/servicem8-add-ons/automation/quote-follow-up-automation" rel="noopener" target="_blank">Official Quote Follow-Up Automation guide</a></p>
+          <h3>Three-person example</h3>
+          <p>Paid ServiceM8 plans publish unlimited users, so team size itself does not add a per-seat charge. A three-person business doing about 100 new jobs/month points to the published Growing tier at $79/month; confirm current pricing before subscribing.</p>
+          <h3>Mobile reality</h3>
+          <p><strong>Apple-first matters.</strong> ServiceM8 Lite supports Android field work, but ServiceM8 documents feature differences versus the full iPhone/iPad experience. Account configuration, permissions, templates and some advanced setup are normally handled through the Online Dashboard, so "Android supported" should not be read as "every business-admin task is fully available in the Android app."</p>
+          <p class="small"><a href="https://support.servicem8.com/help-center/app/basics/about-the-servicem8-android-app-servicem8-lite" rel="noopener" target="_blank">Official Android Lite guide</a> · <a href="https://support.servicem8.com/questions/mobile/can-servicem8-be-used-only-from-the-mobile-app-without-a-computer" rel="noopener" target="_blank">Official mobile-only guidance</a> · <a href="https://support.servicem8.com/help-center/advanced-setup/advanced-setup/security-roles-overview" rel="noopener" target="_blank">Official security roles</a></p>
+          </div>
+          </div>
+          </section>
+          '''
+          insert_before_main_close('servicem8.html','DETAILERFIT-DECISION-SUPPORT-2026-09-17',servicem8_block)
+
+          jobber_block = r'''
+          <!-- DETAILERFIT-DECISION-SUPPORT-2026-09-17 -->
+          <section class="section decision-support" id="decision-support">
+          <div class="wrap article">
+          <div class="card">
+          <div class="kicker">DECISION SUPPORT · VERIFIED SEP 17, 2026</div>
+          <h2>Switching, automation, team permissions and mobile reality</h2>
+          <h3>Switching from another CRM</h3>
+          <p>Jobber documents CSV import workflows for client data and also provides export tools for client information. Current Jobber import tooling also supports structured migration of operational records such as quotes, jobs and invoices where the required CSV format is available. Treat migration as a planned setup task rather than assuming every historical field transfers automatically.</p>
+          <p class="small"><a href="https://help.getjobber.com/en/articles/import-clients/" rel="noopener" target="_blank">Official import guidance</a> · <a href="https://help.getjobber.com/en/articles/export-client-information/" rel="noopener" target="_blank">Official export guidance</a></p>
+          <h3>What actually gets automated?</h3>
+          <p>Jobber documents automated customer communications including quote follow-ups and invoice reminders. Availability depends on the selected plan, so compare the exact automation you need against the current pricing/help documentation before upgrading.</p>
+          <p class="small"><a href="https://help.getjobber.com/en/articles/automations/" rel="noopener" target="_blank">Official automation guide</a></p>
+          <h3>Three-person example and permissions</h3>
+          <p>For a three-person team, DetailerFit should compare the current multi-user configuration instead of the one-user Core headline. Jobber also supports role/permission controls so field staff, senior crew, crew leads and managers can be given different access to schedules, customer information and office workflows.</p>
+          <p class="small"><a href="https://www.getjobber.com/pricing/" rel="noopener" target="_blank">Official pricing</a> · <a href="https://help.getjobber.com/en/articles/user-permissions/" rel="noopener" target="_blank">Official user-permission guide</a></p>
+          <h3>Mobile reality</h3>
+          <p>The Jobber mobile app covers core field work on iOS and Android, but not every setup/admin feature is app-only. If your goal is to run the business entirely from a phone, verify the specific setup, permission and customization tasks you expect to manage without the web dashboard.</p>
+          <p class="small"><a href="https://help.getjobber.com/en/articles/jobber-app-basics/" rel="noopener" target="_blank">Official Jobber app guide</a></p>
+          </div>
+          </div>
+          </section>
+          '''
+          insert_before_main_close('jobber.html','DETAILERFIT-DECISION-SUPPORT-2026-09-17',jobber_block)
+
+          mtrx_block = r'''
+          <!-- DETAILERFIT-DECISION-SUPPORT-2026-09-17 -->
+          <section class="section decision-support" id="decision-support">
+          <div class="wrap article">
+          <div class="card">
+          <div class="kicker">DECISION SUPPORT · VERIFIED SEP 17, 2026</div>
+          <h2>Three-person cost and automation reality</h2>
+          <h3>Three-person published-price examples</h3>
+          <p>Using the published base price plus two additional users, the examples are: <strong>Getting Started $69/month</strong> ($39 + 2×$15), <strong>Standard $157/month</strong> ($99 + 2×$29), and <strong>Pro $257/month</strong> ($199 + 2×$29). These are arithmetic examples based on the published plan structure, not a promise that every workflow you need is included.</p>
+          <h3>What is actually confirmed?</h3>
+          <p>Mobile Tech RX publishes internal scheduling and customer text-alert capabilities. DetailerFit still does <strong>not</strong> treat a native customer-facing self-booking flow or route optimization as confirmed from the official sources reviewed. If either workflow is mandatory, verify it directly before buying.</p>
+          <h3>Automation vs integrations</h3>
+          <p>Do not treat an integration-driven workflow as a built-in feature. If a follow-up or external automation depends on an add-on or integration, include that dependency in the buying decision and total-cost check.</p>
+          <p class="small"><a href="https://www.mobiletechrx.com/plans/" rel="noopener" target="_blank">Official Mobile Tech RX plans</a></p>
+          </div>
+          </div>
+          </section>
+          '''
+          insert_before_main_close('mobile-tech-rx-review-auto-detailers.html','DETAILERFIT-DECISION-SUPPORT-2026-09-17',mtrx_block)
+
+          bookingkoala_block = r'''
+          <!-- DETAILERFIT-DECISION-SUPPORT-2026-09-17 -->
+          <section class="section decision-support" id="decision-support">
+          <div class="wrap article">
+          <div class="card">
+          <div class="kicker">DECISION SUPPORT · VERIFIED SEP 17, 2026</div>
+          <h2>Switching to BookingKoala without guessing the migration work</h2>
+          <p>BookingKoala publishes an existing-business setup sequence that covers store setup, forms, scheduling, notifications, providers/staff, customer import and existing bookings. That makes the migration path more concrete than simply starting a new account and re-entering customers manually.</p>
+          <p>Customer data can be exported to CSV. Before cancelling, export the records you need and review the current cancellation policy: BookingKoala's help documentation warns that cancelled-account data and configuration can be removed and may not be recoverable.</p>
+          <p class="small"><a href="https://help.bookingkoala.com/help/existing-business-how-to-start" rel="noopener" target="_blank">Official existing-business migration guide</a> · <a href="https://help.bookingkoala.com/help/how-to-export-customer-data" rel="noopener" target="_blank">Official customer export guide</a></p>
+          </div>
+          </div>
+          </section>
+          '''
+          booking_done = False
+          for candidate in ('bookingkoala.html','bookingkoala-review-auto-detailers.html'):
+              if (ROOT/candidate).exists():
+                  insert_before_main_close(candidate,'DETAILERFIT-DECISION-SUPPORT-2026-09-17',bookingkoala_block)
+                  booking_done = True
+          if not booking_done:
+              print('WARNING: BookingKoala review file was not found; no file was created because the current route/template could not be identified safely.')
+
+          compare_block = r'''
+          <!-- DETAILERFIT-MOBILE-REALITY-2026-09-17 -->
+          <section class="section" id="mobile-reality">
+          <div class="wrap"><div class="card">
+          <div class="kicker">DEVICE FIT</div>
+          <h2>"Supports Android/iPhone" does not always mean "run everything from the app"</h2>
+          <p>Use the device column as a compatibility screen, then open the review before buying. ServiceM8 is Apple-first and uses ServiceM8 Lite on Android; Jobber supports iOS/Android field work but some setup/admin tasks remain web-oriented. DetailerFit should not infer full mobile-admin parity from an OS badge alone.</p>
+          <div class="actions"><a class="btn secondary" href="servicem8">ServiceM8 mobile reality</a><a class="btn secondary" href="jobber">Jobber mobile reality</a></div>
+          </div></div>
+          </section>
+          '''
+          insert_before_main_close('compare.html','DETAILERFIT-MOBILE-REALITY-2026-09-17',compare_block)
+
+          # ---------------------------------------------------------------
+          # 4) Validate only the intended logic/content changes.
+          # ---------------------------------------------------------------
+          required_markers = {
+              'cost-calculator.js': 'Inputs changed — calculate again to refresh these results.',
+              'app.js': 'DETAILERFIT-DECISION-FLOW-2026-09-17',
+              'finder.html': 'DETAILERFIT-BUDGET-RULE-2026-09-17',
+              'servicem8.html': 'DETAILERFIT-DECISION-SUPPORT-2026-09-17',
+              'jobber.html': 'DETAILERFIT-DECISION-SUPPORT-2026-09-17',
+              'mobile-tech-rx-review-auto-detailers.html': 'DETAILERFIT-DECISION-SUPPORT-2026-09-17',
+              'compare.html': 'DETAILERFIT-MOBILE-REALITY-2026-09-17',
+          }
+          for filename, marker in required_markers.items():
+              text=(ROOT/filename).read_text(encoding='utf-8')
+              if text.count(marker) != 1:
+                  raise SystemExit(f'{filename}: marker validation failed ({marker}).')
+
+          # Preserve editorial source links and tracked affiliate URLs already present.
+          affiliate_sentinels = [
+              ('app.js', 'https://admin-quoteiq.web.app/register?via=ryo'),
+              ('app.js', 'https://www.mobiletechrx.com/?_by=detailerfit-5e824c'),
+              ('app.js', 'https://housecallpro.partnerlinks.io/lquesdqg2t22'),
+          ]
+          for filename, url in affiliate_sentinels:
+              if url not in (ROOT/filename).read_text(encoding='utf-8'):
+                  raise SystemExit(f'{filename}: existing affiliate sentinel missing: {url}')
+
+          print('Changed files:')
+          for item in changed:
+              print(' -', item)
+          print('PASS: calculator stale-result protection')
+          print('PASS: Finder stale-result protection')
+          print('PASS: budget-constrained shortlist when verified fits exist')
+          print('PASS: unverified Mobile Tech RX self-booking/route workflow excluded from matched shortlist')
+          print('PASS: switching/automation/team/mobile decision-support blocks')
+          print('UNCHANGED: editorial rankings, existing affiliate URLs, existing CTA tracking conventions')
+          PY
+
+      - name: JavaScript syntax checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check app.js
+          node --check cost-calculator.js
+          if [ -f strata-finder.js ]; then node --check strata-finder.js; fi
+
+      - name: Review diff safety
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git status --short
+          echo
+          echo "Files changed by this patch:"
+          git diff --name-only
+
+      - name: Commit completed decision flow
+        shell: bash
+        env:
+          TARGET_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # One-time workflow: remove itself only after the patch and checks pass.
+          rm -f .github/workflows/detailerfit-decision-flow-completion-2026-09-17.yml
+
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to commit; patch is already applied."
+            exit 0
+          fi
+
+          git diff --cached --check
+          git commit -m "Complete DetailerFit decision flow from user testing"
+          git push origin "HEAD:${TARGET_BRANCH}"
+
+      - name: Summary
+        shell: bash
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<'TEXT'
+          ## DetailerFit decision-flow completion
+
+          Applied to the repository's current source, without replacing the site with an older snapshot.
+
+          ### Logic fixes
+          - Calculator no longer shows default/stale result cards before an explicit calculation.
+          - Changing calculator inputs invalidates the old result set until Calculate is pressed again.
+          - Changing Finder inputs hides the previous shortlist until Show My Matches is submitted again.
+          - When verified in-budget choices exist, Finder shortlist cards stay within the stated budget.
+          - If no verified in-budget configuration exists, closest over-budget options can still be shown with the existing warning treatment.
+          - Mobile Tech RX is not presented as a matched shortlist result when required native self-booking or route/dispatch workflow remains unverified.
+
+          ### Decision-support content
+          - ServiceM8: migration/export risk, quote follow-up automation, three-person fit, Android Lite/mobile-admin reality.
+          - Jobber: import/export, automations, team permissions, mobile-app limitations.
+          - Mobile Tech RX: three-person price examples and confirmed-vs-unverified workflow boundaries.
+          - BookingKoala: existing-business migration sequence and export/cancellation preparation when the current review file is present.
+          - Compare: explains that OS compatibility is not the same as full mobile administration.
+
+          ### Guardrails
+          - Existing editorial rankings are not changed for affiliate reasons.
+          - Existing tracked affiliate URLs are preserved and validated.
+          - Existing site design/CSS is reused; no redesign.
+          - Unverified claims remain explicitly marked for verification.
+          TEXT

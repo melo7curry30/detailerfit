@@ -1,0 +1,584 @@
+# DetailerFit — Search Impression Expansion Plan
+
+## Objective
+
+Maximize Google Search impressions by expanding query and page coverage. This plan is intentionally focused on search visibility rather than CTR or affiliate conversion.
+
+## Implementation rules
+
+- Preserve the current DetailerFit design, structure, SEO, existing content, and affiliate links.
+- Do not delete or materially rewrite existing ranking pages unless required for internal-linking or canonical cleanup.
+- Build each new page as a genuinely useful standalone article; do not create thin or templated doorway pages.
+- Use the listed SEO Title, H1, Primary Keyword, Secondary Keywords, content angle, H2 outline, internal links, and cannibalization guard as the implementation brief.
+- Add contextual internal links from at least 2 relevant existing pages to each new page where natural.
+- Link each new page back to 2–3 relevant established hubs/pages.
+- Add published pages to sitemap.xml.
+- Use HTTPS canonical URLs.
+- Keep the existing dark + teal DetailerFit visual system.
+- Publish by priority: P1 first, then P2, then P3.
+
+## Current GSC context
+
+- Current snapshot: 55 impressions, 0 clicks, settled through 2026-09-14.
+- Relevant queries are already appearing, including broad software terms and Urable pricing intent.
+- Goal of this plan: increase the number of distinct relevant queries and pages eligible to appear in Google Search.
+
+## 30-page production map
+
+### 1. Best Auto Detailing Invoicing Software in 2026
+
+- **Priority:** P1 (Wave 1)
+- **Cluster:** Workflow
+- **Page type:** Buying guide
+- **URL:** `https://getdetailerfit.com/best-auto-detailing-invoicing-software`
+- **SEO Title:** Best Auto Detailing Invoicing Software (2026): 7 Tools Compared
+- **H1:** Best Auto Detailing Invoicing Software in 2026
+- **Primary Keyword:** auto detailing invoicing software
+- **Secondary Keywords:** car detailing invoice software; mobile detailing invoice app; invoicing software for detailers; detailing estimate and invoice software; auto detailing billing software
+- **Search Intent:** Commercial investigation
+- **Why this expands impressions:** Creates a new feature-specific SERP footprint around invoices/billing instead of competing only on broad 'detailing software'.
+- **Content angle:** Compare invoice creation, deposits, card payments, recurring billing, QuickBooks sync, mobile usability and usable-plan cost.
+- **Required H2 outline:** What detailers need from invoicing software | Comparison table | Best overall | Best low-cost | Best automotive-specific | Payments & fees | Accounting integrations | Mobile workflow | FAQ
+- **Internal links / hubs:** https://getdetailerfit.com/best-auto-detailing-software-2026; https://getdetailerfit.com/best-crm-solo-mobile-detailers; https://getdetailerfit.com/software-cost-calculator
+- **Cannibalization guard:** Do not make this another general CRM roundup; keep the page centered on invoice/billing workflow.
+- **Planning basis:** GSC query family expansion + current site coverage review
+
+### 2. Best Auto Detailing Estimating Software in 2026
+
+- **Priority:** P1 (Wave 1)
+- **Cluster:** Workflow
+- **Page type:** Buying guide
+- **URL:** `https://getdetailerfit.com/best-auto-detailing-estimating-software`
+- **SEO Title:** Best Auto Detailing Estimating Software (2026): Quotes, Photos & VIN Tools
+- **H1:** Best Auto Detailing Estimating Software in 2026
+- **Primary Keyword:** auto detailing estimating software
+- **Secondary Keywords:** car detailing estimate software; auto detailing quote software; mobile detailing estimate app; detailing estimating app; vehicle estimate software for detailers
+- **Search Intent:** Commercial investigation
+- **Why this expands impressions:** Targets estimating/quote terms adjacent to existing broad software queries and vehicle-first workflows.
+- **Content angle:** Compare estimate speed, packages, photos, VIN/vehicle records, approvals, e-signatures, deposits and mobile workflow.
+- **Required H2 outline:** What makes estimating software useful | Comparison table | Fastest quoting | Best vehicle-first | Best low-cost | Photos & inspections | Approvals & e-signatures | Estimate-to-invoice flow | FAQ
+- **Internal links / hubs:** https://getdetailerfit.com/mobile-tech-rx-review-auto-detailers; https://getdetailerfit.com/best-auto-detailing-software-2026; https://getdetailerfit.com/compare
+- **Cannibalization guard:** Keep 'estimating' primary; link to CRM rather than repeating CRM selection criteria.
+- **Planning basis:** Observed GSC 'software' family + existing Mobile Tech RX coverage
+
+### 3. Best Payment Software for Auto Detailing Businesses in 2026
+
+- **Priority:** P1 (Wave 1)
+- **Cluster:** Workflow
+- **Page type:** Buying guide
+- **URL:** `https://getdetailerfit.com/best-auto-detailing-payment-software`
+- **SEO Title:** Best Auto Detailing Payment Software (2026): Deposits, Cards & Mobile Checkout
+- **H1:** Best Payment Software for Auto Detailing Businesses in 2026
+- **Primary Keyword:** auto detailing payment software
+- **Secondary Keywords:** detailing payment processing software; mobile detailing payment app; card payment app for detailers; detailing deposits software; auto detailing POS software
+- **Search Intent:** Commercial investigation
+- **Why this expands impressions:** Adds payment/POS/deposit queries that broad CRM pages only mention incidentally.
+- **Content angle:** Compare deposits, card-present/card-not-present payments, invoice links, surcharges, tips, payout speed and software integration.
+- **Required H2 outline:** Payment workflow for detailers | Comparison table | Best integrated payment stack | Best simple checkout | Deposits | Tips & fees | Mobile card acceptance | Accounting | FAQ
+- **Internal links / hubs:** https://getdetailerfit.com/best-crm-solo-mobile-detailers; https://getdetailerfit.com/software-cost-calculator; https://getdetailerfit.com/compare
+- **Cannibalization guard:** Avoid generic merchant-processing advice; focus on software used inside a detailing workflow.
+- **Planning basis:** Current site mentions payments across many guides but lacks a dedicated intent page
+
+### 4. Best Route Optimization Software for Mobile Detailing Businesses
+
+- **Priority:** P1 (Wave 1)
+- **Cluster:** Workflow
+- **Page type:** Buying guide
+- **URL:** `https://getdetailerfit.com/best-auto-detailing-route-optimization-software`
+- **SEO Title:** Best Route Optimization Software for Mobile Detailers (2026)
+- **H1:** Best Route Optimization Software for Mobile Detailing Businesses
+- **Primary Keyword:** auto detailing route optimization software
+- **Secondary Keywords:** mobile detailing route planner; detailing route software; route planning app for detailers; mobile car wash route software; detailing scheduling and routing software
+- **Search Intent:** Commercial investigation
+- **Why this expands impressions:** Targets a distinct mobile-operator problem and expands into routing/route planner/mobile-service searches.
+- **Content angle:** Compare true optimization vs maps, multi-stop routing, dispatch, service areas, team assignment and plan gates.
+- **Required H2 outline:** Route optimization vs mapping | Comparison table | Best for solo route days | Best for crews | Service areas | Dispatch | Plan gates | What to verify | FAQ
+- **Internal links / hubs:** https://getdetailerfit.com/software-cost-calculator; https://getdetailerfit.com/compare; https://getdetailerfit.com/finder
+- **Cannibalization guard:** Use 'route optimization' only where vendors actually publish optimization; distinguish route display from optimization.
+- **Planning basis:** Existing cost calculator explicitly models route optimization
+
+### 5. Best Auto Detailing Job Management Software in 2026
+
+- **Priority:** P1 (Wave 1)
+- **Cluster:** Workflow
+- **Page type:** Buying guide
+- **URL:** `https://getdetailerfit.com/best-auto-detailing-job-management-software`
+- **SEO Title:** Best Job Management Software for Auto Detailers (2026)
+- **H1:** Best Auto Detailing Job Management Software in 2026
+- **Primary Keyword:** auto detailing job management software
+- **Secondary Keywords:** detailing job management app; car detailing work order software; mobile detailing job tracking software; detailing work order app; job tracking software for detailers
+- **Search Intent:** Commercial investigation
+- **Why this expands impressions:** Captures 'job management', 'work order' and 'job tracking' phrasing not fully covered by CRM terminology.
+- **Content angle:** Compare work orders, job status, photos, notes, checklists, staff assignment, vehicle history and completion workflow.
+- **Required H2 outline:** What job management means | Comparison table | Work orders | Photos/checklists | Team assignment | Mobile job-day workflow | Customer updates | Reporting | FAQ
+- **Internal links / hubs:** https://getdetailerfit.com/best-auto-detailing-software-2026; https://getdetailerfit.com/best-crm-solo-mobile-detailers; https://getdetailerfit.com/mobile-tech-rx-review-auto-detailers
+- **Cannibalization guard:** Keep the angle operational/job-day focused, not lead management or general CRM.
+- **Planning basis:** Current homepage positions job management but no dedicated guide found
+
+### 6. Best Auto Detailing Quoting Software in 2026
+
+- **Priority:** P1 (Wave 1)
+- **Cluster:** Workflow
+- **Page type:** Buying guide
+- **URL:** `https://getdetailerfit.com/best-auto-detailing-quoting-software`
+- **SEO Title:** Best Quoting Software for Auto Detailers (2026): Packages, Upsells & Approvals
+- **H1:** Best Auto Detailing Quoting Software in 2026
+- **Primary Keyword:** auto detailing quoting software
+- **Secondary Keywords:** detailing quote app; car detailing quote software; detailing proposal software; mobile detailing quote app; detailing upsell software
+- **Search Intent:** Commercial investigation
+- **Why this expands impressions:** Adds quote/proposal/upsell query variants that are commercially valuable and broader than estimating alone.
+- **Content angle:** Compare service packages, good-better-best proposals, add-ons, photos, approvals, e-signatures and deposit conversion.
+- **Required H2 outline:** Quote vs estimate | Comparison table | Best proposal experience | Best mobile quoting | Upsells | Customer approval | Deposits | Templates | FAQ
+- **Internal links / hubs:** https://getdetailerfit.com/best-auto-detailing-estimating-software; https://getdetailerfit.com/compare; https://getdetailerfit.com/guides
+- **Cannibalization guard:** Differentiate from estimating page: this page is customer-facing proposal/approval; estimating page is price construction/vehicle data.
+- **Planning basis:** Adjacent commercial intent to estimating and existing proposal coverage
+
+### 7. Best Lead Management Software for Auto Detailing Businesses
+
+- **Priority:** P1 (Wave 1)
+- **Cluster:** Workflow
+- **Page type:** Buying guide
+- **URL:** `https://getdetailerfit.com/best-auto-detailing-lead-management-software`
+- **SEO Title:** Best Lead Management Software for Auto Detailers (2026)
+- **H1:** Best Lead Management Software for Auto Detailing Businesses
+- **Primary Keyword:** auto detailing lead management software
+- **Secondary Keywords:** detailing lead tracking software; detailing sales pipeline CRM; auto detailing lead follow up software; mobile detailing lead CRM; detailing inquiry management
+- **Search Intent:** Commercial investigation
+- **Why this expands impressions:** Expands beyond 'CRM' into lead tracking, pipeline and inquiry-management searches.
+- **Content angle:** Compare lead capture, pipeline stages, missed-call follow-up, source tracking, automation and lead-to-booked-job workflow.
+- **Required H2 outline:** Lead workflow | Comparison table | Best for fast follow-up | Best pipeline | Lead sources | Automation | Missed calls | Conversion tracking | FAQ
+- **Internal links / hubs:** https://getdetailerfit.com/best-crm-solo-mobile-detailers; https://getdetailerfit.com/best-ai-software-auto-detailing; https://getdetailerfit.com/guides
+- **Cannibalization guard:** Do not repeat full CRM comparison; judge tools on pre-booking lead handling.
+- **Planning basis:** Current CRM and AI pages support the topic but do not fully target the lead-management wording
+
+### 8. Best Marketing Automation Software for Auto Detailing Businesses
+
+- **Priority:** P1 (Wave 1)
+- **Cluster:** Workflow
+- **Page type:** Buying guide
+- **URL:** `https://getdetailerfit.com/best-auto-detailing-marketing-automation-software`
+- **SEO Title:** Best Marketing Automation Software for Auto Detailers (2026)
+- **H1:** Best Marketing Automation Software for Auto Detailing Businesses
+- **Primary Keyword:** auto detailing marketing automation software
+- **Secondary Keywords:** detailing marketing software; auto detailing CRM automation; detailing follow up automation; detailing email marketing software; detailing SMS marketing software
+- **Search Intent:** Commercial investigation
+- **Why this expands impressions:** Creates visibility for marketing/follow-up/automation searches outside pure operations software.
+- **Content angle:** Compare SMS/email follow-up, lead nurture, reactivation, review requests, missed-call text-back and campaign controls.
+- **Required H2 outline:** Where automation helps | Comparison table | Best all-in-one | Best CRM automation | SMS/email | Reactivation | Review requests | Compliance considerations | FAQ
+- **Internal links / hubs:** https://getdetailerfit.com/best-ai-software-auto-detailing; https://getdetailerfit.com/best-crm-solo-mobile-detailers; https://getdetailerfit.com/guides
+- **Cannibalization guard:** Keep this about marketing automation; do not compete with AI software guide on AI-agent capabilities.
+- **Planning basis:** HighLevel/AI/review-management content already creates internal topical support
+
+### 9. Best Dispatch Software for Mobile Auto Detailing Teams
+
+- **Priority:** P2 (Wave 2)
+- **Cluster:** Workflow
+- **Page type:** Buying guide
+- **URL:** `https://getdetailerfit.com/best-auto-detailing-dispatch-software`
+- **SEO Title:** Best Dispatch Software for Mobile Detailing Crews (2026)
+- **H1:** Best Dispatch Software for Mobile Auto Detailing Teams
+- **Primary Keyword:** auto detailing dispatch software
+- **Secondary Keywords:** mobile detailing dispatch software; detailing crew dispatch app; car wash dispatch software; detailing technician scheduling software; mobile service dispatch software
+- **Search Intent:** Commercial investigation
+- **Why this expands impressions:** Adds crew/dispatch terminology for operators who search by field-service workflow instead of 'detailing software'.
+- **Content angle:** Compare technician assignment, map visibility, status updates, routing, schedule changes and multi-vehicle teams.
+- **Required H2 outline:** When dispatch matters | Comparison table | Best for small crews | Best routing + dispatch | Technician status | Last-minute changes | Permissions | FAQ
+- **Internal links / hubs:** https://getdetailerfit.com/compare; https://getdetailerfit.com/software-cost-calculator; https://getdetailerfit.com/finder
+- **Cannibalization guard:** Target teams; avoid duplicating route-optimization page by emphasizing assignment/control rather than route math.
+- **Planning basis:** Current compare page features dispatch-focused Housecall Pro positioning
+
+### 10. Best Customer Portal Software for Auto Detailing Businesses
+
+- **Priority:** P2 (Wave 2)
+- **Cluster:** Workflow
+- **Page type:** Buying guide
+- **URL:** `https://getdetailerfit.com/best-auto-detailing-customer-portal-software`
+- **SEO Title:** Best Customer Portal Software for Auto Detailers (2026)
+- **H1:** Best Customer Portal Software for Auto Detailing Businesses
+- **Primary Keyword:** auto detailing customer portal software
+- **Secondary Keywords:** detailing client portal; car detailing customer portal; detailing self service portal; detailing quote approval portal; detailing invoice portal
+- **Search Intent:** Commercial investigation
+- **Why this expands impressions:** Targets a feature-specific customer-experience query family that existing CRM pages only touch as a subfeature.
+- **Content angle:** Compare quote approval, appointment details, invoices, payments, requests, history and branded self-service experience.
+- **Required H2 outline:** What a portal should do | Comparison table | Best portal experience | Quote approvals | Appointments | Payments | Customer history | Branding | FAQ
+- **Internal links / hubs:** https://getdetailerfit.com/best-crm-solo-mobile-detailers; https://getdetailerfit.com/compare; https://getdetailerfit.com/guides
+- **Cannibalization guard:** Keep portal/self-service primary; no broad CRM ranking.
+- **Planning basis:** Current CRM guide discusses Client Hub/customer portals
+
+### 11. Best Text & Appointment Reminder Software for Auto Detailers
+
+- **Priority:** P2 (Wave 2)
+- **Cluster:** Workflow
+- **Page type:** Buying guide
+- **URL:** `https://getdetailerfit.com/best-auto-detailing-text-reminder-software`
+- **SEO Title:** Best Appointment Reminder Software for Auto Detailers (2026)
+- **H1:** Best Text & Appointment Reminder Software for Auto Detailers
+- **Primary Keyword:** auto detailing appointment reminder software
+- **Secondary Keywords:** detailing text reminder software; auto detailing SMS reminders; car detailing appointment reminder app; detailing no show reminder software; detailing customer reminder software
+- **Search Intent:** Commercial investigation
+- **Why this expands impressions:** Expands into reminder/no-show/SMS wording with clear service-business intent.
+- **Content angle:** Compare confirmation texts, reminder timing, two-way replies, rescheduling, templates and plan/message costs.
+- **Required H2 outline:** Why reminders matter | Comparison table | Best built-in reminders | SMS costs | Two-way texting | Rescheduling | No-show prevention workflow | FAQ
+- **Internal links / hubs:** https://getdetailerfit.com/guides; https://getdetailerfit.com/best-crm-solo-mobile-detailers; https://getdetailerfit.com/compare
+- **Cannibalization guard:** Do not turn into a booking-software page; focus on pre-appointment communication.
+- **Planning basis:** Current Tint Wiz and booking research already covers reminder mechanics
+
+### 12. Best Review Management Software for Auto Detailing Businesses
+
+- **Priority:** P2 (Wave 2)
+- **Cluster:** Workflow
+- **Page type:** Buying guide
+- **URL:** `https://getdetailerfit.com/best-auto-detailing-review-management-software`
+- **SEO Title:** Best Review Management Software for Auto Detailers (2026)
+- **H1:** Best Review Management Software for Auto Detailing Businesses
+- **Primary Keyword:** auto detailing review management software
+- **Secondary Keywords:** detailing review software; auto detailing review request software; car detailing reputation management; detailing Google review software; detailing review automation
+- **Search Intent:** Commercial investigation
+- **Why this expands impressions:** Creates a category page around reputation/reviews rather than relying only on a single TrueReview review.
+- **Content angle:** Compare automated review requests, monitoring, response tools, negative-feedback routing, integrations and duplication with CRM features.
+- **Required H2 outline:** Review-growth workflow | Comparison table | Best dedicated tool | Best built-in CRM option | Request timing | Monitoring | AI responses | Avoid duplicate spend | FAQ
+- **Internal links / hubs:** https://getdetailerfit.com/guides; https://getdetailerfit.com/reviews; https://getdetailerfit.com/best-crm-solo-mobile-detailers
+- **Cannibalization guard:** Use the TrueReview article as one product input; category page must compare multiple approaches.
+- **Planning basis:** Existing TrueReview reputation guide provides topical seed but not category SERP coverage
+
+### 13. Best Membership Software for Auto Detailing Businesses
+
+- **Priority:** P2 (Wave 2)
+- **Cluster:** Workflow
+- **Page type:** Buying guide
+- **URL:** `https://getdetailerfit.com/best-auto-detailing-membership-software`
+- **SEO Title:** Best Membership Software for Auto Detailers (2026)
+- **H1:** Best Membership Software for Auto Detailing Businesses
+- **Primary Keyword:** auto detailing membership software
+- **Secondary Keywords:** detailing subscription software; car detailing membership management; monthly detailing plan software; detailing recurring service software; detailing customer membership app
+- **Search Intent:** Commercial investigation
+- **Why this expands impressions:** Targets recurring-plan and membership operators, a distinct intent from one-off booking.
+- **Content angle:** Compare recurring plans, card-on-file, usage tracking, member pricing, renewals, booking rules and customer portal support.
+- **Required H2 outline:** Membership model basics | Comparison table | Best native memberships | Recurring payments | Usage limits | Member booking | Reporting | FAQ
+- **Internal links / hubs:** https://getdetailerfit.com/guides; https://getdetailerfit.com/software-cost-calculator; https://getdetailerfit.com/best-auto-detailing-payment-software
+- **Cannibalization guard:** Keep this on memberships/subscriptions; recurring billing page should focus on billing mechanics across service types.
+- **Planning basis:** Current DetailPilot coverage mentions memberships; no dedicated category guide found
+
+### 14. Best Recurring Billing Software for Auto Detailing Businesses
+
+- **Priority:** P2 (Wave 2)
+- **Cluster:** Workflow
+- **Page type:** Buying guide
+- **URL:** `https://getdetailerfit.com/best-auto-detailing-recurring-billing-software`
+- **SEO Title:** Best Recurring Billing Software for Auto Detailers (2026)
+- **H1:** Best Recurring Billing Software for Auto Detailing Businesses
+- **Primary Keyword:** auto detailing recurring billing software
+- **Secondary Keywords:** detailing recurring payments software; detailing subscription billing; monthly car wash billing software; detailing autopay software; card on file detailing software
+- **Search Intent:** Commercial investigation
+- **Why this expands impressions:** Adds autopay/recurring-payment terms adjacent to memberships and maintenance plans.
+- **Content angle:** Compare card-on-file, automatic invoices, failed-payment handling, subscriptions, recurring jobs and accounting sync.
+- **Required H2 outline:** Recurring billing vs membership | Comparison table | Best autopay workflow | Failed payments | Recurring jobs | Accounting | Fees | FAQ
+- **Internal links / hubs:** https://getdetailerfit.com/best-auto-detailing-payment-software; https://getdetailerfit.com/best-auto-detailing-membership-software; https://getdetailerfit.com/best-crm-solo-mobile-detailers
+- **Cannibalization guard:** Differentiate from membership software by focusing on billing infrastructure, not loyalty/package design.
+- **Planning basis:** Payment and recurring-job capabilities appear across existing product research
+
+### 15. Best Inventory Software for Auto Detailing Businesses
+
+- **Priority:** P2 (Wave 2)
+- **Cluster:** Workflow
+- **Page type:** Buying guide
+- **URL:** `https://getdetailerfit.com/best-auto-detailing-inventory-software`
+- **SEO Title:** Best Inventory Software for Auto Detailing Shops (2026)
+- **H1:** Best Inventory Software for Auto Detailing Businesses
+- **Primary Keyword:** auto detailing inventory software
+- **Secondary Keywords:** detailing product inventory software; detailing chemical inventory app; detailing supplies inventory software; car care inventory software; detailing stock management
+- **Search Intent:** Commercial investigation
+- **Why this expands impressions:** Adds product/chemical/supply inventory searches and supports fixed-shop operators.
+- **Content angle:** Compare chemicals/supplies tracking, low-stock alerts, purchase orders, job consumption, film inventory where relevant and cost visibility.
+- **Required H2 outline:** What detailers actually track | Comparison table | Best general inventory | Best appearance-shop inventory | Low-stock alerts | Job usage | Purchasing | FAQ
+- **Internal links / hubs:** https://getdetailerfit.com/best-auto-detailing-software-2026; https://getdetailerfit.com/best-software-ppf-business; https://getdetailerfit.com/reviews
+- **Cannibalization guard:** Do not let PPF film inventory dominate; primary audience is detailing supplies/chemicals.
+- **Planning basis:** Inventory appears in PPF/Tint/ShopWrk research but lacks detailing-specific category page
+
+### 16. Urable Pricing for Auto Detailers: Which Plan Do You Need?
+
+- **Priority:** P1 (Wave 1)
+- **Cluster:** Pricing
+- **Page type:** Pricing guide
+- **URL:** `https://getdetailerfit.com/urable-pricing`
+- **SEO Title:** Urable Pricing (2026): Which Plan Fits an Auto Detailing Business?
+- **H1:** Urable Pricing for Auto Detailers: Which Plan Do You Need?
+- **Primary Keyword:** urable pricing
+- **Secondary Keywords:** urable cost; urable pricing 2026; urable express vs pro; urable software price; urable monthly cost
+- **Search Intent:** Transactional / commercial investigation
+- **Why this expands impressions:** Brand+pricing queries can generate impressions earlier than broad category terms because intent is narrow and the page can answer one exact question.
+- **Content angle:** Map every current plan to team size, online booking, routing, users and when an upgrade becomes necessary.
+- **Required H2 outline:** Current plan table | Express vs Pro | Booking gate | User limits | Routing | Extra costs | Best-fit scenarios | Alternatives | FAQ
+- **Internal links / hubs:** https://getdetailerfit.com/compare; https://getdetailerfit.com/software-cost-calculator; https://getdetailerfit.com/best-crm-solo-mobile-detailers
+- **Cannibalization guard:** Keep pricing factual and source-dated; do not duplicate a full Urable review.
+- **Planning basis:** GSC already shows brand pricing intent for Urable
+
+### 17. OrbisX Pricing for Auto Detailers in 2026
+
+- **Priority:** P1 (Wave 1)
+- **Cluster:** Pricing
+- **Page type:** Pricing guide
+- **URL:** `https://getdetailerfit.com/orbisx-pricing`
+- **SEO Title:** OrbisX Pricing (2026): Plans, Costs & What Detailers Should Verify
+- **H1:** OrbisX Pricing for Auto Detailers in 2026
+- **Primary Keyword:** orbisx pricing
+- **Secondary Keywords:** orbisx cost; orbisx price; orbisx monthly cost; orbisx software pricing; orbisx free trial
+- **Search Intent:** Transactional / commercial investigation
+- **Why this expands impressions:** Adds a high-intent brand pricing landing page and supports existing OrbisX review/comparison equity.
+- **Content angle:** Explain current published pricing, promotional pricing, included features, usage/add-on uncertainties and who should verify a quote.
+- **Required H2 outline:** Current price | What is included | Promotion caveats | Messaging/add-ons | Team fit | Trial | Alternatives | FAQ
+- **Internal links / hubs:** https://getdetailerfit.com/orbisx-review-auto-detailers; https://getdetailerfit.com/compare; https://getdetailerfit.com/software-cost-calculator
+- **Cannibalization guard:** Do not invent unlisted add-on prices; mark unknowns explicitly.
+- **Planning basis:** Current site has OrbisX review and multiple comparisons but no pricing page found
+
+### 18. Jobber Pricing for Auto Detailers in 2026
+
+- **Priority:** P2 (Wave 2)
+- **Cluster:** Pricing
+- **Page type:** Pricing guide
+- **URL:** `https://getdetailerfit.com/jobber-pricing-auto-detailers`
+- **SEO Title:** Jobber Pricing for Auto Detailers (2026): Real Cost by Team Size
+- **H1:** Jobber Pricing for Auto Detailers in 2026
+- **Primary Keyword:** jobber pricing for auto detailers
+- **Secondary Keywords:** jobber cost for detailing business; jobber pricing 2026; jobber core vs connect; jobber monthly cost detailer; jobber users pricing
+- **Search Intent:** Transactional / commercial investigation
+- **Why this expands impressions:** Captures branded pricing searches while keeping relevance to the detailing niche.
+- **Content angle:** Translate Jobber's general-service plans into solo, 2-person and small-crew detailing scenarios.
+- **Required H2 outline:** Current plans | Solo cost | 2-5 user cost | Booking | Routing | Extra users | Annual vs monthly | Alternatives | FAQ
+- **Internal links / hubs:** https://getdetailerfit.com/compare; https://getdetailerfit.com/software-cost-calculator; https://getdetailerfit.com/best-crm-solo-mobile-detailers
+- **Cannibalization guard:** Use detailing-specific scenarios; avoid competing with generic Jobber pricing sites on every feature.
+- **Planning basis:** Existing compare/calculator already contain Jobber plan-level data
+
+### 19. Housecall Pro Pricing for Auto Detailers in 2026
+
+- **Priority:** P2 (Wave 2)
+- **Cluster:** Pricing
+- **Page type:** Pricing guide
+- **URL:** `https://getdetailerfit.com/housecall-pro-pricing-auto-detailers`
+- **SEO Title:** Housecall Pro Pricing for Auto Detailers (2026): Plans, Users & Routing
+- **H1:** Housecall Pro Pricing for Auto Detailers in 2026
+- **Primary Keyword:** housecall pro pricing for auto detailers
+- **Secondary Keywords:** housecall pro cost detailing; housecall pro pricing 2026; housecall pro user pricing; housecall pro route optimization plan; housecall pro monthly cost
+- **Search Intent:** Transactional / commercial investigation
+- **Why this expands impressions:** Adds a brand+pricing page around an existing affiliate/compare candidate with clear team-size intent.
+- **Content angle:** Translate plans into detailing use cases: booking, dispatch, users, route optimization and usable-plan cost.
+- **Required H2 outline:** Current plans | Basic vs Essentials vs Max | Included users | Booking | Dispatch | Route optimization | Extra costs | Alternatives | FAQ
+- **Internal links / hubs:** https://getdetailerfit.com/compare; https://getdetailerfit.com/software-cost-calculator; https://getdetailerfit.com/guides
+- **Cannibalization guard:** Keep current plan gates sourced; avoid generic home-service commentary.
+- **Planning basis:** Current calculator and compare already model Housecall Pro plan gates
+
+### 20. ServiceM8 Pricing for Auto Detailers in 2026
+
+- **Priority:** P2 (Wave 2)
+- **Cluster:** Pricing
+- **Page type:** Pricing guide
+- **URL:** `https://getdetailerfit.com/servicem8-pricing-auto-detailers`
+- **SEO Title:** ServiceM8 Pricing for Auto Detailers (2026): Free Plan to Growing Teams
+- **H1:** ServiceM8 Pricing for Auto Detailers in 2026
+- **Primary Keyword:** servicem8 pricing for auto detailers
+- **Secondary Keywords:** servicem8 free plan; servicem8 pricing 2026; servicem8 cost; servicem8 job limits; servicem8 starter vs growing
+- **Search Intent:** Transactional / commercial investigation
+- **Why this expands impressions:** Captures price/free-plan searches and reinforces DetailerFit's low-cost mobile-operator topical authority.
+- **Content angle:** Explain the job-volume pricing model, free tier, paid tiers, unlimited users and Apple-first tradeoff.
+- **Required H2 outline:** Current plans | Free plan | Job limits | Extra jobs | Users | Booking | Device fit | Upgrade scenarios | FAQ
+- **Internal links / hubs:** https://getdetailerfit.com/compare; https://getdetailerfit.com/software-cost-calculator; https://getdetailerfit.com/best-crm-solo-mobile-detailers
+- **Cannibalization guard:** Pricing page only; link to review for feature depth.
+- **Planning basis:** Current site highlights ServiceM8 pricing repeatedly but no dedicated pricing guide found
+
+### 21. Tint Wiz Pricing in 2026
+
+- **Priority:** P3 (Wave 3)
+- **Cluster:** Pricing
+- **Page type:** Pricing guide
+- **URL:** `https://getdetailerfit.com/tint-wiz-pricing`
+- **SEO Title:** Tint Wiz Pricing (2026): Cost, Free Trial & What Shops Get
+- **H1:** Tint Wiz Pricing in 2026
+- **Primary Keyword:** tint wiz pricing
+- **Secondary Keywords:** tint wiz cost; tint wiz price; tint wiz monthly cost; tint wiz free trial; tint wiz $150
+- **Search Intent:** Transactional / commercial investigation
+- **Why this expands impressions:** Adds an exact brand pricing answer for tint/PPF/detailing crossover traffic.
+- **Content angle:** Resolve current vs older price references, unlimited users/projects, free trial and what is included.
+- **Required H2 outline:** Current price | Older price references | What is included | Unlimited users | Trial | Payments/add-ons | Best fit | Alternatives | FAQ
+- **Internal links / hubs:** https://getdetailerfit.com/tint-wiz-review; https://getdetailerfit.com/best-software-ppf-business; https://getdetailerfit.com/guides
+- **Cannibalization guard:** Lead with date-stamped current pricing and explain conflicting older references clearly.
+- **Planning basis:** Current Tint Wiz review explicitly notes conflicting price references
+
+### 22. 6 Best Urable Alternatives for Auto Detailers in 2026
+
+- **Priority:** P1 (Wave 1)
+- **Cluster:** Alternatives
+- **Page type:** Alternatives guide
+- **URL:** `https://getdetailerfit.com/urable-alternatives`
+- **SEO Title:** Best Urable Alternatives for Auto Detailers (2026): 6 Options Compared
+- **H1:** 6 Best Urable Alternatives for Auto Detailers in 2026
+- **Primary Keyword:** urable alternatives
+- **Secondary Keywords:** urable competitors; apps like urable; urable alternative for detailers; cheaper than urable; urable vs alternatives
+- **Search Intent:** Commercial investigation
+- **Why this expands impressions:** Targets brand-switching queries that often surface earlier because the searcher has a narrow comparison set.
+- **Content angle:** Organize alternatives by reason to switch: lower price, stronger booking, Apple-first, AI, estimating, broader field-service.
+- **Required H2 outline:** Why switch from Urable | Comparison table | Lower-cost option | Best vehicle estimating | Best general field service | Best Apple-first | Best AI | FAQ
+- **Internal links / hubs:** https://getdetailerfit.com/compare; https://getdetailerfit.com/best-crm-solo-mobile-detailers; https://getdetailerfit.com/software-cost-calculator
+- **Cannibalization guard:** Do not duplicate Urable vs X pages; this is a multi-option decision page.
+- **Planning basis:** GSC already shows Urable brand queries; many current head-to-head pages create strong internal support
+
+### 23. 6 Best OrbisX Alternatives for Auto Detailers
+
+- **Priority:** P1 (Wave 1)
+- **Cluster:** Alternatives
+- **Page type:** Alternatives guide
+- **URL:** `https://getdetailerfit.com/orbisx-alternatives`
+- **SEO Title:** Best OrbisX Alternatives for Auto Detailers (2026)
+- **H1:** 6 Best OrbisX Alternatives for Auto Detailers
+- **Primary Keyword:** orbisx alternatives
+- **Secondary Keywords:** orbisx competitors; apps like orbisx; orbisx alternative; cheaper alternative to orbisx; orbisx vs competitors
+- **Search Intent:** Commercial investigation
+- **Why this expands impressions:** Expands existing OrbisX review/comparison authority into a high-intent switching query family.
+- **Content angle:** Alternatives by reason: simpler/cheaper, unlimited users, stronger estimating, stronger booking, general field service, AI-first.
+- **Required H2 outline:** Why look beyond OrbisX | Comparison table | Best lower-cost | Best automotive specialist | Best estimates | Best booking | Best simple option | FAQ
+- **Internal links / hubs:** https://getdetailerfit.com/orbisx-review-auto-detailers; https://getdetailerfit.com/compare; https://getdetailerfit.com/best-crm-solo-mobile-detailers
+- **Cannibalization guard:** Avoid restating the OrbisX review; center each section on 'why choose this instead'.
+- **Planning basis:** Existing OrbisX review plus OrbisX vs Jobber/QuoteIQ/Urable comparisons
+
+### 24. 6 Best Jobber Alternatives for Auto Detailers
+
+- **Priority:** P2 (Wave 2)
+- **Cluster:** Alternatives
+- **Page type:** Alternatives guide
+- **URL:** `https://getdetailerfit.com/jobber-alternatives-auto-detailers`
+- **SEO Title:** Best Jobber Alternatives for Auto Detailers (2026)
+- **H1:** 6 Best Jobber Alternatives for Auto Detailers
+- **Primary Keyword:** jobber alternatives for auto detailers
+- **Secondary Keywords:** jobber competitors detailing; apps like jobber for detailers; cheaper jobber alternative; automotive crm instead of jobber; jobber alternatives small detailing business
+- **Search Intent:** Commercial investigation
+- **Why this expands impressions:** Captures general-platform switchers and narrows them into the auto-detailing niche.
+- **Content angle:** Compare alternatives when automotive workflow, lower solo cost, unlimited users, estimating or AI matters more than general field-service depth.
+- **Required H2 outline:** Why detailers leave Jobber | Comparison table | Best automotive-specific | Best low-cost | Best Apple-first | Best estimating | Best AI | FAQ
+- **Internal links / hubs:** https://getdetailerfit.com/compare; https://getdetailerfit.com/best-crm-solo-mobile-detailers; https://getdetailerfit.com/guides
+- **Cannibalization guard:** Keep niche modifier strong in title/H1/body so it does not compete head-on with generic Jobber-alternatives SERPs.
+- **Planning basis:** Multiple current Jobber head-to-head pages support this hub
+
+### 25. 6 Best Housecall Pro Alternatives for Auto Detailers
+
+- **Priority:** P2 (Wave 2)
+- **Cluster:** Alternatives
+- **Page type:** Alternatives guide
+- **URL:** `https://getdetailerfit.com/housecall-pro-alternatives-auto-detailers`
+- **SEO Title:** Best Housecall Pro Alternatives for Auto Detailers (2026)
+- **H1:** 6 Best Housecall Pro Alternatives for Auto Detailers
+- **Primary Keyword:** housecall pro alternatives for auto detailers
+- **Secondary Keywords:** housecall pro competitors detailing; cheaper housecall pro alternative; apps like housecall pro for detailers; housecall pro vs detailing crm; housecall pro alternative small business
+- **Search Intent:** Commercial investigation
+- **Why this expands impressions:** Adds niche-specific switcher traffic around another established field-service brand.
+- **Content angle:** Alternatives by price, automotive fit, solo workflow, route/dispatch, booking and vehicle documentation.
+- **Required H2 outline:** Why switch | Comparison table | Best automotive-specific | Best low-cost | Best solo | Best vehicle workflow | Best booking | FAQ
+- **Internal links / hubs:** https://getdetailerfit.com/compare; https://getdetailerfit.com/software-cost-calculator; https://getdetailerfit.com/best-crm-solo-mobile-detailers
+- **Cannibalization guard:** Avoid generic HVAC/plumbing framing; every comparison criterion should be detailing-specific.
+- **Planning basis:** Housecall Pro already appears in core comparison/calculator
+
+### 26. 6 Best ServiceM8 Alternatives for Auto Detailers
+
+- **Priority:** P3 (Wave 3)
+- **Cluster:** Alternatives
+- **Page type:** Alternatives guide
+- **URL:** `https://getdetailerfit.com/servicem8-alternatives-auto-detailers`
+- **SEO Title:** Best ServiceM8 Alternatives for Auto Detailers (2026)
+- **H1:** 6 Best ServiceM8 Alternatives for Auto Detailers
+- **Primary Keyword:** servicem8 alternatives for auto detailers
+- **Secondary Keywords:** servicem8 competitors detailing; apps like servicem8; servicem8 android alternative; servicem8 alternative for detailers; servicem8 vs jobber alternative
+- **Search Intent:** Commercial investigation
+- **Why this expands impressions:** Captures users who like ServiceM8 economics but need Android, automotive specialization or different scaling.
+- **Content angle:** Organize around the exact reasons ServiceM8 may not fit: Apple-first experience, job limits, automotive depth, routing or broader CRM.
+- **Required H2 outline:** Why switch | Comparison table | Best Android-friendly | Best automotive-specific | Best general field service | Best estimating | Best team scaling | FAQ
+- **Internal links / hubs:** https://getdetailerfit.com/compare; https://getdetailerfit.com/best-crm-solo-mobile-detailers; https://getdetailerfit.com/guides
+- **Cannibalization guard:** Emphasize Android/automotive/job-limit reasons rather than generic feature-count comparisons.
+- **Planning basis:** Current content repeatedly positions ServiceM8 around Apple-first and job-volume economics
+
+### 27. 6 Best Tint Wiz Alternatives in 2026
+
+- **Priority:** P3 (Wave 3)
+- **Cluster:** Alternatives
+- **Page type:** Alternatives guide
+- **URL:** `https://getdetailerfit.com/tint-wiz-alternatives`
+- **SEO Title:** Best Tint Wiz Alternatives for Tint, PPF & Detailing Shops (2026)
+- **H1:** 6 Best Tint Wiz Alternatives in 2026
+- **Primary Keyword:** tint wiz alternatives
+- **Secondary Keywords:** tint wiz competitors; apps like tint wiz; cheaper tint wiz alternative; tint crm alternatives; ppf software alternatives
+- **Search Intent:** Commercial investigation
+- **Why this expands impressions:** Extends film-shop topical authority into brand-switcher searches and can surface for tint/PPF/detailing crossover terms.
+- **Content angle:** Alternatives by lower price, PPF workflow, AI, cutting/production, quoting and broader shop management.
+- **Required H2 outline:** Why switch | Comparison table | Best PPF operations | Best lower-cost | Best AI-first | Best quoting | Best cutting companion | FAQ
+- **Internal links / hubs:** https://getdetailerfit.com/tint-wiz-review; https://getdetailerfit.com/best-software-ppf-business; https://getdetailerfit.com/best-car-wrap-software
+- **Cannibalization guard:** Clearly distinguish CRM/shop-management alternatives from cutting software.
+- **Planning basis:** Current Tint Wiz, PPF and wrap guides provide a strong internal cluster
+
+### 28. Best Software for Mobile Car Wash Businesses in 2026
+
+- **Priority:** P2 (Wave 2)
+- **Cluster:** Business type
+- **Page type:** Buying guide
+- **URL:** `https://getdetailerfit.com/best-mobile-car-wash-software`
+- **SEO Title:** Best Mobile Car Wash Software (2026): Booking, Routes & Payments
+- **H1:** Best Software for Mobile Car Wash Businesses in 2026
+- **Primary Keyword:** mobile car wash software
+- **Secondary Keywords:** mobile car wash booking software; mobile car wash app for business; car wash scheduling software mobile; mobile wash route software; mobile car wash CRM
+- **Search Intent:** Commercial investigation
+- **Why this expands impressions:** Directly addresses an observed GSC query and expands beyond 'detailing' wording into adjacent mobile wash terminology.
+- **Content angle:** Compare booking, route planning, recurring plans, payments, service areas and mobile-first operation.
+- **Required H2 outline:** Mobile car wash workflow | Comparison table | Best booking | Best route planning | Best subscriptions | Best low-cost | Payments | FAQ
+- **Internal links / hubs:** https://getdetailerfit.com/compare; https://getdetailerfit.com/software-cost-calculator; https://getdetailerfit.com/guides
+- **Cannibalization guard:** Keep mobile wash use cases prominent; do not simply rename the main detailing-software guide.
+- **Planning basis:** Observed GSC query: 'mobile car wash software'
+
+### 29. Best Auto Detailing Software for 2–5 Person Teams
+
+- **Priority:** P3 (Wave 3)
+- **Cluster:** Business type
+- **Page type:** Buying guide
+- **URL:** `https://getdetailerfit.com/best-detailing-software-small-team`
+- **SEO Title:** Best Detailing Software for Small Teams (2–5 People) in 2026
+- **H1:** Best Auto Detailing Software for 2–5 Person Teams
+- **Primary Keyword:** detailing software for small team
+- **Secondary Keywords:** auto detailing software for 2 people; detailing software for 5 employees; small detailing shop software; detailing team management software; detailing crew software
+- **Search Intent:** Commercial investigation
+- **Why this expands impressions:** Adds team-size modifiers that the current broad guides mention but do not isolate as a dedicated landing page.
+- **Content angle:** Compare seat economics, permissions, dispatch, shared customer history, routing, staff scheduling and growth limits.
+- **Required H2 outline:** 2–5 person requirements | Comparison table | Best value by seats | Best automotive workflow | Best dispatch | Best unlimited users | Permissions | FAQ
+- **Internal links / hubs:** https://getdetailerfit.com/software-cost-calculator; https://getdetailerfit.com/compare; https://getdetailerfit.com/finder
+- **Cannibalization guard:** Make team size the organizing principle; avoid a generic 'best software' rewrite.
+- **Planning basis:** Methodology already defines a 2–5 person small-crew reference business
+
+### 30. Best Auto Detailing Software for Multi-Location Businesses
+
+- **Priority:** P3 (Wave 3)
+- **Cluster:** Business type
+- **Page type:** Buying guide
+- **URL:** `https://getdetailerfit.com/best-multi-location-detailing-software`
+- **SEO Title:** Best Multi-Location Software for Auto Detailing Businesses (2026)
+- **H1:** Best Auto Detailing Software for Multi-Location Businesses
+- **Primary Keyword:** multi location auto detailing software
+- **Secondary Keywords:** multi shop detailing software; auto detailing franchise software; multiple location detailing CRM; detailing business multi location management; car detailing chain software
+- **Search Intent:** Commercial investigation
+- **Why this expands impressions:** Opens a higher-scale search surface not addressed by solo/mobile-first pages.
+- **Content angle:** Compare location-level permissions, centralized reporting, CRM sharing, inventory, pricing controls, staff access and enterprise/API options.
+- **Required H2 outline:** When multi-location features matter | Comparison table | Best centralized CRM | Best permissions | Best reporting | Inventory | APIs/integrations | Questions to ask vendors | FAQ
+- **Internal links / hubs:** https://getdetailerfit.com/best-auto-detailing-software-2026; https://getdetailerfit.com/best-crm-solo-mobile-detailers; https://getdetailerfit.com/guides
+- **Cannibalization guard:** Do not make unverified enterprise claims; mark multi-location capabilities that require vendor confirmation.
+- **Planning basis:** Current content is heavily solo/small-crew focused, leaving scale-specific intent open
+
+## Recommended execution order
+
+1. Complete all P1 pages first.
+2. Verify each published URL is internally linked, included in sitemap.xml, canonicalized to HTTPS, and crawlable.
+3. Review early GSC query impressions before publishing P2, then continue unless a clear cannibalization issue appears.
+4. Publish P2 pages.
+5. Publish P3 pages to fill narrower query gaps.
+
+## Completion report required after implementation
+
+After each wave, report:
+- New pages created
+- Existing pages modified
+- Internal links added
+- sitemap.xml changes
+- Canonical changes, if any
+- Any skipped page and the exact reason

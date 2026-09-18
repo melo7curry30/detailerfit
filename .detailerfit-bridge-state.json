@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-09-18T10:46:55.296306+00:00",
-  "base_commit": "38c823271575a846f66273c24de9bb5e944789a8",
-  "command_id": "quoteiq-hotfix-20260918-02",
-  "last_uid": 79
+  "applied_at_utc": "2026-09-18T11:16:27.665438+00:00",
+  "base_commit": "2afd1910b0cf5b841ef41c1ed6dbc240244b6ddc",
+  "command_id": "hcp-seat-pricing-consistency-20260918-01",
+  "last_uid": 80
 }

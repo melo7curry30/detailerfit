@@ -308,7 +308,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       vendorRel:"sponsored noopener",
       vendorTarget:"_blank",
       why:"A broad field-service platform with online booking and scheduling/dispatch on Basic, then stronger routing and team controls above it.",
-      baseWatch:"It is built for general home-service operations rather than vehicle-care businesses. Teams above eight users can add users to Max at an extra published per-user cost.",
+      baseWatch:"It is built for general home-service operations rather than vehicle-care businesses. Basic includes 1 user, Essentials 5 and Max 8; additional users are currently published only on Max at $35/month each.",
       tags:["iOS + Android","Dispatch-focused"]
     }
   };
@@ -401,9 +401,9 @@ document.addEventListener('DOMContentLoaded',()=>{
     const extra=Math.max(0,team-8);
     return {
       plan:extra>0?'Max + extra users':'Max',
-      cost:329+(extra*75),
-      annual:extra>0?'$299/mo annual base + published extra-user charges':'$299/mo billed annually',
-      users:extra>0?`8 included + ${extra} extra user${extra===1?'':'s'}`:'8 users included'
+      cost:329+(extra*35),
+      annual:extra>0?`$299/mo annual base + $${extra*35}/mo for ${extra} extra user${extra===1?'':'s'}`:'$299/mo billed annually',
+      users:extra>0?`8 included + ${extra} extra user${extra===1?'':'s'} @ $35/mo each`:'8 users included'
     };
   };
 

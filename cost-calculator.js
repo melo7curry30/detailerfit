@@ -178,32 +178,32 @@ document.addEventListener('DOMContentLoaded', () => {
         plan, monthly:baseMonthly + extra*extraMonthly,
         annualMonthly:baseAnnual + extra*extraMonthly,
         annualTotal:(baseAnnual + extra*extraMonthly)*12,
-        capacity: extra ? `${included} included + ${extra} extra user${extra===1?'':'s'}` : `${included} user${included===1?'':'s'} included`,
+        capacity: extra ? `${included} included + ${extra} extra user${extra===1?'':'s'} @ $35/mo each` : `${included} user${included===1?'':'s'} included`,
         route
       };
     };
 
     let p;
-    if (routeOpt) {
-      p=make('Max',329,299,8,75,true);
+    if (routeOpt || team > 5) {
+      p=make('Max',329,299,8,35,true);
+    } else if (team <= 1) {
+      p=make('Basic',79,59,1,0,false);
     } else {
-      const candidates=[];
-      if (team <= 1) candidates.push(make('Basic',79,59,1,0,false));
-      candidates.push(make('Essentials',189,149,5,100,false));
-      candidates.push(make('Max',329,299,8,75,true));
-      p=candidates.sort((a,b)=>a.monthly-b.monthly)[0];
+      p=make('Essentials',189,149,5,0,false);
     }
 
     const reasons=[];
     if (selfBooking) reasons.push('online booking is included on Basic and above');
     if (routeOpt) reasons.push('route optimization requires Max');
-    if (team > 1) reasons.push(`${team} users affect the included-seat math`);
+    if (team > 5) reasons.push(`${team} users require Max because Essentials includes up to five users`);
+    else if (team > 1) reasons.push(`${team} users fit within Essentials' five included users`);
+    if (team > 8) reasons.push(`${team-8} additional user${team-8===1?'':'s'} add $35/month each on Max`);
     return {
       name:'Housecall Pro', url:'housecall-pro', plan:p.plan, monthly:p.monthly,
       annualMonthly:p.annualMonthly, annualTotal:p.annualTotal, complete:true,
       capacity:p.capacity,
       why: reasons.length ? reasons.join('; ') + '.' : 'Basic is the lowest published configuration for one user.',
-      watch:'Additional-user charges are included in this estimate where your team exceeds the plan’s included seats. Taxes and optional add-ons are excluded.'
+      watch:'Basic includes 1 user, Essentials includes 5, and Max includes 8. Housecall Pro currently publishes additional users on Max at $35/month each. Taxes and optional add-ons are excluded.'
     };
   };
 

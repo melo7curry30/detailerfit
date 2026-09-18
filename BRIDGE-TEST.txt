@@ -1,2 +1,0 @@
-DetailerFit ChatGPT Mail Bridge test.
-Created automatically to verify Gmail -> GitHub Actions -> main.

@@ -88,9 +88,6 @@
     <loc>https://getdetailerfit.com/privacy</loc>
   </url>
   <url>
-    <loc>https://getdetailerfit.com/quoteiq</loc>
-  </url>
-  <url>
     <loc>https://getdetailerfit.com/quoteiq-alternatives-mobile-detailing</loc>
   </url>
   <url>
@@ -215,5 +212,9 @@
   <url>
     <loc>https://getdetailerfit.com/orbisx-alternatives</loc>
     <lastmod>2026-09-17</lastmod>
+  </url>
+  <url>
+    <loc>https://getdetailerfit.com/quoteiq</loc>
+    <lastmod>2026-09-18</lastmod>
   </url>
 </urlset>

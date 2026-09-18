@@ -107,7 +107,10 @@ document.addEventListener('click',(e)=>{
       link_host:link.hostname,
       link_text:(link.textContent||'').trim().slice(0,120),
       cta_position:dfLinkContext(link),
-      monetized:isAffiliate
+      monetized:isAffiliate,
+      tool_name:link.dataset.toolName||undefined,
+      result_rank:link.dataset.resultRank?Number(link.dataset.resultRank):undefined,
+      result_plan:link.dataset.resultPlan||undefined
     });
     return;
   }
@@ -440,6 +443,16 @@ document.addEventListener('DOMContentLoaded',()=>{
     const device=d.get('device')||'either';
     const needs=d.getAll('priority');
 
+    dfTrackEvent('tool_start',{
+      tool_name:'finder',
+      team_size:team,
+      jobs_per_month:jobs,
+      budget_monthly:budget,
+      booking_requirement:booking,
+      device_preference:device,
+      priority_count:needs.length
+    });
+
     if(team===1){
       tools.ServiceM8.s+=6;tools.QuoteIQ.s+=5;tools["Mobile Tech RX"].s+=4;tools.Jobber.s+=4;tools.Urable.s+=2;tools["Housecall Pro"].s+=2;
     }else if(team<=5){
@@ -562,11 +575,30 @@ document.addEventListener('DOMContentLoaded',()=>{
           <div class="result-watch"><strong>Verify before buying:</strong> ${x.baseWatch}</div>
           <div class="actions">
             <a class="btn secondary" href="${x.url}">See research notes</a>
-            <a class="btn primary" data-vendor="${x.name}" data-cta-position="finder-result" href="${x.vendorUrl}" rel="${vendorRel}"${x.vendorTarget?` target="${x.vendorTarget}"`:``}>Visit ${x.name}</a>
+            <a class="btn primary" data-vendor="${x.name}" data-cta-position="finder-result" data-tool-name="finder" data-result-rank="${i+1}" data-result-plan="${p.plan}" href="${x.vendorUrl}" rel="${vendorRel}"${x.vendorTarget?` target="${x.vendorTarget}"`:``}>Visit ${x.name}</a>
             ${i===0?'<a class="btn ghost" href="compare">Open comparison hub</a>':''}
           </div>
         </article>`;
     }).join('');
+
+    if(ranked.length){
+      dfTrackEvent('tool_result_view',{
+        tool_name:'finder',
+        result_count:ranked.length,
+        top_vendor:ranked[0].name,
+        top_plan:ranked[0].plan.plan,
+        any_in_budget:anyInBudget
+      });
+    }else{
+      dfTrackEvent('tool_no_match',{
+        tool_name:'finder',
+        team_size:team,
+        jobs_per_month:jobs,
+        budget_monthly:budget,
+        booking_requirement:booking,
+        device_preference:device
+      });
+    }
 
     const box=document.getElementById('resultsBox');
     box.style.display='block';

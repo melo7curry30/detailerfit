@@ -214,6 +214,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const selfBooking = d.get('selfBooking') === 'yes';
     const routeOpt = d.get('routeOpt') === 'yes';
 
+    if(typeof dfTrackEvent==='function'){
+      dfTrackEvent('tool_start',{
+        tool_name:'cost_calculator',
+        team_size:team,
+        jobs_per_month:jobs,
+        self_booking_required:selfBooking,
+        route_optimization_required:routeOpt
+      });
+    }
+
     const results = [
       quoteIQ(team,selfBooking,routeOpt),
       mobileTechRX(team,selfBooking,routeOpt),
@@ -262,13 +272,33 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="${r.complete?'note':'warning'}"><b>${r.complete?'Verify before buying':'Cost not fully known'}:</b> ${r.watch}</div>
           <div class="actions">
             <a class="btn secondary" href="${r.url}">See ${r.name} research</a>
-            <a class="btn primary" data-vendor="${r.name}" href="${vendorMap[r.name].url}" rel="${vendorMap[r.name].rel}"${vendorMap[r.name].target?` target="${vendorMap[r.name].target}"`:``}>Visit ${r.name}</a>
+            <a class="btn primary" data-vendor="${r.name}" data-cta-position="cost-calculator-result" data-tool-name="cost_calculator" data-result-rank="${i+1}" data-result-plan="${r.plan}" href="${vendorMap[r.name].url}" rel="${vendorMap[r.name].rel}"${vendorMap[r.name].target?` target="${vendorMap[r.name].target}"`:``}>Visit ${r.name}</a>
           </div>
         </article>`;
     }).join('');
 
     document.getElementById('costResults').innerHTML = cards;
     document.getElementById('resultsSection').hidden = false;
+
+    if(typeof dfTrackEvent==='function'){
+      if(lowest){
+        dfTrackEvent('tool_result_view',{
+          tool_name:'cost_calculator',
+          result_count:results.length,
+          top_vendor:lowest.name,
+          top_plan:lowest.plan,
+          top_monthly_cost:lowest.monthly
+        });
+      }else{
+        dfTrackEvent('tool_no_match',{
+          tool_name:'cost_calculator',
+          team_size:team,
+          jobs_per_month:jobs,
+          self_booking_required:selfBooking,
+          route_optimization_required:routeOpt
+        });
+      }
+    }
 
     const requirementText = [
       `${team} software user${team===1?'':'s'}`,

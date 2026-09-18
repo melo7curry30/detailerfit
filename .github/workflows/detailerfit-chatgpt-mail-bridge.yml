@@ -1,0 +1,366 @@
+name: DetailerFit ChatGPT Mail Bridge
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Every 5 minutes, offset from the top of the hour to reduce scheduler congestion.
+    - cron: "3-58/5 * * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: detailerfit-chatgpt-mail-bridge
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      DF_GMAIL_USER: hello.detailerfit@gmail.com
+      DF_GMAIL_APP_PASSWORD: ${{ secrets.DF_GMAIL_APP_PASSWORD }}
+
+    steps:
+      - name: Check out current main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Read newest DetailerFit deploy command from Gmail Sent
+        id: command
+        shell: python
+        run: |
+          import email
+          import hashlib
+          import imaplib
+          import io
+          import json
+          import os
+          import posixpath
+          import re
+          import shutil
+          import stat
+          import subprocess
+          import sys
+          import zipfile
+          from datetime import datetime, timezone
+          from email import policy
+          from email.utils import parseaddr
+          from pathlib import Path, PurePosixPath
+
+          USER = os.environ.get("DF_GMAIL_USER", "").strip()
+          APP_PASSWORD = os.environ.get("DF_GMAIL_APP_PASSWORD", "").replace(" ", "").strip()
+          SUBJECT_MARKER = "[DETAILERFIT-DEPLOY]"
+          ATTACHMENT_NAME = "detailerfit-deploy.zip"
+          STATE_PATH = Path(".detailerfit-bridge-state.json")
+          MAX_FILES = 250
+          MAX_UNCOMPRESSED = 20 * 1024 * 1024
+
+          def output(name, value):
+              with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
+                  fh.write(f"{name}={value}\n")
+
+          def fail(message):
+              print(f"ERROR: {message}", file=sys.stderr)
+              raise SystemExit(1)
+
+          if not USER:
+              fail("DF_GMAIL_USER is empty")
+          if not APP_PASSWORD:
+              fail("Repository secret DF_GMAIL_APP_PASSWORD is missing")
+
+          last_uid = 0
+          if STATE_PATH.exists():
+              try:
+                  state = json.loads(STATE_PATH.read_text(encoding="utf-8"))
+                  last_uid = int(state.get("last_uid", 0))
+              except Exception:
+                  fail("Bridge state file is malformed")
+
+          mail = imaplib.IMAP4_SSL("imap.gmail.com", 993)
+          try:
+              mail.login(USER, APP_PASSWORD)
+
+              sent_box = None
+              typ, boxes = mail.list()
+              if typ == "OK" and boxes:
+                  for raw in boxes:
+                      line = raw.decode("utf-8", "replace")
+                      if "\\Sent" not in line:
+                          continue
+                      m = re.match(r'^\((.*?)\)\s+"[^"]*"\s+(.+)$', line)
+                      if not m:
+                          continue
+                      name = m.group(2).strip()
+                      if name.startswith('"') and name.endswith('"'):
+                          name = name[1:-1].replace(r'\"', '"')
+                      sent_box = name
+                      break
+
+              candidates = [sent_box, "[Gmail]/Sent Mail", "[Gmail]/Sent", "Sent"]
+              selected = False
+              for box in [x for x in candidates if x]:
+                  typ, _ = mail.select(f'"{box}"', readonly=True)
+                  if typ == "OK":
+                      selected = True
+                      break
+              if not selected:
+                  fail("Could not locate Gmail Sent mailbox")
+
+              typ, data = mail.uid("search", None, "SUBJECT", f'"{SUBJECT_MARKER}"')
+              if typ != "OK":
+                  fail("IMAP search failed")
+
+              uids = []
+              if data and data[0]:
+                  for raw_uid in data[0].split():
+                      try:
+                          uid = int(raw_uid)
+                      except ValueError:
+                          continue
+                      if uid > last_uid:
+                          uids.append(uid)
+
+              if not uids:
+                  print("No new deploy command found.")
+                  output("found", "false")
+                  raise SystemExit(0)
+
+              uid = max(uids)
+              typ, msg_data = mail.uid("fetch", str(uid), "(RFC822)")
+              if typ != "OK" or not msg_data:
+                  fail(f"Could not fetch Gmail UID {uid}")
+
+              raw_message = None
+              for item in msg_data:
+                  if isinstance(item, tuple) and len(item) == 2:
+                      raw_message = item[1]
+                      break
+              if not raw_message:
+                  fail("Fetched email did not contain RFC822 data")
+
+              msg = email.message_from_bytes(raw_message, policy=policy.default)
+              from_addr = parseaddr(msg.get("From", ""))[1].lower()
+              if from_addr != USER.lower():
+                  fail("Deploy command was not sent from the configured DetailerFit Gmail account")
+
+              subject = str(msg.get("Subject", ""))
+              if SUBJECT_MARKER not in subject:
+                  fail("Subject marker missing")
+
+              attachment = None
+              for part in msg.walk():
+                  filename = part.get_filename()
+                  if filename == ATTACHMENT_NAME:
+                      attachment = part.get_payload(decode=True)
+                      break
+              if not attachment:
+                  fail(f"Attachment {ATTACHMENT_NAME} not found")
+
+          finally:
+              try:
+                  mail.logout()
+              except Exception:
+                  pass
+
+          current_sha = subprocess.check_output(
+              ["git", "rev-parse", "HEAD"], text=True
+          ).strip()
+
+          with zipfile.ZipFile(io.BytesIO(attachment)) as zf:
+              infos = zf.infolist()
+              if len(infos) > MAX_FILES + 1:
+                  fail(f"ZIP contains too many entries ({len(infos)})")
+
+              total_size = sum(i.file_size for i in infos)
+              if total_size > MAX_UNCOMPRESSED:
+                  fail(f"ZIP uncompressed size exceeds {MAX_UNCOMPRESSED} bytes")
+
+              for info in infos:
+                  name = info.filename
+                  pure = PurePosixPath(name)
+                  if pure.is_absolute() or ".." in pure.parts:
+                      fail(f"Unsafe ZIP path: {name}")
+                  mode = (info.external_attr >> 16) & 0o170000
+                  if mode == stat.S_IFLNK:
+                      fail(f"Symlink entries are not allowed: {name}")
+
+              if "detailerfit-command.json" not in zf.namelist():
+                  fail("detailerfit-command.json is missing")
+
+              try:
+                  manifest = json.loads(
+                      zf.read("detailerfit-command.json").decode("utf-8")
+                  )
+              except Exception as exc:
+                  fail(f"Invalid detailerfit-command.json: {exc}")
+
+              if manifest.get("schema") != 1:
+                  fail("Unsupported command schema")
+
+              command_id = str(manifest.get("command_id", "")).strip()
+              if not command_id or len(command_id) > 120:
+                  fail("Invalid command_id")
+
+              base_commit = str(manifest.get("base_commit", "")).strip()
+              if not re.fullmatch(r"[0-9a-fA-F]{40}", base_commit):
+                  fail("base_commit must be a full 40-character Git SHA")
+              if base_commit.lower() != current_sha.lower():
+                  fail(
+                      f"Stale command: base_commit={base_commit}, current HEAD={current_sha}. "
+                      "Generate a fresh deploy package."
+                  )
+
+              replace_paths = manifest.get("replace", [])
+              delete_paths = manifest.get("delete", [])
+              if not isinstance(replace_paths, list) or not isinstance(delete_paths, list):
+                  fail("replace/delete must be arrays")
+
+              all_paths = [str(x) for x in replace_paths + delete_paths]
+              if len(all_paths) != len(set(all_paths)):
+                  fail("Duplicate paths in command")
+              if len(all_paths) > MAX_FILES:
+                  fail("Too many file operations")
+              if not all_paths:
+                  fail("Command contains no file operations")
+
+              def validate_repo_path(raw):
+                  raw = raw.replace("\\", "/").strip()
+                  pure = PurePosixPath(raw)
+                  if not raw or pure.is_absolute() or ".." in pure.parts:
+                      fail(f"Unsafe repository path: {raw}")
+                  normalized = posixpath.normpath(raw)
+                  protected = (
+                      normalized == ".detailerfit-bridge-state.json"
+                      or normalized.startswith(".github/")
+                      or normalized.startswith(".git/")
+                      or normalized == ".env"
+                      or normalized.startswith(".env.")
+                  )
+                  if protected:
+                      fail(f"Protected path cannot be modified through mail bridge: {normalized}")
+                  return normalized
+
+              replace_paths = [validate_repo_path(p) for p in replace_paths]
+              delete_paths = [validate_repo_path(p) for p in delete_paths]
+
+              for path in replace_paths:
+                  member = f"payload/{path}"
+                  if member not in zf.namelist():
+                      fail(f"Missing payload member: {member}")
+                  dest = Path(path)
+                  dest.parent.mkdir(parents=True, exist_ok=True)
+                  dest.write_bytes(zf.read(member))
+                  print(f"REPLACE {path}")
+
+              for path in delete_paths:
+                  dest = Path(path)
+                  if dest.exists():
+                      if dest.is_dir():
+                          fail(f"Directory deletion is not allowed: {path}")
+                      dest.unlink()
+                      print(f"DELETE {path}")
+
+          commit_message = str(
+              manifest.get("commit_message", "Apply DetailerFit update")
+          ).replace("\r", " ").replace("\n", " ").strip()
+          commit_message = commit_message[:120] or "Apply DetailerFit update"
+
+          STATE_PATH.write_text(
+              json.dumps(
+                  {
+                      "last_uid": uid,
+                      "command_id": command_id,
+                      "applied_at_utc": datetime.now(timezone.utc).isoformat(),
+                      "base_commit": current_sha,
+                  },
+                  indent=2,
+                  sort_keys=True,
+              )
+              + "\n",
+              encoding="utf-8",
+          )
+
+          output("found", "true")
+          output("commit_message", commit_message)
+          output("command_id", command_id)
+          print(f"Prepared command {command_id} from Gmail UID {uid}")
+
+      - name: Validate proposed repository changes
+        if: steps.command.outputs.found == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # Never permit the mail bridge to alter its own workflow or GitHub metadata.
+          if git diff --name-only | grep -E '^\.github/|^\.git/' >/dev/null; then
+            echo "Protected GitHub metadata was modified; refusing deployment."
+            exit 1
+          fi
+
+          git diff --check
+
+          while IFS= read -r file; do
+            [ -z "$file" ] && continue
+            if [ -f "$file" ]; then
+              node --check "$file"
+            fi
+          done < <(git diff --name-only -- '*.js')
+
+          python - <<'PY'
+          import json
+          import subprocess
+          from pathlib import Path
+
+          changed = subprocess.check_output(
+              ["git", "diff", "--name-only"], text=True
+          ).splitlines()
+
+          for name in changed:
+              if name.endswith(".json") and Path(name).is_file():
+                  with open(name, "r", encoding="utf-8") as fh:
+                      json.load(fh)
+                  print("JSON OK:", name)
+          PY
+
+          echo "Validated files:"
+          git status --short
+
+      - name: Commit and push approved update
+        if: steps.command.outputs.found == 'true'
+        shell: bash
+        env:
+          COMMIT_MESSAGE: ${{ steps.command.outputs.commit_message }}
+        run: |
+          set -euo pipefail
+
+          git config user.name "detailerfit-bridge[bot]"
+          git config user.email "detailerfit-bridge[bot]@users.noreply.github.com"
+
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo "No repository changes to commit."
+            exit 0
+          fi
+
+          git commit -m "$COMMIT_MESSAGE"
+          git push origin HEAD:main
+
+      - name: Summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## DetailerFit ChatGPT Mail Bridge"
+            echo
+            if [ "${{ steps.command.outputs.found }}" = "true" ]; then
+              echo "Command: \`${{ steps.command.outputs.command_id }}\`"
+              echo
+              echo "The newest authenticated deploy package from the DetailerFit Gmail Sent mailbox was processed."
+            else
+              echo "No new deploy command was found."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

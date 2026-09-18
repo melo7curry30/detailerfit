@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-09-18T12:36:52.751907+00:00",
-  "base_commit": "633dd2920e88a6c28d16a3f820c0d84c33ff0fd6",
-  "command_id": "finder-scope-html-only-20260918-01",
-  "last_uid": 84
+  "applied_at_utc": "2026-09-18T12:53:14.495491+00:00",
+  "base_commit": "2a6ca187bba92e9e4765935cd0f162a2a6185db2",
+  "command_id": "reviews-visible-suffix-cleanup-20260918-01",
+  "last_uid": 85
 }

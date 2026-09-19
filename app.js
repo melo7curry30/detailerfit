@@ -88,7 +88,8 @@ const DF_AFFILIATE_VENDOR_HOSTS={
   'roapp.io':'RO App',
   'watch.thewrapinstitute.com':'The Wrap Institute',
   'thewrapinstitute.com':'The Wrap Institute',
-  'myaifrontdesk.com':'My AI Front Desk'
+  'myaifrontdesk.com':'My AI Front Desk',
+  'garagetool.app':'GarageTool'
 };
 
 function dfVendorContext(link,explicitVendor,isAffiliate){
@@ -241,6 +242,60 @@ document.addEventListener('DOMContentLoaded',()=>{
     document.querySelectorAll('#current-affiliate-relationships .small').forEach(el=>{
       if(el.textContent.includes('Disclosure list updated'))el.textContent='Disclosure list updated September 19, 2026.';
     });
+  }
+
+  // GarageTool monetization — independent review + unranked discovery surfaces.
+  // Do not alter the existing eight-vendor wrap ranking because of the affiliate relationship.
+  if(currentPath==='best-car-wrap-software') {
+    const sourcesHeading=document.getElementById('sources');
+    const existingGarage=document.getElementById('garagetool-unranked');
+    if(sourcesHeading&&!existingGarage){
+      const wrapBlock=document.createElement('div');
+      wrapBlock.innerHTML=`
+        <h2 id="garagetool-unranked">GarageTool — Unranked Wrap &amp; Sign Shop Option</h2>
+        <p>GarageTool was not part of the original eight-platform ranking on this page, so we are not inserting it into that order because of a commercial relationship. Our standalone review evaluates its wrap/sign estimating, proofing, scheduling, payments, team workflow and current pricing independently.</p>
+        <div class="note"><b>Why it is worth a separate look:</b> GarageTool is built specifically for wrap and sign shops, with a visual wrap estimator, 15,000+ vehicle templates, design proofing, scheduling, deposits, invoices and team workflow. Its current Solo Shop plan starts at $100/month.</div>
+        <div class="actions"><a class="btn secondary" href="/garagetool-review-wrap-sign-shops">Read the GarageTool Review</a><a class="btn primary" href="https://garagetool.app?fpr=ryo-18b665" rel="sponsored noopener" target="_blank" data-vendor="GarageTool" data-cta-position="article_recommendation">Explore GarageTool</a></div>
+        <p class="cta-disclosure small">Affiliate link. DetailerFit may earn a commission if you sign up through GarageTool, at no extra cost to you. This relationship does not change the existing ranking.</p>`;
+      while(wrapBlock.firstChild)sourcesHeading.parentNode.insertBefore(wrapBlock.firstChild,sourcesHeading);
+    }
+    const disclosure=document.querySelector('.research-detail');
+    if(disclosure&&disclosure.textContent.includes('This page contains an affiliate link to Mobile Tech RX.')){
+      disclosure.innerHTML=disclosure.innerHTML.replace('This page contains an affiliate link to Mobile Tech RX.','This page contains affiliate links to Mobile Tech RX and GarageTool.');
+    }
+  }
+
+  if(currentPath==='reviews') {
+    const existingGarageReview=document.getElementById('garagetool-option-reviews-html');
+    const conversionHub=document.querySelector('section[aria-labelledby="reviews-conversion-hub"]');
+    if(!existingGarageReview){
+      const garageSection=document.createElement('section');
+      garageSection.className='section tight';
+      garageSection.setAttribute('aria-labelledby','garagetool-option-reviews-html');
+      garageSection.innerHTML=`<div class="wrap article"><div class="card"><div class="kicker">WRAP &amp; SIGN SHOP SOFTWARE</div><h2 id="garagetool-option-reviews-html">GarageTool for wrap and sign shops</h2><p>GarageTool connects visual wrap estimating, 15,000+ vehicle templates, design proofing, scheduling, deposits, invoicing, customer records and team workflow. The current Solo Shop plan starts at $100/month; advanced lead-management CRM features are listed on the $200 Multiple Shop + CRM tier.</p><p class="small"><strong>Watch for:</strong> no free trial on the current pricing page; GarageTool advertises a 30-day money-back guarantee.</p><div class="actions"><a class="btn secondary" href="/garagetool-review-wrap-sign-shops">Read the GarageTool review</a><a class="btn primary" href="https://garagetool.app?fpr=ryo-18b665" rel="sponsored noopener" target="_blank" data-vendor="GarageTool" data-cta-position="reviews-page">Explore GarageTool</a></div><p class="cta-disclosure small">DetailerFit may earn a commission if you sign up through this link, at no extra cost to you. <a href="affiliate-disclosure">Affiliate disclosure</a>.</p></div></div>`;
+      if(conversionHub)conversionHub.insertAdjacentElement('beforebegin',garageSection);
+      else document.querySelector('main')?.appendChild(garageSection);
+    }
+  }
+
+  if(currentPath==='affiliate-disclosure') {
+    document.querySelectorAll('.note, #current-affiliate-relationships p').forEach(el=>{
+      if(!el.textContent.includes('GarageTool')&&el.innerHTML.includes('My AI Front Desk')){
+        if(el.innerHTML.includes(', and My AI Front Desk')){
+          el.innerHTML=el.innerHTML.replace(', and My AI Front Desk',', My AI Front Desk, and GarageTool');
+        }else{
+          el.innerHTML=el.innerHTML.replace('My AI Front Desk','My AI Front Desk and GarageTool');
+        }
+      }
+    });
+    const relSection=document.getElementById('current-affiliate-relationships');
+    if(relSection&&!document.getElementById('garagetool-affiliate-relationship')){
+      const garageDisclosure=document.createElement('section');
+      garageDisclosure.className='section tight';
+      garageDisclosure.setAttribute('aria-labelledby','garagetool-affiliate-relationship');
+      garageDisclosure.innerHTML=`<div class="wrap article"><div class="kicker">AFFILIATE RELATIONSHIP</div><h2 id="garagetool-affiliate-relationship">GarageTool affiliate relationship</h2><p>DetailerFit participates in the GarageTool affiliate program and may earn a commission from qualifying signups made through clearly marked GarageTool affiliate links, at no extra cost to the reader. Affiliate compensation does not buy ranking position or change our editorial conclusions.</p></div>`;
+      relSection.insertAdjacentElement('afterend',garageDisclosure);
+    }
   }
 
   // Keep the Research footer consistent on older pages without editing every footer by hand.

@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-09-19T07:43:54.751057+00:00",
-  "base_commit": "e6b93a7ea8fdd94467dd10fc7e7fec171a63ee60",
-  "command_id": "cro-affiliate-measurement-2026-09-19-v1",
-  "last_uid": 97
+  "applied_at_utc": "2026-09-19T12:29:31.452483+00:00",
+  "base_commit": "08dfaf8a0a6d2b92d2c2f3356dacb5a37cb93ef3",
+  "command_id": "affiliate-click-normalization-2026-09-19-v2",
+  "last_uid": 116
 }

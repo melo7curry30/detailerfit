@@ -70,6 +70,37 @@ function dfTrackEvent(eventName, params={}){
   }
 }
 
+const DF_AFFILIATE_VENDOR_HOSTS={
+  'admin-quoteiq.web.app':'QuoteIQ',
+  'detailpilot.com':'DetailPilot',
+  'housecallpro.partnerlinks.io':'Housecall Pro',
+  'orbisx.com':'OrbisX',
+  'mobiletechrx.com':'Mobile Tech RX',
+  'marlie.ai':'Marlie AI',
+  'stratacrm.app':'Strata',
+  'bookingkoala.com':'BookingKoala',
+  'truereview.co':'TrueReview',
+  'gohighlevel.com':'HighLevel',
+  'ai-receptionist.com':'AI Receptionist',
+  'onepagecrm.com':'OnePageCRM',
+  'jotform.com':'Jotform',
+  'smarfle.com':'Smarfle',
+  'roapp.io':'RO App',
+  'watch.thewrapinstitute.com':'The Wrap Institute',
+  'thewrapinstitute.com':'The Wrap Institute'
+};
+
+function dfVendorContext(link,explicitVendor,isAffiliate){
+  if(explicitVendor)return {vendor:explicitVendor,source:'data-vendor'};
+  if(!isAffiliate)return {vendor:'',source:'none'};
+  const host=(link.hostname||'').toLowerCase().replace(/^www\./,'');
+  const canonical=DF_AFFILIATE_VENDOR_HOSTS[host];
+  return {
+    vendor:canonical||host||'unknown',
+    source:canonical?'hostname_map':'hostname'
+  };
+}
+
 function dfLinkContext(link){
   if(link.dataset.ctaPosition){
     const position=link.dataset.ctaPosition;
@@ -79,13 +110,26 @@ function dfLinkContext(link){
   if(link.closest('.heroMini'))return 'review_primary_cta';
   if(link.closest('.revenue-decision-cta'))return 'review_secondary_cta';
   if(link.closest('.review-summary'))return 'review_primary_cta';
-
   if(link.closest('table'))return 'compare_table';
+  if(link.closest('footer'))return 'footer_or_related';
+
+  const pageName=(location.pathname.split('/').pop()||'').replace(/\.html$/i,'');
+  const affiliateLinks=[...document.querySelectorAll('a[rel~="sponsored"],a[data-affiliate="true"]')];
+  const affiliateIndex=affiliateLinks.indexOf(link);
+
+  if(pageName==='auto-detailing-software-pricing')return 'pricing_index_affiliate_section';
+  if(pageName==='software-cost-calculator'||pageName==='finder')return 'footer_or_related';
+  if(pageName!=='reviews'&&pageName.includes('review')){
+    return affiliateIndex===0?'review_primary_cta':'review_secondary_cta';
+  }
+  if(pageName.startsWith('best-')||pageName.includes('-vs-')||pageName.includes('alternatives')){
+    return 'article_recommendation';
+  }
+
   const section=link.closest('section');
   const heading=section?.querySelector('h2[id],h3[id]');
-  if(heading?.id)return heading.id;
+  if(heading?.id)return heading.id.replace(/-/g,'_');
 
-  if(link.closest('footer'))return 'footer_or_related';
   return 'review_secondary_cta';
 }
 
@@ -102,12 +146,13 @@ document.addEventListener('click',(e)=>{
     .filter(Boolean);
   const isAffiliate=relTokens.includes('sponsored')||link.dataset.affiliate==='true';
   const explicitVendor=(link.dataset.vendor||'').trim();
-  const vendor=explicitVendor||(isAffiliate ? link.hostname : '');
+  const vendorContext=dfVendorContext(link,explicitVendor,isAffiliate);
+  const vendor=vendorContext.vendor;
 
   if(vendor||isAffiliate){
     dfTrackEvent(isAffiliate?'affiliate_click':'vendor_outbound_click',{
       vendor:vendor||'unknown',
-      vendor_label_source:explicitVendor?'data-vendor':(isAffiliate?'hostname':'none'),
+      vendor_label_source:vendorContext.source,
       link_url:link.href,
       clicked_url:link.href,
       link_host:link.hostname,
@@ -132,6 +177,18 @@ document.addEventListener('click',(e)=>{
 document.addEventListener('DOMContentLoaded',()=>{
   const reducedMotion=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
   const resultScrollBehavior=reducedMotion?'auto':'smooth';
+
+  // Normalize legacy sponsored CTAs at runtime so every monetized click has
+  // a canonical vendor label and stable CTA position without rewriting dozens
+  // of editorial pages. Explicit page attributes always win.
+  document.querySelectorAll('a[rel~="sponsored"],a[data-affiliate="true"]').forEach(link=>{
+    const explicitVendor=(link.dataset.vendor||'').trim();
+    if(!explicitVendor){
+      const vendorContext=dfVendorContext(link,'',true);
+      if(vendorContext.vendor&&vendorContext.vendor!=='unknown')link.dataset.vendor=vendorContext.vendor;
+    }
+    if(!link.dataset.ctaPosition)link.dataset.ctaPosition=dfLinkContext(link);
+  });
 
   // Upgrade older pages that still use the original header markup.
   const menuBtn=document.querySelector('.menuBtn');

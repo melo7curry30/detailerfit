@@ -55,9 +55,14 @@
           <a class="btn secondary" href="/strata-crm-review">
           Read the Strata CRM review</a>
           <a class="btn primary" data-vendor="Strata"
+          data-cta-position="finder_result" data-tool-name="finder"
+          data-result-plan="${team === 1 ? 'Focus' : 'Flow'}"
           href="${affiliate}" rel="sponsored noopener" target="_blank">
-          Explore Strata CRM</a>
+          Try Strata Free for 30 Days</a>
           </div>
+          <p class="small">No card required to start, according to Strata's
+          <a href="https://stratacrm.app/pricing" rel="noopener" target="_blank">published trial terms</a>
+          checked September 19, 2026. Confirm current terms before signing up.</p>
           <p class="cta-disclosure small">
           DetailerFit may earn a commission if you sign up through
           this link, at no extra cost to you.

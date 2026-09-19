@@ -176,6 +176,58 @@ document.addEventListener('click',(e)=>{
   }
 });
 
+// One visible CTA exposure per vendor/position/URL per page load. This is an
+// exposure denominator, not a signup or a revenue event. Dynamic tool results
+// are observed too; repeated calculations do not inflate the same exposure.
+function dfObserveAffiliateCtas(){
+  if(typeof IntersectionObserver!=='function'||typeof MutationObserver!=='function')return;
+  const selector='a[rel~="sponsored"],a[data-affiliate="true"]';
+  const observed=new Set();
+  const seen=new Set();
+  const observer=new IntersectionObserver(entries=>{
+    if(document.visibilityState==='hidden')return;
+    entries.forEach(entry=>{
+      const link=entry.target;
+      if(!entry.isIntersecting||entry.intersectionRatio<0.5||!link.isConnected)return;
+      const vendor=dfVendorContext(link,(link.dataset.vendor||'').trim(),true).vendor;
+      const position=dfLinkContext(link);
+      const key=JSON.stringify([vendor,position,link.href]);
+      if(!seen.has(key)){
+        seen.add(key);
+        dfTrackEvent('affiliate_cta_view',{
+          vendor,cta_position:position,monetized:'true',
+          link_host:link.hostname,link_url:link.href,
+          link_text:(link.textContent||'').trim().slice(0,120),
+          tool_name:link.dataset.toolName||undefined,
+          result_plan:link.dataset.resultPlan||undefined
+        });
+      }
+      observer.unobserve(link);
+      observed.delete(link);
+    });
+  },{threshold:0.5});
+  const scan=root=>{
+    const links=[...(root.matches?.(selector)?[root]:[]),...root.querySelectorAll(selector)];
+    links.forEach(link=>{
+      if(!observed.has(link)){observed.add(link);observer.observe(link);}
+    });
+  };
+  scan(document);
+  new MutationObserver(records=>{
+    observed.forEach(link=>{
+      if(!link.isConnected){observer.unobserve(link);observed.delete(link);}
+    });
+    records.forEach(record=>record.addedNodes.forEach(node=>{
+      if(node.nodeType===1)scan(node);
+    }));
+  }).observe(document.body,{childList:true,subtree:true});
+  document.addEventListener('visibilitychange',()=>{
+    if(document.visibilityState==='hidden')return;
+    observed.forEach(link=>{observer.unobserve(link);observer.observe(link);});
+  });
+}
+document.addEventListener('DOMContentLoaded',dfObserveAffiliateCtas,{once:true});
+
 document.addEventListener('DOMContentLoaded',()=>{
   const reducedMotion=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
   const resultScrollBehavior=reducedMotion?'auto':'smooth';

@@ -272,7 +272,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="${r.complete?'note':'warning'}"><b>${r.complete?'Verify before buying':'Cost not fully known'}:</b> ${r.watch}</div>
           <div class="actions">
             <a class="btn secondary" href="${r.url}">See ${r.name} research</a>
-            <a class="btn primary" data-vendor="${r.name}" data-cta-position="cost-calculator-result" data-tool-name="cost_calculator" data-result-rank="${i+1}" data-result-plan="${r.plan}" href="${vendorMap[r.name].url}" rel="${vendorMap[r.name].rel}"${vendorMap[r.name].target?` target="${vendorMap[r.name].target}"`:``}>Visit ${r.name}</a>
+            <a class="btn primary" data-vendor="${r.name}" data-cta-position="calculator_result" data-tool-name="cost_calculator" data-result-rank="${i+1}" data-result-plan="${r.plan}" href="${vendorMap[r.name].url}" rel="${vendorMap[r.name].rel}"${vendorMap[r.name].target?` target="${vendorMap[r.name].target}"`:``}>Visit ${r.name}</a>
           </div>
         </article>`;
     }).join('');

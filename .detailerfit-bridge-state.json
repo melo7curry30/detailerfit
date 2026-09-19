@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-09-19T01:09:07.906578+00:00",
-  "base_commit": "4400c7d717e3db030bf59784b1bae8a9ce253db5",
-  "command_id": "hotfix-compare-sitemap-url-20260919-01",
-  "last_uid": 96
+  "applied_at_utc": "2026-09-19T07:43:54.751057+00:00",
+  "base_commit": "e6b93a7ea8fdd94467dd10fc7e7fec171a63ee60",
+  "command_id": "cro-affiliate-measurement-2026-09-19-v1",
+  "last_uid": 97
 }

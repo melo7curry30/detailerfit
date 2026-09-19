@@ -60,28 +60,33 @@ function dfTrackEvent(eventName, params={}){
   };
 
   window.dataLayer=window.dataLayer||[];
-  window.dataLayer.push({event:eventName,...payload});
-
   if(typeof window.gtag==='function'){
     window.gtag('event',eventName,{
       ...payload,
       transport_type:'beacon'
     });
+  }else{
+    window.dataLayer.push({event:eventName,...payload});
   }
 }
 
 function dfLinkContext(link){
-  if(link.dataset.ctaPosition)return link.dataset.ctaPosition;
-  if(link.closest('.heroMini'))return 'hero';
-  if(link.closest('.revenue-decision-cta'))return 'decision';
-  if(link.closest('.review-summary'))return 'summary';
+  if(link.dataset.ctaPosition){
+    const position=link.dataset.ctaPosition;
+    const aliases={'cost-calculator-result':'calculator_result','finder-result':'finder_result','compare-page':'compare_table','pricing-index-affiliate-grid':'pricing_index_affiliate_section','decision-exit':'review_secondary_cta','cost-calculator-page':'footer_or_related'};
+    return aliases[position]||position.replace(/-/g,'_');
+  }
+  if(link.closest('.heroMini'))return 'review_primary_cta';
+  if(link.closest('.revenue-decision-cta'))return 'review_secondary_cta';
+  if(link.closest('.review-summary'))return 'review_primary_cta';
 
+  if(link.closest('table'))return 'compare_table';
   const section=link.closest('section');
   const heading=section?.querySelector('h2[id],h3[id]');
   if(heading?.id)return heading.id;
 
-  if(link.closest('footer'))return 'footer';
-  return 'inline';
+  if(link.closest('footer'))return 'footer_or_related';
+  return 'review_secondary_cta';
 }
 
 document.addEventListener('click',(e)=>{
@@ -104,10 +109,11 @@ document.addEventListener('click',(e)=>{
       vendor:vendor||'unknown',
       vendor_label_source:explicitVendor?'data-vendor':(isAffiliate?'hostname':'none'),
       link_url:link.href,
+      clicked_url:link.href,
       link_host:link.hostname,
       link_text:(link.textContent||'').trim().slice(0,120),
       cta_position:dfLinkContext(link),
-      monetized:isAffiliate,
+      monetized:isAffiliate?'true':'false',
       tool_name:link.dataset.toolName||undefined,
       result_rank:link.dataset.resultRank?Number(link.dataset.resultRank):undefined,
       result_plan:link.dataset.resultPlan||undefined
@@ -575,7 +581,7 @@ document.addEventListener('DOMContentLoaded',()=>{
           <div class="result-watch"><strong>Verify before buying:</strong> ${x.baseWatch}</div>
           <div class="actions">
             <a class="btn secondary" href="${x.url}">See research notes</a>
-            <a class="btn primary" data-vendor="${x.name}" data-cta-position="finder-result" data-tool-name="finder" data-result-rank="${i+1}" data-result-plan="${p.plan}" href="${x.vendorUrl}" rel="${vendorRel}"${x.vendorTarget?` target="${x.vendorTarget}"`:``}>Visit ${x.name}</a>
+            <a class="btn primary" data-vendor="${x.name}" data-cta-position="finder_result" data-tool-name="finder" data-result-rank="${i+1}" data-result-plan="${p.plan}" href="${x.vendorUrl}" rel="${vendorRel}"${x.vendorTarget?` target="${x.vendorTarget}"`:``}>Visit ${x.name}</a>
             ${i===0?'<a class="btn ghost" href="compare">Open comparison hub</a>':''}
           </div>
         </article>`;

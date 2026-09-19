@@ -87,7 +87,8 @@ const DF_AFFILIATE_VENDOR_HOSTS={
   'smarfle.com':'Smarfle',
   'roapp.io':'RO App',
   'watch.thewrapinstitute.com':'The Wrap Institute',
-  'thewrapinstitute.com':'The Wrap Institute'
+  'thewrapinstitute.com':'The Wrap Institute',
+  'myaifrontdesk.com':'My AI Front Desk'
 };
 
 function dfVendorContext(link,explicitVendor,isAffiliate){
@@ -199,6 +200,48 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(!menuBtn.hasAttribute('aria-expanded'))menuBtn.setAttribute('aria-expanded','false');
   }
   if(nav&&!nav.hasAttribute('aria-label'))nav.setAttribute('aria-label','Primary navigation');
+
+  // My AI Front Desk affiliate placement — added only to the existing unranked
+  // "Other AI Receptionist Options Worth Watching" section. This does not alter rankings.
+  const currentPath=(location.pathname.split('/').pop()||'').replace(/\.html$/i,'');
+  if(currentPath==='best-ai-receptionists-auto-detailing') {
+    const targetHeading=[...document.querySelectorAll('h3')].find(h=>
+      (h.textContent||'').trim().startsWith('My AI Front Desk,')
+    );
+    const existingMafd=document.querySelector('a[data-vendor="My AI Front Desk"]');
+    const targetCopy=targetHeading?.nextElementSibling;
+    if(targetHeading&&targetCopy&&!existingMafd){
+      const actions=document.createElement('div');
+      actions.className='actions';
+      actions.innerHTML='<a class="btn primary" href="https://www.myaifrontdesk.com/?via=ryo" rel="sponsored noopener" target="_blank" data-vendor="My AI Front Desk" data-cta-position="article_recommendation">Try My AI Front Desk</a>';
+      targetCopy.insertAdjacentElement('afterend',actions);
+
+      const disclosure=document.createElement('p');
+      disclosure.className='cta-disclosure small';
+      disclosure.innerHTML='Affiliate link. DetailerFit may earn a commission if you sign up, at no extra cost to you. My AI Front Desk remains an unranked option in this guide; the affiliate relationship does not determine our rankings.';
+      actions.insertAdjacentElement('afterend',disclosure);
+    }
+
+    const researchDisclosure=document.querySelector('.research-detail');
+    if(researchDisclosure&&researchDisclosure.textContent.includes('This page contains affiliate links to QuoteIQ, AI Receptionist and Marlie AI.')){
+      researchDisclosure.innerHTML=researchDisclosure.innerHTML.replace(
+        'This page contains affiliate links to QuoteIQ, AI Receptionist and Marlie AI.',
+        'This page contains affiliate links to QuoteIQ, AI Receptionist, Marlie AI and My AI Front Desk.'
+      );
+    }
+  }
+
+  // Keep the site-wide affiliate disclosure in sync with the newly activated link.
+  if(currentPath==='affiliate-disclosure') {
+    document.querySelectorAll('.note, #current-affiliate-relationships p').forEach(el=>{
+      if(el.innerHTML.includes('Jotform, and Smarfle')){
+        el.innerHTML=el.innerHTML.replace('Jotform, and Smarfle','Jotform, Smarfle, and My AI Front Desk');
+      }
+    });
+    document.querySelectorAll('#current-affiliate-relationships .small').forEach(el=>{
+      if(el.textContent.includes('Disclosure list updated'))el.textContent='Disclosure list updated September 19, 2026.';
+    });
+  }
 
   // Keep the Research footer consistent on older pages without editing every footer by hand.
   document.querySelectorAll('.footergrid > div').forEach(col=>{

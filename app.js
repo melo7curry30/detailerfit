@@ -908,3 +908,37 @@ document.addEventListener('DOMContentLoaded',()=>{
   addEventListener('resize',sync,{passive:true});
   mobileQuery.addEventListener?.('change',sync);
 });
+
+// DetailerFit contextual BOF routing - Sep 20, 2026.
+// Add one relevant decision-stage comparison exit to two established guides.
+// This does not change rankings, vendor order, affiliate URLs or editorial conclusions.
+document.addEventListener('DOMContentLoaded',()=>{
+  const page=(location.pathname.split('/').pop()||'').replace(/\.html$/i,'');
+  if(!['best-mobile-detailing-software','mobile-detailing-scheduling-software'].includes(page))return;
+  if(document.querySelector('a[href="quoteiq-vs-housecall-pro"]'))return;
+
+  const addComparisonLink=(actions)=>{
+    if(!actions)return;
+    const link=document.createElement('a');
+    link.className='btn secondary';
+    link.href='quoteiq-vs-housecall-pro';
+    link.textContent='QuoteIQ vs Housecall Pro';
+    actions.appendChild(link);
+  };
+
+  if(page==='best-mobile-detailing-software'){
+    const quoteHeading=document.getElementById('section-4');
+    let node=quoteHeading?.nextElementSibling;
+    while(node&&node.tagName!=='H2'){
+      if(node.classList?.contains('actions')){
+        addComparisonLink(node);
+        break;
+      }
+      node=node.nextElementSibling;
+    }
+    return;
+  }
+
+  const pricingLink=document.querySelector('a[href="quoteiq-pricing-mobile-detailing"]');
+  addComparisonLink(pricingLink?.closest('.actions'));
+});

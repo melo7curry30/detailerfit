@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-09-20T10:51:36.281713+00:00",
-  "base_commit": "d4586c9dc9f3a3a8948265429901ecfcf18d897e",
-  "command_id": "hcp-static-alternatives-link-20260920-v1",
-  "last_uid": 161
+  "applied_at_utc": "2026-09-20T14:13:13.792809+00:00",
+  "base_commit": "68efe5bf72c5c15e5bbceee4af57e625b2e67c01",
+  "command_id": "highlevel-vs-bookingkoala-20260920-v1",
+  "last_uid": 164
 }

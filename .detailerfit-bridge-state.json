@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-09-20T07:35:29.271693+00:00",
-  "base_commit": "12736cf0eab50d48581edc3f5605ab30e4cbec6f",
-  "command_id": "finder-pricing-bof-routing-20260920-v1",
-  "last_uid": 150
+  "applied_at_utc": "2026-09-20T07:47:21.746774+00:00",
+  "base_commit": "9d1bc356bc3c3d388db5a7c5b46094c8b929bdaf",
+  "command_id": "compare-bof-routing-20260920-v2",
+  "last_uid": 152
 }

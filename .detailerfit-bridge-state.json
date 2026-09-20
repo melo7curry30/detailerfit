@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-09-20T07:58:19.544344+00:00",
-  "base_commit": "2dcf8c394d8ce5a146dfb4840bc46cd5083b8df3",
-  "command_id": "homepage-bof-discovery-20260920-v1",
-  "last_uid": 153
+  "applied_at_utc": "2026-09-20T09:15:39.890676+00:00",
+  "base_commit": "23fa2761608253a93b262da44c60f3816c5cc1bf",
+  "command_id": "mobile-bof-balanced-sticky-cta-20260920-v1",
+  "last_uid": 155
 }

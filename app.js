@@ -834,3 +834,77 @@ document.querySelectorAll('.navlinks a').forEach(link=>{
   const href=raw.replace(/^\//,'').replace(/\.html$/i,'');
   if((!currentPage && raw==='/') || href===currentPage)link.setAttribute('aria-current','page');
 });
+
+
+// DetailerFit mobile comparison conversion bar - Sep 20, 2026.
+// Keeps both compared affiliate options equally accessible after the balanced
+// primary CTA has scrolled away. It never changes rankings or conclusions.
+document.addEventListener('DOMContentLoaded',()=>{
+  const page=location.pathname.replace(/\/+$/,'').split('/').pop()?.replace(/\.html$/i,'')||'';
+  const eligiblePages=new Set([
+    'quoteiq-vs-housecall-pro',
+    'strata-crm-vs-quoteiq-auto-detailers',
+    'marlie-ai-vs-my-ai-front-desk-auto-detailers'
+  ]);
+  if(!eligiblePages.has(page))return;
+
+  const primaryLinks=[...document.querySelectorAll('a[data-cta-position="comparison_primary_cta"][rel~="sponsored"]')].slice(0,2);
+  if(primaryLinks.length!==2)return;
+
+  const style=document.createElement('style');
+  style.textContent=`
+    .df-mobile-comparison-bar{display:none}
+    @media(max-width:800px){
+      .df-mobile-comparison-bar{display:block;position:fixed;left:0;right:0;bottom:0;z-index:45;padding:7px 10px calc(7px + env(safe-area-inset-bottom));background:rgba(9,13,18,.96);border-top:1px solid #2b3a46;box-shadow:0 -8px 24px rgba(0,0,0,.32);transform:translateY(115%);opacity:0;pointer-events:none;transition:transform .18s ease,opacity .18s ease}
+      .df-mobile-comparison-bar.is-visible{transform:translateY(0);opacity:1;pointer-events:auto}
+      .df-mobile-comparison-bar-inner{max-width:850px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:7px}
+      .df-mobile-comparison-bar-label{grid-column:1/-1;text-align:center;color:#91a0ad;font-size:.6875rem;line-height:1.1;letter-spacing:.04em;text-transform:uppercase}
+      .df-mobile-comparison-link{display:flex;align-items:center;justify-content:center;min-height:44px;padding:8px 10px;border:1px solid #4d8d77;border-radius:8px;background:#77d9b8;color:#061b14;text-decoration:none;font-size:.8125rem;font-weight:800;line-height:1.2;text-align:center}
+      body.df-mobile-comparison-bar-active{padding-bottom:78px}
+    }
+    @media(prefers-reduced-motion:reduce){.df-mobile-comparison-bar{transition:none!important}}
+  `;
+  document.head.appendChild(style);
+
+  const bar=document.createElement('aside');
+  bar.className='df-mobile-comparison-bar';
+  bar.setAttribute('aria-label','Affiliate options for the compared software');
+  bar.setAttribute('aria-hidden','true');
+  bar.setAttribute('inert','');
+  const inner=document.createElement('div');
+  inner.className='df-mobile-comparison-bar-inner';
+  const label=document.createElement('span');
+  label.className='df-mobile-comparison-bar-label';
+  label.textContent='Affiliate links - same comparison conclusions';
+  inner.appendChild(label);
+
+  primaryLinks.forEach(source=>{
+    const link=source.cloneNode(true);
+    link.className='df-mobile-comparison-link';
+    link.dataset.ctaPosition='comparison_sticky_cta';
+    link.textContent=`${source.dataset.vendor||source.textContent.trim()} >`;
+    link.tabIndex=-1;
+    inner.appendChild(link);
+  });
+  bar.appendChild(inner);
+  document.body.appendChild(bar);
+
+  const sourceCta=primaryLinks[0].closest('.mid-cta')||primaryLinks[0].parentElement;
+  const footer=document.querySelector('.footer');
+  const mobileQuery=window.matchMedia('(max-width:800px)');
+  const clonedLinks=[...bar.querySelectorAll('a[href]')];
+  const sync=()=>{
+    const sourcePassed=Boolean(sourceCta&&sourceCta.getBoundingClientRect().bottom<0);
+    const footerNear=Boolean(footer&&footer.getBoundingClientRect().top<(window.innerHeight-24));
+    const show=Boolean(mobileQuery.matches&&sourcePassed&&!footerNear);
+    bar.classList.toggle('is-visible',show);
+    bar.setAttribute('aria-hidden',String(!show));
+    bar.toggleAttribute('inert',!show);
+    clonedLinks.forEach(link=>{link.tabIndex=show?0:-1;});
+    document.body.classList.toggle('df-mobile-comparison-bar-active',show);
+  };
+  sync();
+  addEventListener('scroll',sync,{passive:true});
+  addEventListener('resize',sync,{passive:true});
+  mobileQuery.addEventListener?.('change',sync);
+});

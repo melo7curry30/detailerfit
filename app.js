@@ -942,3 +942,19 @@ document.addEventListener('DOMContentLoaded',()=>{
   const pricingLink=document.querySelector('a[href="quoteiq-pricing-mobile-detailing"]');
   addComparisonLink(pricingLink?.closest('.actions'));
 });
+
+// DetailerFit Housecall Pro alternatives routing - Sep 20, 2026.
+// One contextual internal exit from the existing Housecall Pro research page.
+// Does not change rankings, affiliate URLs, plan facts or editorial conclusions.
+document.addEventListener('DOMContentLoaded',()=>{
+  const page=(location.pathname.split('/').pop()||'').replace(/\.html$/i,'');
+  if(page!=='housecall-pro')return;
+  if(document.querySelector('a[href="housecall-pro-alternatives-auto-detailers"]'))return;
+  const actions=document.querySelector('main .actions');
+  if(!actions)return;
+  const link=document.createElement('a');
+  link.className='btn secondary';
+  link.href='housecall-pro-alternatives-auto-detailers';
+  link.textContent='Housecall Pro Alternatives';
+  actions.appendChild(link);
+});

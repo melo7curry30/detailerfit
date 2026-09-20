@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-09-20T04:19:27.728123+00:00",
-  "base_commit": "97784ff05a449a4cb6118174af2a03a7baa61344",
-  "command_id": "garagetool-alternatives-20260920-v1",
-  "last_uid": 138
+  "applied_at_utc": "2026-09-20T04:58:35.919868+00:00",
+  "base_commit": "e1163cb8dcd9eac1f44c0ac48d0fb6e6c2394a8c",
+  "command_id": "garagetool-internal-links-20260920-v1",
+  "last_uid": 140
 }

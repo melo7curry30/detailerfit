@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-09-20T10:25:39.735643+00:00",
-  "base_commit": "6f918d34e54daac131532ae8c06014877ad43284",
-  "command_id": "hcp-alternatives-marlie-positioning-20260920-v1",
-  "last_uid": 160
+  "applied_at_utc": "2026-09-20T10:51:36.281713+00:00",
+  "base_commit": "d4586c9dc9f3a3a8948265429901ecfcf18d897e",
+  "command_id": "hcp-static-alternatives-link-20260920-v1",
+  "last_uid": 161
 }

@@ -1075,3 +1075,39 @@ document.addEventListener('DOMContentLoaded',()=>{
     }catch(_){/* preserve original structured data if parsing fails */}
   });
 });
+
+// DetailerFit core software topic-cluster routing - Sep 21, 2026.
+// Clarifies broad-software, mobile-app and pricing research paths without
+// changing vendor rankings, ordering, affiliate URLs or editorial conclusions.
+document.addEventListener('DOMContentLoaded',()=>{
+  const page=(location.pathname.split('/').pop()||'').replace(/\.html$/i,'');
+  const configs={
+    'best-auto-detailing-software-2026':{
+      label:'Related software research',
+      html:'Looking for a narrower workflow? Compare <a href="best-mobile-detailing-software">mobile detailing apps for field work</a>, or use the <a href="auto-detailing-software-pricing">auto detailing software pricing index</a> to compare current plan costs and limits.'
+    },
+    'best-mobile-detailing-software':{
+      label:'Related software research',
+      html:'Need the broader platform view? Start with the <a href="best-auto-detailing-software-2026">best auto detailing software comparison</a>. If price is the main constraint, use the <a href="auto-detailing-software-pricing">software pricing index</a> before choosing a plan.'
+    },
+    'auto-detailing-software-pricing':{
+      label:'Related software research',
+      html:'Use this page for plan economics. For overall product fit, see the <a href="best-auto-detailing-software-2026">best auto detailing software guide</a>; for phone-first field workflow, compare <a href="best-mobile-detailing-software">mobile detailing apps</a>.'
+    }
+  };
+  const cfg=configs[page];
+  if(!cfg||document.querySelector('[data-detailerfit-topic-cluster="core-software"]'))return;
+
+  const box=document.createElement('aside');
+  box.className='note';
+  box.setAttribute('data-detailerfit-topic-cluster','core-software');
+  box.setAttribute('aria-label',cfg.label);
+  box.innerHTML='<strong>'+cfg.label+':</strong> '+cfg.html;
+
+  const anchor=document.querySelector('main .research-context')
+    || document.querySelector('main .sub')
+    || document.querySelector('main .callout')
+    || document.querySelector('main h1');
+  if(!anchor)return;
+  anchor.insertAdjacentElement('afterend',box);
+});

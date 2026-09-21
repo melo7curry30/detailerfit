@@ -108,7 +108,8 @@ const DF_AFFILIATE_VENDOR_HOSTS={
   'watch.thewrapinstitute.com':'The Wrap Institute',
   'thewrapinstitute.com':'The Wrap Institute',
   'myaifrontdesk.com':'My AI Front Desk',
-  'garagetool.app':'GarageTool'
+  'garagetool.app':'GarageTool',
+  'autohustl.com':'AutoHustl'
 };
 
 function dfVendorContext(link,explicitVendor,isAffiliate){
@@ -1143,4 +1144,52 @@ document.addEventListener('DOMContentLoaded',()=>{
       link.href=url.toString();
     }catch(_){/* preserve the original affiliate URL if URL parsing fails */}
   });
+});
+
+
+// DetailerFit AutoHustl affiliate activation - Sep 21, 2026.
+// Adds separate sponsored CTAs while preserving the existing direct official-source links,
+// ranking/order, pricing data and editorial conclusions.
+document.addEventListener('DOMContentLoaded',()=>{
+  const page=(location.pathname.split('/').pop()||'').replace(/\.html$/i,'');
+  const affiliateUrl='https://autohustl.com/new?aff=detailerfit';
+
+  if(page==='compare'){
+    const heading=[...document.querySelectorAll('#additional-research-options h3')].find(h=>(h.textContent||'').trim()==='AutoHustl');
+    const card=heading?.closest('.card');
+    const actions=card?.querySelector('.actions');
+    if(card&&actions&&!card.querySelector('a[data-vendor="AutoHustl"][rel~="sponsored"]')){
+      const link=document.createElement('a');
+      link.className='btn primary';
+      link.href=affiliateUrl;
+      link.rel='sponsored noopener';
+      link.target='_blank';
+      link.dataset.vendor='AutoHustl';
+      link.dataset.ctaPosition='compare_research_option';
+      link.textContent='Explore AutoHustl';
+      actions.appendChild(link);
+
+      const note=card.querySelector('p.small');
+      if(note&&note.textContent.includes('DetailerFit does not currently use a tracked AutoHustl referral link on this page.')){
+        note.innerHTML='Official pricing link + separate sponsored affiliate CTA. DetailerFit may earn a commission if you sign up through <strong>Explore AutoHustl</strong>, at no extra cost to you. This relationship does not change inclusion or placement.';
+      }
+    }
+
+    const context=[...document.querySelectorAll('#additional-research-options .research-context')].find(el=>el.textContent.includes('AutoHustl and JobField'));
+    if(context){
+      context.textContent='JobField remains shown with a normal official link. AutoHustl now also has a separate tracked affiliate CTA. Affiliate status does not determine inclusion or placement.';
+    }
+  }
+
+  if(page==='auto-detailing-software-pricing'){
+    const heading=[...document.querySelectorAll('main h2')].find(h=>(h.textContent||'').trim()==='Affiliate relationships in this index');
+    const grid=heading?.parentElement?.querySelector('.grid2');
+    if(grid&&!grid.querySelector('[data-detailerfit-autohustl-affiliate]')){
+      const card=document.createElement('div');
+      card.className='card flat';
+      card.dataset.detailerfitAutohustlAffiliate='true';
+      card.innerHTML='<h3>AutoHustl</h3><p class="small">Detailing-native booking, CRM, invoicing and vehicle workflow.</p><div class="actions"><a class="btn primary" data-vendor="AutoHustl" data-cta-position="pricing_index_affiliate_section" href="https://autohustl.com/new?aff=detailerfit" rel="sponsored noopener" target="_blank">Explore AutoHustl</a></div>';
+      grid.insertBefore(card,grid.firstElementChild);
+    }
+  }
 });

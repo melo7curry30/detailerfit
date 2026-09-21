@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-09-21T16:33:54.469960+00:00",
-  "base_commit": "6c42bc6aefc393e488d25eadb9345df358535e19",
-  "command_id": "det29-jobber-housecall-discovery-20260922-v1",
-  "last_uid": 197
+  "applied_at_utc": "2026-09-21T16:59:21.924622+00:00",
+  "base_commit": "c3d3ffda758b7b0b6d4e805155164ec33485cc9a",
+  "command_id": "det30-housecall-setup-migration-20260922-v1",
+  "last_uid": 198
 }

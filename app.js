@@ -1095,6 +1095,26 @@ document.addEventListener('DOMContentLoaded',()=>{
       grid.insertBefore(card,grid.firstElementChild);
     }
   }
+
+  // Keep the site-wide affiliate disclosure aligned with the active AutoHustl relationship.
+  if(page==='affiliate-disclosure'){
+    document.querySelectorAll('.note, #current-affiliate-relationships p').forEach(el=>{
+      if(!el.textContent.includes('AutoHustl')&&el.innerHTML.includes(', and GarageTool')){
+        el.innerHTML=el.innerHTML.replace(', and GarageTool',', GarageTool, and AutoHustl');
+      }
+    });
+    document.querySelectorAll('#current-affiliate-relationships .small').forEach(el=>{
+      if(el.textContent.includes('Disclosure list updated'))el.textContent='Disclosure list updated September 21, 2026.';
+    });
+    const relSection=document.getElementById('current-affiliate-relationships');
+    if(relSection&&!document.getElementById('autohustl-affiliate-relationship')){
+      const autoHustlDisclosure=document.createElement('section');
+      autoHustlDisclosure.className='section tight';
+      autoHustlDisclosure.setAttribute('aria-labelledby','autohustl-affiliate-relationship');
+      autoHustlDisclosure.innerHTML=`<div class="wrap article"><div class="kicker">AFFILIATE RELATIONSHIP</div><h2 id="autohustl-affiliate-relationship">AutoHustl affiliate relationship</h2><p>DetailerFit participates in the AutoHustl affiliate program and may earn a commission from qualifying paid subscriptions made through clearly marked AutoHustl affiliate links, at no extra cost to the reader. Affiliate compensation does not buy ranking position or change our editorial conclusions.</p></div>`;
+      relSection.insertAdjacentElement('afterend',autoHustlDisclosure);
+    }
+  }
 });
 
 // DetailerFit HighLevel FirstPromoter Sub-ID attribution - Sep 21, 2026.

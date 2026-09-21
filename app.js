@@ -977,3 +977,51 @@ document.addEventListener('DOMContentLoaded',()=>{
   link.textContent='Housecall Pro Alternatives';
   actions.appendChild(link);
 });
+
+// DetailerFit mobile detailing app search-intent refresh - Sep 21, 2026.
+// Page-scoped metadata/content alignment only. No vendor ranking, order, CTA,
+// affiliate URL or editorial conclusion changes.
+document.addEventListener('DOMContentLoaded',()=>{
+  const page=(location.pathname.split('/').pop()||'').replace(/\.html$/i,'');
+  if(page!=='best-mobile-detailing-software')return;
+
+  const title='Best Detailing Apps for Mobile Detailers (2026) | DetailerFit';
+  const description='Compare the best detailing apps for mobile detailers in 2026 by booking, CRM, estimates, vehicle documentation, payments, routing, device fit and field workflow.';
+  document.title=title;
+
+  const setMeta=(selector,value)=>{
+    const el=document.querySelector(selector);
+    if(el)el.setAttribute('content',value);
+  };
+  setMeta('meta[name="description"]',description);
+  setMeta('meta[property="og:title"]','Best Detailing Apps for Mobile Detailers (2026)');
+  setMeta('meta[name="twitter:title"]','Best Detailing Apps for Mobile Detailers (2026)');
+
+  const h1=document.querySelector('main h1');
+  if(h1)h1.textContent='Best Detailing Apps for Mobile Detailers in 2026';
+
+  const eyebrow=document.querySelector('.heroMini .eyebrow');
+  if(eyebrow)eyebrow.textContent='DETAILING APP BUYING GUIDE · VERIFIED SEP 21, 2026';
+
+  const breadcrumbCurrent=document.querySelector('.breadcrumbs span');
+  if(breadcrumbCurrent)breadcrumbCurrent.textContent='Detailing Apps for Mobile Detailers';
+
+  document.querySelectorAll('script[type="application/ld+json"]').forEach(script=>{
+    try{
+      const data=JSON.parse(script.textContent||'{}');
+      const graph=Array.isArray(data['@graph'])?data['@graph']:[];
+      graph.forEach(node=>{
+        if(node?.['@type']==='Article'&&String(node?.['@id']||'').includes('/best-mobile-detailing-software')){
+          node.headline='Best Detailing Apps for Mobile Detailers (2026)';
+          node.description='A research-based guide to the best detailing apps for mobile detailers, comparing booking, CRM, routing, estimates, vehicle documentation, payments, device fit and team workflow.';
+          node.dateModified='2026-09-21';
+        }
+        if(node?.['@type']==='BreadcrumbList'&&Array.isArray(node.itemListElement)){
+          const last=node.itemListElement.find(item=>item?.position===3&&String(item?.item||'').includes('/best-mobile-detailing-software'));
+          if(last)last.name='Best Detailing Apps for Mobile Detailers';
+        }
+      });
+      script.textContent=JSON.stringify(data);
+    }catch(_){/* preserve original structured data if parsing fails */}
+  });
+});

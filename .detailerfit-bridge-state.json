@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-09-21T09:33:30.916430+00:00",
-  "base_commit": "166c30bdf61212d7885d49ba49ceff1b69a6fe62",
-  "command_id": "det22-highlevel-fp-sid-autohustl-fix-20260921-v1",
-  "last_uid": 185
+  "applied_at_utc": "2026-09-21T09:59:00.475247+00:00",
+  "base_commit": "8e684b151ee44c45fb43fbc6f42771470953e739",
+  "command_id": "det20-autohustl-review-20260921-v1",
+  "last_uid": 186
 }

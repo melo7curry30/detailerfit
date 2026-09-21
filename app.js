@@ -1225,3 +1225,37 @@ document.addEventListener('DOMContentLoaded',()=>{
     }catch(_){/* preserve the original affiliate URL if URL parsing fails */}
   });
 });
+
+// DetailerFit AutoHustl review discovery links - Sep 21, 2026.
+// Adds non-ranked discovery paths only; existing rankings/order remain unchanged.
+document.addEventListener('DOMContentLoaded',()=>{
+  const page=(location.pathname.split('/').pop()||'').replace(/\.html$/i,'');
+
+  if(page==='compare'){
+    const h=document.getElementById('additional-research-options');
+    const section=h?.closest('section');
+    const heading=section ? [...section.querySelectorAll('h3')].find(el=>(el.textContent||'').trim()==='AutoHustl') : null;
+    const card=heading?.closest('.card');
+    const actions=card?.querySelector('.actions');
+    if(actions&&!actions.querySelector('a[href="/autohustl-review-auto-detailers"]')){
+      const review=document.createElement('a');
+      review.className='btn secondary';
+      review.href='/autohustl-review-auto-detailers';
+      review.textContent='Read AutoHustl Review';
+      actions.insertBefore(review,actions.firstElementChild);
+    }
+  }
+
+  if(page==='reviews'){
+    const existing=document.querySelector('a[href="/autohustl-review-auto-detailers"],a[href="autohustl-review-auto-detailers"]');
+    if(existing) return;
+    const target=[...document.querySelectorAll('section')].find(s=>s.querySelector('.grid2 .software-card'));
+    const wrap=target?.querySelector('.wrap');
+    if(!wrap) return;
+    const block=document.createElement('section');
+    block.className='section tight';
+    block.setAttribute('aria-label','Additional detailing software option');
+    block.innerHTML='<div class="wrap article"><div class="card"><div class="kicker">DETAILING-NATIVE BOOKING + CRM · UNRANKED OPTION</div><h2>AutoHustl</h2><p>AutoHustl combines online booking, client and vehicle records, invoicing, deposits, reminders and inspection workflows for detailing businesses. Its current plans start at $39/month.</p><p class="small">Research verified September 21, 2026. This placement does not change the ranked reviews above.</p><div class="actions"><a class="btn secondary" href="/autohustl-review-auto-detailers">Read AutoHustl Review</a><a class="btn primary" data-vendor="AutoHustl" data-cta-position="reviews-page" href="https://autohustl.com/new?aff=detailerfit" rel="sponsored noopener" target="_blank">Explore AutoHustl</a></div><p class="cta-disclosure small">Affiliate link. DetailerFit may earn a commission if you sign up, at no extra cost to you. This placement does not change the ranking above.</p></div></div>';
+    target.insertAdjacentElement('afterend',block);
+  }
+});

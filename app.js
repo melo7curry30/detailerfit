@@ -1111,3 +1111,36 @@ document.addEventListener('DOMContentLoaded',()=>{
   if(!anchor)return;
   anchor.insertAdjacentElement('afterend',box);
 });
+
+// DetailerFit GarageTool FirstPromoter Sub-ID attribution - Sep 21, 2026.
+// Keeps the verified fpr token unchanged and adds only FirstPromoter's
+// documented fp_sid parameter using non-personal page/CTA source keys.
+document.addEventListener('DOMContentLoaded',()=>{
+  const page=(location.pathname.split('/').pop()||'').replace(/\.html$/i,'');
+  const pageKeys={
+    'garagetool-pricing-wrap-sign-shops':'df-gt-pricing',
+    'garagetool-review-wrap-sign-shops':'df-gt-review',
+    'garagetool-vs-wrapstart':'df-gt-vs',
+    'garagetool-alternatives-wrap-sign-shops':'df-gt-alts',
+    'best-car-wrap-software':'df-wrap-best',
+    'reviews':'df-reviews'
+  };
+  const pageKey=pageKeys[page];
+  if(!pageKey)return;
+
+  document.querySelectorAll('a[href*="garagetool.app"][href*="fpr=ryo-18b665"]').forEach(link=>{
+    try{
+      const url=new URL(link.href,location.href);
+      const host=(url.hostname||'').toLowerCase().replace(/^www\./,'');
+      if(host!=='garagetool.app'||url.searchParams.get('fpr')!=='ryo-18b665')return;
+      const rawPosition=link.dataset.ctaPosition||dfLinkContext(link)||'link';
+      const position=String(rawPosition)
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g,'-')
+        .replace(/^-+|-+$/g,'')
+        .slice(0,24)||'link';
+      url.searchParams.set('fp_sid',`${pageKey}-${position}`.slice(0,64));
+      link.href=url.toString();
+    }catch(_){/* preserve the original affiliate URL if URL parsing fails */}
+  });
+});

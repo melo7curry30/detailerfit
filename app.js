@@ -1155,7 +1155,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   const affiliateUrl='https://autohustl.com/new?aff=detailerfit';
 
   if(page==='compare'){
-    const heading=[...document.querySelectorAll('#additional-research-options h3')].find(h=>(h.textContent||'').trim()==='AutoHustl');
+    const section=document.getElementById('additional-research-options')?.closest('section');
+    const heading=[...(section?.querySelectorAll('h3')||[])].find(h=>(h.textContent||'').trim()==='AutoHustl');
     const card=heading?.closest('.card');
     const actions=card?.querySelector('.actions');
     if(card&&actions&&!card.querySelector('a[data-vendor="AutoHustl"][rel~="sponsored"]')){
@@ -1175,7 +1176,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       }
     }
 
-    const context=[...document.querySelectorAll('#additional-research-options .research-context')].find(el=>el.textContent.includes('AutoHustl and JobField'));
+    const context=[...(section?.querySelectorAll('.research-context')||[])].find(el=>el.textContent.includes('AutoHustl and JobField'));
     if(context){
       context.textContent='JobField remains shown with a normal official link. AutoHustl now also has a separate tracked affiliate CTA. Affiliate status does not determine inclusion or placement.';
     }
@@ -1192,4 +1193,35 @@ document.addEventListener('DOMContentLoaded',()=>{
       grid.insertBefore(card,grid.firstElementChild);
     }
   }
+});
+
+// DetailerFit HighLevel FirstPromoter Sub-ID attribution - Sep 21, 2026.
+// Preserves the verified fp_ref token and adds only FirstPromoter's documented
+// fp_sid parameter using deterministic non-personal page/CTA source keys.
+document.addEventListener('DOMContentLoaded',()=>{
+  const page=(location.pathname.split('/').pop()||'home').replace(/\.html$/i,'')||'home';
+  const pageKey=page
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g,'-')
+    .replace(/^-+|-+$/g,'')
+    .slice(0,32)||'page';
+
+  document.querySelectorAll('a[href*="gohighlevel.com"]').forEach(link=>{
+    try{
+      const url=new URL(link.href,location.href);
+      const host=(url.hostname||'').toLowerCase().replace(/^www\./,'');
+      if(host!=='gohighlevel.com')return;
+      if(url.searchParams.get('fp_ref')!=='ryo-c2d397')return;
+
+      const rawPosition=(link.dataset.ctaPosition||dfLinkContext(link)||'link');
+      const position=String(rawPosition)
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g,'-')
+        .replace(/^-+|-+$/g,'')
+        .slice(0,24)||'link';
+
+      url.searchParams.set('fp_sid',`df-hl-${pageKey}-${position}`.slice(0,64));
+      link.href=url.toString();
+    }catch(_){/* preserve the original affiliate URL if URL parsing fails */}
+  });
 });

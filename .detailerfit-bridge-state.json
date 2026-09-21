@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-09-21T07:00:22.459052+00:00",
-  "base_commit": "cefe7705a7f8db188ee9860bef22e843fa09aca7",
-  "command_id": "det15-detailing-app-intent-20260921-v1",
-  "last_uid": 178
+  "applied_at_utc": "2026-09-21T08:08:27.395779+00:00",
+  "base_commit": "e43f1ed2cd26c94f63c18625307802355689101c",
+  "command_id": "det16-crm-intent-20260921-v1",
+  "last_uid": 181
 }

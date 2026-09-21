@@ -1025,3 +1025,53 @@ document.addEventListener('DOMContentLoaded',()=>{
     }catch(_){/* preserve original structured data if parsing fails */}
   });
 });
+
+// DetailerFit auto detailing CRM search-intent refresh - Sep 21, 2026.
+// Page-scoped metadata/content alignment only. No ranked vendor, ordering, CTA,
+// affiliate URL, methodology or editorial conclusion changes.
+document.addEventListener('DOMContentLoaded',()=>{
+  const page=(location.pathname.split('/').pop()||'').replace(/\.html$/i,'');
+  if(page!=='best-crm-solo-mobile-detailers')return;
+
+  const title='Best CRM for Auto Detailing Businesses (2026) | DetailerFit';
+  const description='Compare CRM software for auto detailing businesses by pricing, online booking, vehicle records, automation, user limits and mobile workflow in 2026.';
+  document.title=title;
+
+  const setMeta=(selector,value)=>{
+    const el=document.querySelector(selector);
+    if(el)el.setAttribute('content',value);
+  };
+  setMeta('meta[name="description"]',description);
+  setMeta('meta[property="og:title"]','Best CRM for Auto Detailing Businesses (2026)');
+  setMeta('meta[property="og:description"]','Compare six CRM options for auto detailing businesses by pricing, booking, vehicle records, automation, users and business fit.');
+  setMeta('meta[name="twitter:title"]','Best CRM for Auto Detailing Businesses (2026)');
+  setMeta('meta[name="twitter:description"]','Six CRM options compared for mobile detailers, fixed shops and growing auto detailing teams.');
+
+  const h1=document.querySelector('main h1');
+  if(h1)h1.textContent='Best CRM for Auto Detailing Businesses in 2026: 6 Tools Compared';
+
+  const kicker=document.querySelector('main .kicker');
+  if(kicker)kicker.textContent='AUTO DETAILING CRM BUYING GUIDE · VERIFIED SEP 21, 2026';
+
+  const breadcrumbCurrent=document.querySelector('.breadcrumbs span');
+  if(breadcrumbCurrent)breadcrumbCurrent.textContent='CRM for Auto Detailing Businesses';
+
+  document.querySelectorAll('script[type="application/ld+json"]').forEach(script=>{
+    try{
+      const data=JSON.parse(script.textContent||'{}');
+      if(data?.['@type']==='Article'&&String(data?.mainEntityOfPage||'').includes('/best-crm-solo-mobile-detailers')){
+        data.headline='Best CRM for Auto Detailing Businesses in 2026: 6 Tools Compared';
+        data.description='A research-based comparison of six CRM and business-management platforms for auto detailing businesses, mobile detailers, fixed shops and growing teams.';
+        data.dateModified='2026-09-21';
+      }
+      if(data?.['@type']==='BreadcrumbList'&&Array.isArray(data.itemListElement)){
+        const last=data.itemListElement.find(item=>item?.position===3&&String(item?.item||'').includes('/best-crm-solo-mobile-detailers'));
+        if(last)last.name='Best CRM for Auto Detailing Businesses';
+      }
+      if(data?.['@type']==='ItemList'&&String(data?.name||'').includes('Auto Detailing CRM')){
+        data.name='Best CRM for Auto Detailing Businesses in 2026';
+      }
+      script.textContent=JSON.stringify(data);
+    }catch(_){/* preserve original structured data if parsing fails */}
+  });
+});

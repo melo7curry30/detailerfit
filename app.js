@@ -31,13 +31,37 @@ document.addEventListener('keydown',(e)=>{
 });
 
 
+// DetailerFit owner/QA analytics exclusion v1.
+// Open any site URL with ?df_qa=1 once to persistently exclude that browser
+// from GA4/PostHog. Use ?df_qa=0 to return the browser to normal tracking.
+const DF_QA_STORAGE_KEY='detailerfit_qa_mode';
+let DF_QA_MODE=false;
+try{
+  const dfQaParams=new URLSearchParams(location.search);
+  const dfQaToggle=dfQaParams.get('df_qa');
+  if(dfQaToggle==='1')localStorage.setItem(DF_QA_STORAGE_KEY,'1');
+  if(dfQaToggle==='0')localStorage.removeItem(DF_QA_STORAGE_KEY);
+  DF_QA_MODE=localStorage.getItem(DF_QA_STORAGE_KEY)==='1';
+  if(dfQaParams.has('df_qa')){
+    dfQaParams.delete('df_qa');
+    const cleanQuery=dfQaParams.toString();
+    history.replaceState(
+      history.state,
+      '',
+      location.pathname+(cleanQuery?'?'+cleanQuery:'')+location.hash
+    );
+  }
+}catch(_dfQaError){
+  DF_QA_MODE=false;
+}
+
 // DetailerFit GA4 bootstrap v1.
 // One shared loader keeps GA4 consistent across every page that already loads app.js.
 const DF_GA4_MEASUREMENT_ID='G-1MS4N4L2J1';
 window.dataLayer=window.dataLayer||[];
 window.gtag=window.gtag||function(){window.dataLayer.push(arguments);};
 
-if(!document.querySelector(`script[data-detailerfit-ga4="${DF_GA4_MEASUREMENT_ID}"]`)){
+if(!DF_QA_MODE&&!document.querySelector(`script[data-detailerfit-ga4="${DF_GA4_MEASUREMENT_ID}"]`)){
   const ga4=document.createElement('script');
   ga4.async=true;
   ga4.src=`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(DF_GA4_MEASUREMENT_ID)}`;
@@ -53,7 +77,7 @@ if(!document.querySelector(`script[data-detailerfit-ga4="${DF_GA4_MEASUREMENT_ID
 const DF_POSTHOG_PROJECT_TOKEN='phc_m6imRHdVDyARtzASRBEQoogndGCZr7WZ7QPanyxe72Pe';
 const DF_POSTHOG_API_HOST='https://us.i.posthog.com';
 
-if(!window.__DETAILERFIT_POSTHOG_INITIALIZED__){
+if(!DF_QA_MODE&&!window.__DETAILERFIT_POSTHOG_INITIALIZED__){
   !function(t,e){var o,n,p,r;e.__SV||(window.posthog&&window.posthog.__loaded)||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}p||((p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",p.onerror=function(){p=null},(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r));var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],Object.defineProperty(u,"toString",{configurable:!0,enumerable:!0,writable:!0,value:function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e}}),Object.defineProperty(u.people,"toString",{configurable:!0,enumerable:!0,writable:!0,value:function(){return u.toString(1)+".people (stub)"}}),o="init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagResult isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey getNextSurveyStep identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty createPersonProfile opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
   window.posthog.init(DF_POSTHOG_PROJECT_TOKEN,{
     api_host:DF_POSTHOG_API_HOST,
@@ -68,6 +92,7 @@ if(!window.__DETAILERFIT_POSTHOG_INITIALIZED__){
 // If GA4/gtag is installed later, these events start flowing automatically.
 // dataLayer is also populated for Google Tag Manager compatibility.
 function dfTrackEvent(eventName, params={}){
+  if(DF_QA_MODE)return;
   const payload={
     ...params,
     page_path: location.pathname,

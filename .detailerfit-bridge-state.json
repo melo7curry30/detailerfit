@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-09-21T17:16:01.597728+00:00",
-  "base_commit": "2cdc2f6293428cd6394c8410bcd3d9da8a2c7ebc",
-  "command_id": "det31-autohustl-sitemap-discovery-20260922-v1",
-  "last_uid": 199
+  "applied_at_utc": "2026-09-22T04:33:32.716859+00:00",
+  "base_commit": "30de039c66094a9cfb07d4642e38a3246e10bada",
+  "command_id": "det32-ai-receptionist-human-handoff-20260922-v1",
+  "last_uid": 201
 }

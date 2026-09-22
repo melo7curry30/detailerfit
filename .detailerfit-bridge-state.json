@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-09-22T04:33:32.716859+00:00",
-  "base_commit": "30de039c66094a9cfb07d4642e38a3246e10bada",
-  "command_id": "det32-ai-receptionist-human-handoff-20260922-v1",
-  "last_uid": 201
+  "applied_at_utc": "2026-09-22T07:17:40.872579+00:00",
+  "base_commit": "bf547d159b7a957052b41a5d16bdda22902c0391",
+  "command_id": "painpoint-batch4-20260922-v1",
+  "last_uid": 202
 }

@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-09-23T01:47:21.383193+00:00",
-  "base_commit": "bdb0146f056df157c025367b6d75c671987f64e7",
-  "command_id": "revenue-reviews-garagetool-discovery-20260923-v1",
-  "last_uid": 229
+  "applied_at_utc": "2026-09-23T02:47:41.829378+00:00",
+  "base_commit": "8a499d7474cb43427b140adb03726a5f45bda723",
+  "command_id": "revenue-reviews-sitemap-refresh-20260923-v1",
+  "last_uid": 233
 }

@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-09-24T05:02:44.061555+00:00",
-  "base_commit": "fb048509f9bbb7c3d7179c826f744a2931ebd893",
-  "command_id": "quoteiq-september-update-20260924-v1",
-  "last_uid": 258
+  "applied_at_utc": "2026-09-24T07:50:34.246555+00:00",
+  "base_commit": "ed956d58f15660b14057dc9dcb0e0dfbc3183238",
+  "command_id": "revenue-housecall-pro-pricing-bof-20260924-v1",
+  "last_uid": 260
 }

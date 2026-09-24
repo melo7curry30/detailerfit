@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-09-24T02:59:35.213696+00:00",
-  "base_commit": "d9d738bc6abadf8eef31fd1e2c0693614c12041e",
-  "command_id": "revenue-autodetailcrm-standalone-review-20260924-v1",
-  "last_uid": 249
+  "applied_at_utc": "2026-09-24T03:18:50.441570+00:00",
+  "base_commit": "74d22a0e1a329bc8bb53e28a351ab10e0ee574e5",
+  "command_id": "revenue-bookingkoala-calculator-20260924-v2",
+  "last_uid": 250
 }

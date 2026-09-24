@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-09-24T07:50:34.246555+00:00",
-  "base_commit": "ed956d58f15660b14057dc9dcb0e0dfbc3183238",
-  "command_id": "revenue-housecall-pro-pricing-bof-20260924-v1",
-  "last_uid": 260
+  "applied_at_utc": "2026-09-24T09:32:38.192902+00:00",
+  "base_commit": "33013137f4cc867e55947c74ec169e352355b8a6",
+  "command_id": "housecall-auto-detailing-industry-signal-20260924-v1",
+  "last_uid": 262
 }

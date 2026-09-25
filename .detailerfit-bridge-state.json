@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-09-25T17:37:28.071280+00:00",
-  "base_commit": "fd345f216c8f9cee672dcbad01e1ecf109c9e6fd",
-  "command_id": "revenue-twizzlo-integration-20260926-v1",
-  "last_uid": 280
+  "applied_at_utc": "2026-09-25T18:44:12.639192+00:00",
+  "base_commit": "85b226fbfa3f64470cabaee5d6492039b0213d4f",
+  "command_id": "pricing-index-housecall-high-intent-20260926-v1",
+  "last_uid": 282
 }

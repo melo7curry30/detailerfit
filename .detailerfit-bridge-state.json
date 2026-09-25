@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-09-25T05:03:58.635019+00:00",
-  "base_commit": "d40de87293dcf07aefcc7e1f047fe0c5bf82a1d4",
-  "command_id": "filmiq-review-early-mover-20260925-v1",
-  "last_uid": 269
+  "applied_at_utc": "2026-09-25T13:13:49.831477+00:00",
+  "base_commit": "c8a6d77eed30338a1227d4ce0139feeb402d09d0",
+  "command_id": "revenue-cost-calculator-html-20260925-v5",
+  "last_uid": 275
 }

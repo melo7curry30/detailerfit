@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-09-25T14:39:27.763306+00:00",
-  "base_commit": "508517b4d59a6452dc978831bb2ab9284f295bce",
-  "command_id": "revenue-cost-calculator-comparison-cta-20260925-v7",
-  "last_uid": 277
+  "applied_at_utc": "2026-09-25T17:37:28.071280+00:00",
+  "base_commit": "fd345f216c8f9cee672dcbad01e1ecf109c9e6fd",
+  "command_id": "revenue-twizzlo-integration-20260926-v1",
+  "last_uid": 280
 }

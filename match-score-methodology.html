@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#090d12">
+<title>DetailerFit Match Score Methodology</title>
+<meta name="description" content="The transparent formula, evidence confidence rules, hard constraints and weighting used by the DetailerFit Software Finder Match Score.">
+<link rel="stylesheet" href="styles.css">
+<link rel="canonical" href="https://getdetailerfit.com/match-score-methodology">
+<meta property="og:url" content="https://getdetailerfit.com/match-score-methodology">
+</head>
+<body><a class="skip-link" href="#main-content">Skip to content</a>
+<header class="site-header"><div class="wrap nav"><a aria-label="DetailerFit home" class="brand" href="/">Detailer<b>Fit</b></a><button aria-controls="navlinks" aria-expanded="false" class="menuBtn" onclick="toggleMenu(this)" type="button">Menu</button><nav aria-label="Primary navigation" class="navlinks" id="navlinks"><a href="compare">Compare Software</a><a href="reviews">Reviews</a><a href="guides">Guides</a><a href="finder">Software Finder</a><a href="methodology">How We Review</a><a href="about">About</a></nav></div></header>
+<main id="main-content" tabindex="-1">
+<section class="heroMini"><div class="wrap">
+<div class="breadcrumbs"><a href="/">Home</a> / <a href="finder">Software Finder</a> / Match Score Methodology</div>
+<span class="eyebrow">MATCH SCORE MODEL V1.0.0 · VERIFIED SEP 27, 2026</span>
+<h1>A Match Score should be reproducible, not a gut feeling.</h1>
+<p class="lead">DetailerFit separates requirement fit from evidence strength. The score is personalized to the Finder inputs and is not a universal quality rating for a software vendor.</p>
+</div></section>
+<section class="section"><div class="wrap article">
+<div class="note"><b>Core rule:</b> unknown information is not scored as failure. Weak or missing evidence pulls a criterion toward neutral instead of toward zero. Affiliate relationships and commission amounts are not scoring inputs.</div>
+
+<details class="toc"><summary>On this page</summary><nav aria-label="On this page"><ol>
+<li><a href="#formula">The formula</a></li><li><a href="#raw">Raw criterion scores</a></li><li><a href="#confidence">Evidence confidence</a></li><li><a href="#weights">Personalized weights</a></li><li><a href="#gates">Hard constraints</a></li><li><a href="#price">Price fit</a></li><li><a href="#unknowns">Unknowns and conflicts</a></li><li><a href="#scope">Current scope and limitations</a></li><li><a href="#commercial">Commercial independence</a></li>
+</ol></nav></details>
+
+<h2 id="formula">1. The formula</h2>
+<p>Each applicable criterion begins with a raw score from 0 to 100 and an evidence-confidence value from 0.00 to 1.00. The raw score is then shrunk toward neutral 50 according to the strength of the evidence:</p>
+<div class="callout"><p><strong>Adjusted criterion score = 50 + Confidence × (Raw score − 50)</strong></p></div>
+<p>Examples: a verified 100 with 1.00 confidence stays 100. A raw 100 supported at 0.70 confidence becomes 85. A raw 0 at 0.70 confidence becomes 15. A completely unknown criterion has confidence 0 and therefore becomes neutral 50.</p>
+<p>The final personalized Match Score is the weighted mean of all applicable adjusted criterion scores:</p>
+<div class="callout"><p><strong>Match Score = Σ(Adjusted score × Criterion weight) ÷ Σ(Criterion weights)</strong></p></div>
+<p>Evidence Confidence is reported separately as the weighted mean of the confidence values. It is not hidden inside the headline score.</p>
+
+<h2 id="raw">2. Raw criterion scores</h2>
+<p>DetailerFit avoids free-form 83/100-style editorial scoring where possible. Workflow requirements use a conservative three-state rubric:</p>
+<div class="grid3">
+<div class="metric"><b>100</b>Requirement clearly confirmed for the selected plan or configuration.</div>
+<div class="metric"><b>50</b>Partial, neutral or not sufficiently established for a positive or negative conclusion.</div>
+<div class="metric"><b>0</b>Requirement clearly does not satisfy the stated need.</div>
+</div>
+<p>Industry fit uses a separate classification rubric because it describes product focus rather than a binary feature: 100 = purpose-built detailing/appearance workflow; 75 = automotive-specialist workflow; 50 = general field-service workflow; 25 = generic horizontal business software; 0 = unrelated workflow.</p>
+
+<h2 id="confidence">3. Evidence confidence</h2>
+<p>The current model uses the following confidence multipliers:</p>
+<div class="tablewrap"><table><thead><tr><th>Evidence type</th><th>Confidence</th><th>Use</th></tr></thead><tbody>
+<tr><td>Hands-on verified</td><td>1.00</td><td>DetailerFit directly verifies the relevant workflow.</td></tr>
+<tr><td>Official help documentation</td><td>0.98</td><td>Current vendor help-center or support documentation.</td></tr>
+<tr><td>Official pricing / product documentation</td><td>0.95</td><td>Current vendor pricing, plan or feature documentation.</td></tr>
+<tr><td>Official demo / release material</td><td>0.90</td><td>Vendor demos or release notes when the workflow is shown clearly.</td></tr>
+<tr><td>Vendor-confirmed</td><td>0.85</td><td>Direct vendor confirmation that is not yet independently reproduced.</td></tr>
+<tr><td>Multiple third-party sources</td><td>0.70</td><td>Corroborated context, not preferred over first-party product facts.</td></tr>
+<tr><td>Unknown</td><td>0.00</td><td>No normalized evidence strong enough to score the criterion.</td></tr>
+</tbody></table></div>
+
+<h2 id="weights">4. Personalized weights</h2>
+<p>Weights come from the user's Finder inputs. They are normalized automatically, so the active weights always form one comparable score even when optional priorities are not selected.</p>
+<div class="tablewrap"><table><thead><tr><th>Criterion</th><th>Weight when applicable</th><th>Rule</th></tr></thead><tbody>
+<tr><td>Price fit</td><td>30</td><td>Always active.</td></tr>
+<tr><td>Team / capacity fit</td><td>15</td><td>Always active.</td></tr>
+<tr><td>Industry fit</td><td>5 baseline / 25 when selected</td><td>Detailing-specific workflow increases its importance.</td></tr>
+<tr><td>Device fit</td><td>15</td><td>Active when iPhone/iPad or Android is explicitly selected.</td></tr>
+<tr><td>Customer self-booking</td><td>20</td><td>Active when true customer self-booking is required.</td></tr>
+<tr><td>Vehicle workflow</td><td>25</td><td>Active when VIN / estimating / vehicle documentation is selected.</td></tr>
+<tr><td>Automation / admin</td><td>20</td><td>Active when automated follow-up/admin is selected.</td></tr>
+<tr><td>Routing / dispatch / growth</td><td>20</td><td>Active when the scale priority is selected.</td></tr>
+</tbody></table></div>
+<p>Weights are attached to requirements, not vendors. A vendor cannot receive a different weight because it has an affiliate program or a higher payout.</p>
+
+<h2 id="gates">5. Hard constraints</h2>
+<p>Some inputs are requirements rather than preferences. The current Finder applies these gates before ranking:</p>
+<ul class="list">
+<li><b>Budget:</b> if at least one eligible configuration has a verified monthly cost within the stated budget, over-budget and price-unverified configurations are removed before Match Score ranking.</li>
+<li><b>Required customer self-booking:</b> a product is not presented as a verified match when native customer-facing self-booking is not established in the current evidence set.</li>
+<li><b>Plan capacity:</b> the Finder chooses the first plan configuration that can be supported by the current team-size/job-volume rules. Where the official documentation conflicts, the configuration is marked for verification instead of guessed.</li>
+</ul>
+
+<h2 id="price">6. Price fit</h2>
+<p>Known configurations at or below the stated monthly budget receive a raw Price Fit of 100. If no in-budget configuration exists and an over-budget option remains in the pool, Price Fit declines continuously using:</p>
+<div class="callout"><p><strong>Raw Price Fit = 100 × (Budget ÷ Monthly cost)²</strong>, capped between 0 and 100.</p></div>
+<p>An exact price that is not verified receives neutral raw 50 with low confidence rather than a guessed dollar amount.</p>
+
+<h2 id="unknowns">7. Unknowns, conflicts and missing evidence</h2>
+<p>“Not found” and “does not exist” are different claims. The model therefore does not assign zero merely because DetailerFit has not verified a feature. Unknown criteria use raw 50 and confidence 0 unless stronger evidence supports a different state. When official pages conflict, the model uses the conservative plan interpretation and lowers certainty or asks the reader to verify.</p>
+
+<h2 id="scope">8. Current scope and limitations</h2>
+<p>Model v1.0.0 is intentionally narrower than a full universal vendor rating. It scores the requirements currently collected by the Software Finder and only where DetailerFit has enough normalized plan evidence to do so consistently.</p>
+<p><strong>Setup difficulty and migration difficulty are not yet included in the numeric Match Score.</strong> DetailerFit intends to add them only after a common rubric is populated across the scored vendor set. Leaving an immature dimension out is preferable to adding false precision. Until then, setup/migration findings can still appear in reviews and verification notes.</p>
+<p>The Match Score should therefore be read as: “How well does this currently verified plan fit the requirements I entered?” It should not be read as “Which software company is objectively best?”</p>
+
+<h2 id="commercial">9. Commercial independence</h2>
+<p>The scoring implementation contains no commission amount, EPC, payout, affiliate-status bonus or revenue weight. Affiliate relationships can change the destination URL or disclosure text, but they do not change raw criterion scores, confidence multipliers, user weights, plan gates or the ranking formula.</p>
+<div class="actions"><a class="btn primary" href="finder">Run the Software Finder</a><a class="btn secondary" href="methodology">Read the broader review methodology</a><a class="btn ghost" href="affiliate-disclosure">Affiliate disclosure</a></div>
+</div></section>
+</main>
+<footer class="footer"><div class="wrap footergrid"><div><a class="brand" href="/">Detailer<b>Fit</b></a><p>Independent research for mobile detailers choosing business software.</p></div><div><strong>Research</strong><a href="finder">Software Finder</a><a href="compare">Compare tools</a><a href="methodology">How we rank</a><a href="reviews">Software reviews</a></div><div><strong>Company</strong><a href="about">About</a><a href="contact">Contact</a><a href="affiliate-disclosure">Affiliate disclosure</a><a href="privacy">Privacy</a></div></div></footer>
+<script src="app.js"></script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"25a4f3de7baa42bf8934155a29b6cc47","r":1,"spa":2}' crossorigin="anonymous"></script>
+</body></html>

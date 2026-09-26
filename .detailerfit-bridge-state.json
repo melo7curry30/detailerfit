@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-09-26T15:55:54.952780+00:00",
-  "base_commit": "5790295c5f5767841a81c160ca8e7b8763f999e3",
-  "command_id": "revenue-cluster-links-20260927-01",
-  "last_uid": 298
+  "applied_at_utc": "2026-09-26T16:13:47.615291+00:00",
+  "base_commit": "30ed306ed374163112fe45da2fd959c828880f88",
+  "command_id": "match-score-v1-20260927-01",
+  "last_uid": 304
 }

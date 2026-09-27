@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-09-27T11:30:49.090729+00:00",
-  "base_commit": "010c3255905bd8a6fa94dd5799e12f9b6404a6fe",
-  "command_id": "match-score-v1-5-confidence-bands-20260927",
-  "last_uid": 314
+  "applied_at_utc": "2026-09-27T11:44:42.058316+00:00",
+  "base_commit": "3cd03d8e3051a2ee39e3d20a2b567e823a0fab5a",
+  "command_id": "compare-refresh-9-tools-neutral-order-20260927",
+  "last_uid": 317
 }

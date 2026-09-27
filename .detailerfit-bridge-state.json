@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-09-27T07:47:23.497392+00:00",
-  "base_commit": "ebfa1fa3f1a258709a1e7217ec96742f1034cd38",
-  "command_id": "match-score-v1-1-setup-migration-20260927",
-  "last_uid": 305
+  "applied_at_utc": "2026-09-27T08:18:03.976412+00:00",
+  "base_commit": "523e8812b34d89be2e2a932a9963761f6a133ed9",
+  "command_id": "match-score-v1-3-1-strata-evidence-20260927",
+  "last_uid": 309
 }

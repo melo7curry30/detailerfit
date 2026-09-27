@@ -15,7 +15,7 @@
 <main id="main-content" tabindex="-1">
 <section class="heroMini"><div class="wrap">
 <div class="breadcrumbs"><a href="/">Home</a> / <a href="finder">Software Finder</a> / Match Score Methodology</div>
-<span class="eyebrow">MATCH SCORE MODEL V1.1.0 · VERIFIED SEP 27, 2026</span>
+<span class="eyebrow">MATCH SCORE MODEL V1.3.1 · VERIFIED SEP 27, 2026</span>
 <h1>A Match Score should be reproducible, not a gut feeling.</h1>
 <p class="lead">DetailerFit separates requirement fit from evidence strength. The score is personalized to the Finder inputs and is not a universal quality rating for a software vendor.</p>
 </div></section>
@@ -34,6 +34,7 @@
 <li><a href="#migration">Migration readiness</a></li>
 <li><a href="#unknowns">Unknowns and conflicts</a></li>
 <li><a href="#sources">Setup &amp; migration evidence</a></li>
+<li><a href="#capability-refresh">Capability evidence refresh</a></li>
 <li><a href="#scope">Scope and limitations</a></li>
 <li><a href="#commercial">Commercial independence</a></li>
 </ol></nav></details>
@@ -121,22 +122,34 @@
 <p>“Not found” and “does not exist” are different claims. The model therefore does not assign zero merely because DetailerFit has not verified a feature. Unknown criteria use raw 50 and confidence 0 unless stronger evidence supports a different state. When official pages conflict, the model uses the conservative plan interpretation and lowers certainty or asks the reader to verify.</p>
 
 <h2 id="sources">10. Setup &amp; migration evidence reviewed</h2>
-<p>The v1.1.0 setup/migration normalization was checked against current first-party documentation on September 27, 2026. These are source families, not endorsements:</p>
+<p>The v1.3.1 setup/migration normalization was checked against current first-party documentation on September 27, 2026. These are source families, not endorsements:</p>
 <div class="tablewrap"><table><thead><tr><th>Vendor</th><th>Setup evidence</th><th>Migration evidence</th></tr></thead><tbody>
 <tr><td>QuoteIQ</td><td><a href="https://intercom.help/quoteiq/en/articles/11185940-how-to-set-up-your-account-in-quoteiq" rel="noopener" target="_blank">Account setup guide</a></td><td><a href="https://intercom.help/quoteiq/en/articles/14442924-ai-smart-import-migrate-your-data-from-any-crm-in-minutes" rel="noopener" target="_blank">AI Smart Import</a></td></tr>
 <tr><td>Mobile Tech RX</td><td><a href="https://www.mobiletechrx.com/lessons/get-started/" rel="noopener" target="_blank">Certification: Get Started</a></td><td><a href="https://www.mobiletechrx.com/plans/" rel="noopener" target="_blank">Plans / Batch Import</a></td></tr>
 <tr><td>ServiceM8</td><td><a href="https://support.servicem8.com/help-center/getting-started" rel="noopener" target="_blank">Getting Started</a></td><td><a href="https://support.servicem8.com/help-center/advanced-setup/advanced-setup/how-to-import-materials-and-clients" rel="noopener" target="_blank">Import Materials and Clients</a></td></tr>
 <tr><td>Jobber</td><td><a href="https://help.getjobber.com/en/articles/first-steps-basic-account-set-up/" rel="noopener" target="_blank">Basic Account Setup</a></td><td><a href="https://help.getjobber.com/en/articles/import-clients/" rel="noopener" target="_blank">Import Clients</a> · <a href="https://help.getjobber.com/en/articles/import-jobs/" rel="noopener" target="_blank">Import Jobs</a></td></tr>
 <tr><td>Urable</td><td><a href="https://intercom.help/urable/en/articles/10002869-customer-support-in-urable" rel="noopener" target="_blank">Customer Support / Setup</a></td><td><a href="https://intercom.help/urable/en/articles/10069738-importing-customers-and-products-services" rel="noopener" target="_blank">Import Customers and Products/Services</a></td></tr>
+<tr><td>Strata</td><td><a href="https://stratacrm.app/resources/switch-from-orbisx-urable" rel="noopener" target="_blank">Switching/setup guide</a> · <a href="https://stratacrm.app/company" rel="noopener" target="_blank">Onboarding support</a></td><td><a href="https://stratacrm.app/pricing" rel="noopener" target="_blank">Self-serve CSV migration</a> · <a href="https://stratacrm.app/company" rel="noopener" target="_blank">Migration help</a></td></tr>
 <tr><td>Housecall Pro</td><td><a href="https://help.housecallpro.com/en/articles/11115983-getting-started-with-housecall-pro" rel="noopener" target="_blank">Getting Started</a></td><td><a href="https://help.housecallpro.com/en/articles/6797101-how-to-import-export-jobs-and-customers" rel="noopener" target="_blank">Import / Export Jobs and Customers</a></td></tr>
 </tbody></table></div>
 
-<h2 id="scope">11. Current scope and limitations</h2>
-<p>Model v1.1.0 scores the requirements currently collected by the Software Finder across the six vendors in the normalized ranking set. Setup and migration are now included only when the user activates those needs.</p>
+<h2 id="capability-refresh">11. Capability evidence refresh</h2>
+<p>Model v1.2.0 rechecked several previously neutral workflow criteria against current first-party product and help documentation. A neutral 50 was upgraded only where the requested capability is now explicitly documented; missing evidence remains neutral.</p>
+<div class="tablewrap"><table><thead><tr><th>Vendor</th><th>Criterion updated</th><th>First-party evidence</th></tr></thead><tbody>
+<tr><td>ServiceM8</td><td>Automation; Routing / dispatch / growth</td><td><a href="https://www.servicem8.com/au/pricing-comparison" rel="noopener" target="_blank">Pricing comparison</a> confirms automated reminders/follow-ups and Dispatch Map; <a href="https://support.servicem8.com/help-center/servicem8-add-ons/auto-routing/how-to-use-auto-routing-to-optimise-daily-schedules" rel="noopener" target="_blank">Auto Routing</a> documents route optimisation.</td></tr>
+<tr><td>Jobber</td><td>Routing / dispatch / growth</td><td><a href="https://help.getjobber.com/en/articles/route-optimization-new-schedule/" rel="noopener" target="_blank">Route Optimization</a> documents automatic route ordering, map views and Connect/Grow/Plus availability.</td></tr>
+<tr><td>Urable</td><td>Routing / dispatch / growth; Vehicle workflow</td><td><a href="https://urable.com/" rel="noopener" target="_blank">Urable product page</a> documents route optimisation and personnel assignment; <a href="https://urable.com/pricing/" rel="noopener" target="_blank">Pricing</a> documents VIN barcode scanning, a two-way Carfax link and vehicle data/image storage.</td></tr>
+<tr><td>Strata</td><td>New normalized vendor</td><td><a href="https://stratacrm.app/pricing" rel="noopener" target="_blank">Pricing</a> confirms standard plan rules, booking, automation, iPhone/Android apps and CSV migration; <a href="https://stratacrm.app/features/crm" rel="noopener" target="_blank">Client &amp; Vehicle CRM</a> confirms vehicle records and history. Route optimization and VIN scanning remain unverified and therefore neutral.</td></tr>
+<tr><td>Housecall Pro</td><td>Automation / admin</td><td><a href="https://www.housecallpro.com/pricing/" rel="noopener" target="_blank">Pricing</a> and <a href="https://www.housecallpro.com/features/customer-management/" rel="noopener" target="_blank">Customer Management</a> document automated reminders and follow-ups on the entry plan path.</td></tr>
+</tbody></table></div>
+<p>This refresh changes evidence-backed fit only. It does not introduce affiliate status, payout, popularity, review sentiment or editorial preference into the formula.</p>
+
+<h2 id="scope">12. Current scope and limitations</h2>
+<p>Model v1.3.1 scores the requirements currently collected by the Software Finder across seven vendors in the normalized ranking set. Strata joined the normalized set only after first-party plan, booking, automation, device and migration rules were documented well enough to reproduce its score. Setup and migration are now included only when the user activates those needs.</p>
 <p>The model intentionally does not score claimed setup time, UI aesthetics, generic review sentiment or undocumented migration capabilities. A documented import path can still have real-world edge cases, and a successful migration may depend on the quality and structure of the source data.</p>
 <p>The Match Score should therefore be read as: “How well does this currently verified plan fit the requirements I entered?” It should not be read as “Which software company is objectively best?”</p>
 
-<h2 id="commercial">12. Commercial independence</h2>
+<h2 id="commercial">13. Commercial independence</h2>
 <p>The scoring implementation contains no commission amount, EPC, payout, affiliate-status bonus or revenue weight. Affiliate relationships can change the destination URL or disclosure text, but they do not change raw criterion scores, confidence multipliers, user weights, plan gates or the ranking formula.</p>
 <div class="actions"><a class="btn primary" href="finder">Run the Software Finder</a><a class="btn secondary" href="methodology">Read the broader review methodology</a><a class="btn ghost" href="affiliate-disclosure">Affiliate disclosure</a></div>
 </div></section>

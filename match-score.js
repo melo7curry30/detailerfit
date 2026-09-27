@@ -1,4 +1,4 @@
-/* DetailerFit Evidence-Weighted Match Score v1.1.0
+/* DetailerFit Evidence-Weighted Match Score v1.3.1
  * Scope: Software Finder only.
  * Match Score is personalized fit, not a universal vendor quality rating.
  * Affiliate relationships and commission data are intentionally absent.
@@ -6,7 +6,7 @@
 (function(){
   'use strict';
 
-  const MODEL_VERSION='1.1.0';
+  const MODEL_VERSION='1.3.1';
   const LAST_VERIFIED='2026-09-27';
   const EVIDENCE={
     hands_on:1.00,
@@ -44,12 +44,12 @@
     },
     'ServiceM8':{
       url:'servicem8',vendorUrl:'https://www.servicem8.com/us/pricing',vendorRel:'noopener',
-      why:'Low entry cost, published job-volume tiers, online booking and unlimited users on paid plans.',
+      why:'Low entry cost, published job-volume tiers, online booking, automation and dispatch/routing tools.',
       watch:'The full field experience is Apple-first. Android field staff use ServiceM8 Lite.',
       tags:['Apple-first','Unlimited users on paid plans'],
       industry:{raw:50,evidence:'official_product',note:'General field-service platform, not detailing-specific.'},
-      automation:{raw:50,evidence:'unknown',note:'Not enough normalized Finder evidence to award a full automation match.'},
-      scale:{raw:50,evidence:'unknown',note:'Not enough normalized Finder evidence to award a full routing/dispatch match.'},
+      automation:{raw:100,evidence:'official_product',note:'Current ServiceM8 pricing documentation confirms automated booking reminders, quote follow-up, customer feedback and payment follow-ups; these core automations are listed across all plans.'},
+      scale:{raw:100,evidence:'official_help',note:'ServiceM8 documents Dispatch Map, urgent dispatch and Auto Routing that optimizes a staff member’s daily route and schedule.'},
       vehicle:{raw:50,evidence:'unknown',note:'Vehicle-first VIN/documentation workflow is not established in the current Finder dataset.'}
     },
     'Jobber':{
@@ -59,18 +59,28 @@
       tags:['iOS + Android','General field service'],
       industry:{raw:50,evidence:'official_product',note:'General field-service platform, not detailing-specific.'},
       automation:{raw:100,evidence:'official_product',note:'Automation is documented on the eligible plan path used by the Finder.'},
-      scale:{raw:50,evidence:'official_product',note:'Team tooling is documented; this normalized model does not assume the full routing/dispatch cluster without plan-level verification.'},
+      scale:{raw:100,evidence:'official_help',note:'Jobber documents route optimization, map-based scheduling and reassignment; route optimization is available on Connect, Grow and Plus, and selecting scale moves the Finder to an eligible plan path.'},
       vehicle:{raw:50,evidence:'unknown',note:'Vehicle-first VIN/documentation workflow is not established in the current Finder dataset.'}
     },
     'Urable':{
       url:'urable',vendorUrl:'https://urable.com/pricing/',vendorRel:'noopener',
-      why:'Automotive-specialist workflow with unlimited users and customer online booking on Pro.',
+      why:'Automotive-specialist workflow with unlimited users, vehicle/Carfax tooling, routing and customer online booking on Pro.',
       watch:'Express has internal scheduling; customer online booking starts on Pro.',
-      tags:['Web + iOS + Android','Unlimited users'],
+      tags:['Web + iOS + Android','Unlimited users','VIN + Carfax'],
       industry:{raw:75,evidence:'official_product',note:'Automotive-specialist workflow.'},
       automation:{raw:100,evidence:'official_product',note:'The Finder moves to Pro when automation is selected.'},
-      scale:{raw:50,evidence:'official_product',note:'Unlimited users are documented; the full routing/dispatch cluster is kept neutral until normalized verification is complete.'},
-      vehicle:{raw:50,evidence:'unknown',note:'Vehicle-first VIN/documentation workflow is not awarded without stronger normalized evidence.'}
+      scale:{raw:100,evidence:'official_product',note:'Urable documents mapping and route optimization plus assigning personnel and resources to routes, alongside unlimited users.'},
+      vehicle:{raw:100,evidence:'official_product',note:'Urable documents VIN barcode scanning with a two-way Carfax link, customer vehicle data/image storage and automotive quoting/workflow tools.'}
+    },
+    'Strata':{
+      url:'strata-crm-review',vendorUrl:'https://stratacrm.app/?via=ryo-yonemura',vendorRel:'sponsored noopener',vendorTarget:'_blank',
+      why:'Automotive-shop CRM with booking, deposits, texting, automation, quotes/invoices and vehicle history on every plan.',
+      watch:'Focus is one login and 2,000 clients; Flow adds unlimited team logins and 20,000 clients. Route optimization and VIN scanning are not treated as confirmed in the current evidence set.',
+      tags:['iOS + Android','Automotive-focused','30-day trial'],
+      industry:{raw:75,evidence:'official_product',note:'Automotive-specialist workflow built for detailing and adjacent automotive service shops.'},
+      automation:{raw:100,evidence:'official_product',note:'Strata documents automated confirmations, reminders, review requests, win-backs and Autopilot follow-up workflows on every plan.'},
+      scale:{raw:50,evidence:'official_product',note:'Flow confirms unlimited team logins, roles and job assignment, but route optimization is not established in the current evidence set.'},
+      vehicle:{raw:50,evidence:'official_product',note:'Vehicle CRM, service history, vehicle intake and photos are documented; VIN scanning is not established in the current evidence set.'}
     },
     'Housecall Pro':{
       url:'housecall-pro',vendorUrl:'https://housecallpro.partnerlinks.io/lquesdqg2t22',vendorRel:'sponsored noopener',vendorTarget:'_blank',
@@ -78,7 +88,7 @@
       watch:'Built for general home-service operations rather than vehicle-care businesses. User counts are plan-gated.',
       tags:['iOS + Android','Dispatch-focused'],
       industry:{raw:50,evidence:'official_product',note:'General field-service platform, not detailing-specific.'},
-      automation:{raw:50,evidence:'official_product',note:'Broad operational tooling is documented, but the normalized automation cluster is not treated as fully confirmed here.'},
+      automation:{raw:100,evidence:'official_product',note:'Housecall Pro’s current pricing and customer-management pages document automated reminders and follow-ups from the entry plan path.'},
       scale:{raw:100,evidence:'official_product',note:'Scheduling/dispatch and team controls are documented on the relevant plan path.'},
       vehicle:{raw:50,evidence:'unknown',note:'Vehicle-first VIN/documentation workflow is not established in the current Finder dataset.'}
     }
@@ -109,6 +119,11 @@
       guided:{raw:100,evidence:'official_help',note:'Urable documents an in-app setup guide for new trials.'},
       training:{raw:100,evidence:'official_help',note:'Tutorials, demos, Q&A and office hours are documented in the official Help Center.'},
       human:{raw:100,evidence:'official_help',note:'A paid New Account Set Up service is documented.'}
+    },
+    'Strata':{
+      guided:{raw:100,evidence:'official_product',note:'Strata publishes a step-by-step switching/setup guide covering import, booking page, texting, payments and team setup.'},
+      training:{raw:50,evidence:'official_product',note:'Strata publishes guides and playbooks, but a formal structured training curriculum is not established.'},
+      human:{raw:100,evidence:'official_product',note:'Strata’s company page explicitly offers onboarding and setup help through its support team.'}
     },
     'Housecall Pro':{
       guided:{raw:100,evidence:'official_help',note:'A current official Getting Started guide provides a structured account setup path.'},
@@ -152,6 +167,13 @@
       history:{raw:50,evidence:'unknown',note:'Past job/invoice history migration breadth is not established in the current normalized evidence set.'},
       mapping:{raw:50,evidence:'official_help',note:'The documented CSV flow requires exact template headers rather than arbitrary source-field mapping.'},
       assisted:{raw:100,evidence:'official_help',note:'Urable documents spreadsheet help and an Account Transfer Service.'}
+    },
+    'Strata':{
+      customers:{raw:100,evidence:'official_product',note:'Strata documents self-serve CSV import from an existing CRM using its template.'},
+      catalog:{raw:50,evidence:'unknown',note:'A normalized services/price-book import path is not established in the current evidence set.'},
+      history:{raw:100,evidence:'official_product',note:'Strata explicitly documents importing customers, vehicles and history from another tool.'},
+      mapping:{raw:100,evidence:'official_product',note:'The migration flow documents matching source columns to Strata’s template, previewing the result and undoing an import.'},
+      assisted:{raw:100,evidence:'official_product',note:'Strata’s company page explicitly offers help bringing across an export from the old system; self-serve import remains available without a required onboarding call.'}
     },
     'Housecall Pro':{
       customers:{raw:100,evidence:'official_help',note:'Customers can be imported from CSV, Excel and other supported file formats.'},
@@ -262,6 +284,11 @@
     return {plan:'Express',cost:70,annual:'$840/year',users:'Unlimited users',booking:false,capacityConfidence:EVIDENCE.official_product};
   }
 
+  function strataPlan(team){
+    if(team<=1)return {plan:'Focus',cost:39,annual:'',users:'1 login · up to 2,000 clients',booking:true,capacityConfidence:EVIDENCE.official_product};
+    return {plan:'Flow',cost:89,annual:'',users:'Unlimited team logins · up to 20,000 clients',booking:true,capacityConfidence:EVIDENCE.official_product};
+  }
+
   function hcpPlan(team,needs){
     if(team===1&&!needs.includes('scale'))return {plan:'Basic',cost:79,annual:'$59/mo billed annually',users:'1 user',booking:true,capacityConfidence:EVIDENCE.official_product};
     if(team<=5)return {plan:'Essentials',cost:189,annual:'$149/mo billed annually',users:'5 users included',booking:true,capacityConfidence:EVIDENCE.official_product};
@@ -275,6 +302,7 @@
     if(name==='ServiceM8')return serviceM8Plan(team,jobs);
     if(name==='Jobber')return jobberPlan(team,needs);
     if(name==='Urable')return urablePlan(booking,needs);
+    if(name==='Strata')return strataPlan(team);
     if(name==='Housecall Pro')return hcpPlan(team,needs);
   }
 
@@ -386,7 +414,7 @@
     while(wrapper.firstChild)form.insertBefore(wrapper.firstChild,submit);
 
     const eyebrow=document.querySelector('.heroMini .eyebrow');
-    if(eyebrow&&/V3\.0/.test(eyebrow.textContent))eyebrow.textContent=eyebrow.textContent.replace('V3.0','V3.1');
+    if(eyebrow&&/V3\.0/.test(eyebrow.textContent))eyebrow.textContent=eyebrow.textContent.replace('V3.0','V3.3');
   }
 
   function factorHtml(c){
@@ -493,11 +521,19 @@
     render(input,scored);
   }
 
+  // The legacy Strata extension is intentionally suppressed before deferred scripts execute.
+  document.getElementById('finderForm')?.dataset && (document.getElementById('finderForm').dataset.strataExtension='ready');
+
   document.addEventListener('DOMContentLoaded',()=>{
     injectStyles();
     const form=document.getElementById('finderForm');
     if(!form)return;
     ensureExtendedQuestions(form);
+    // Strata is normalized in Match Score v1.3+, so suppress the legacy out-of-band candidate extension.
+    form.dataset.strataExtension='ready';
+    document.querySelectorAll('.section.tight h2').forEach(h=>{
+      if((h.textContent||'').trim()==='Also researching customer and vehicle management?')h.closest('section')?.remove();
+    });
     form.addEventListener('submit',handleSubmit,{capture:true});
     window.DetailerFitMatchScore={version:MODEL_VERSION,lastVerified:LAST_VERIFIED,evidence:EVIDENCE,scoreVendor};
   });

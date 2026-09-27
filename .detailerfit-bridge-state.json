@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-09-27T13:52:16.776906+00:00",
-  "base_commit": "c42410bead2fc7277f3d75071375657964c6da37",
-  "command_id": "parent-software-intent-hub-20260927",
-  "last_uid": 318
+  "applied_at_utc": "2026-09-27T16:17:44.054703+00:00",
+  "base_commit": "dcf3e6f2c4d50600e3351675bc8328af6fa799d9",
+  "command_id": "housecall-pricing-guides-discovery-20260928-v1",
+  "last_uid": 319
 }

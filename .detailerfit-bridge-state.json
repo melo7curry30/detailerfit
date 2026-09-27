@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-09-27T16:17:44.054703+00:00",
-  "base_commit": "dcf3e6f2c4d50600e3351675bc8328af6fa799d9",
-  "command_id": "housecall-pricing-guides-discovery-20260928-v1",
-  "last_uid": 319
+  "applied_at_utc": "2026-09-27T16:33:51.659852+00:00",
+  "base_commit": "734895681518acd96f6695e931f41bbf38b53d3c",
+  "command_id": "jobfield-bookingkoala-discovery-20260928-v3",
+  "last_uid": 322
 }

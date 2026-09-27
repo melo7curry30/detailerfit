@@ -6,7 +6,7 @@
 (function(){
   'use strict';
 
-  const MODEL_VERSION='1.4.0';
+  const MODEL_VERSION='1.5.0';
   const LAST_VERIFIED='2026-09-27';
   const EVIDENCE={
     hands_on:1.00,
@@ -208,6 +208,12 @@
 
   function adjusted(raw,confidence){return 50+(confidence*(raw-50));}
   function round1(n){return Math.round(n*10)/10;}
+  function confidenceBand(pct){
+    if(pct>=90)return {key:'high',label:'High'};
+    if(pct>=75)return {key:'good',label:'Good'};
+    if(pct>=60)return {key:'moderate',label:'Moderate'};
+    return {key:'limited',label:'Limited'};
+  }
   function money(v){return Number.isFinite(v)?`$${v.toFixed(2).replace('.00','')}/mo`:'Price to verify';}
   function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 
@@ -414,6 +420,7 @@
       .df-score-badge{display:inline-flex;align-items:baseline;gap:5px;border:1px solid #3d7663;background:#10211c;border-radius:10px;padding:8px 10px}
       .df-score-badge b{font-size:1.35rem;color:var(--accent)}
       .df-confidence-badge{display:inline-flex;align-items:center;border:1px solid var(--line);background:#0f171f;border-radius:10px;padding:8px 10px;font-size:.875rem;color:#cbd6df}
+      .df-confidence-warning{margin:8px 0 2px;padding:9px 10px;border:1px solid var(--line);border-radius:9px;background:#121a22;font-size:.82rem;color:#d7e0e7}
       .df-factors{display:grid;gap:7px;margin:12px 0}
       .df-factor{display:grid;grid-template-columns:minmax(120px,1fr) minmax(100px,1.5fr) auto;gap:8px;align-items:center;font-size:.82rem}
       .df-factor-track{height:7px;background:#26323d;border-radius:999px;overflow:hidden}
@@ -479,9 +486,11 @@
       const annual=p.annual?`<div class="small annual-note"><strong>Annual billing:</strong> ${esc(p.annual)}</div>`:'';
       const planNote=p.note?`<div class="small"><strong>Plan note:</strong> ${esc(p.note)}</div>`:'';
       const factors=x.criteria.slice().sort((a,b)=>b.weight-a.weight).map(factorHtml).join('');
+      const band=confidenceBand(x.confidence);
+      const confidenceWarning=x.confidence<75?`<div class="df-confidence-warning"><strong>${esc(band.label)} evidence:</strong> Some active criteria rely on incomplete or weaker evidence. Check the lowest-confidence factors before buying.</div>`:'';
       return `<article class="result ${i===0?'top':''}">
         <div class="result-head"><div><div class="kicker">${i===0?'TOP MATCH':'ALTERNATIVE'} · MODEL ${MODEL_VERSION}</div><h3>${i+1}. ${esc(x.name)}</h3></div>${budgetLabel}</div>
-        <div class="df-score-row"><div class="df-score-badge"><b>${Math.round(x.match)}%</b><span>Match</span></div><div class="df-confidence-badge">Evidence confidence&nbsp;<strong>${Math.round(x.confidence)}%</strong></div></div>
+        <div class="df-score-row"><div class="df-score-badge"><b>${Math.round(x.match)}%</b><span>Match</span></div><div class="df-confidence-badge">Evidence confidence&nbsp;<strong>${Math.round(x.confidence)}%</strong>&nbsp;·&nbsp;${esc(band.label)}</div></div>${confidenceWarning}
         <div class="result-plan"><strong>Plan to inspect first:</strong> ${esc(p.plan)} · ${money(p.cost)}</div>${annual}<div class="small"><strong>Capacity:</strong> ${esc(p.users)}</div>${planNote}
         <p class="small">${esc(v.why)}</p>
         <div class="result-tags">${v.tags.map(tag=>`<span class="result-tag">${esc(tag)}</span>`).join('')}</div>
@@ -507,6 +516,7 @@
         top_plan:ranked[0].plan.plan,
         match_score:ranked[0].match,
         evidence_confidence:ranked[0].confidence,
+        evidence_band:confidenceBand(ranked[0].confidence).key,
         scoring_model:MODEL_VERSION,
         any_in_budget:anyInBudget,
         setup_preference:input.setup,

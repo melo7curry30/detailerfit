@@ -15,7 +15,7 @@
 <main id="main-content" tabindex="-1">
 <section class="heroMini"><div class="wrap">
 <div class="breadcrumbs"><a href="/">Home</a> / <a href="finder">Software Finder</a> / Match Score Methodology</div>
-<span class="eyebrow">MATCH SCORE MODEL V1.4.0 · VERIFIED SEP 27, 2026</span>
+<span class="eyebrow">MATCH SCORE MODEL V1.5.0 · VERIFIED SEP 27, 2026</span>
 <h1>A Match Score should be reproducible, not a gut feeling.</h1>
 <p class="lead">DetailerFit separates requirement fit from evidence strength. The score is personalized to the Finder inputs and is not a universal quality rating for a software vendor.</p>
 </div></section>
@@ -67,6 +67,14 @@
 <tr><td>Multiple third-party sources</td><td>0.70</td><td>Corroborated context, not preferred over first-party product facts.</td></tr>
 <tr><td>Unknown</td><td>0.00</td><td>No normalized evidence strong enough to score the criterion.</td></tr>
 </tbody></table></div>
+<p>The percentage is also shown with a readability band. The band is descriptive only and does not change ranking:</p>
+<div class="tablewrap"><table><thead><tr><th>Evidence Confidence</th><th>Label</th><th>Interpretation</th></tr></thead><tbody>
+<tr><td>90–100%</td><td>High</td><td>Most active weighted criteria are supported by current first-party or hands-on evidence.</td></tr>
+<tr><td>75–89%</td><td>Good</td><td>Evidence is generally strong, with some active criteria supported less directly.</td></tr>
+<tr><td>60–74%</td><td>Moderate</td><td>Several active criteria need verification before relying heavily on the Match Score.</td></tr>
+<tr><td>Below 60%</td><td>Limited</td><td>A material share of the active score rests on incomplete or weakly supported criteria.</td></tr>
+</tbody></table></div>
+<p>These labels describe evidence coverage, not vendor quality. A high Match Score with Moderate or Limited evidence should be treated as a hypothesis to verify, not stronger proof.</p>
 
 <h2 id="weights">4. Personalized weights</h2>
 <p>Weights come from the user's Finder inputs. They are normalized automatically, so the active weights always form one comparable score even when optional priorities are not selected.</p>
@@ -122,7 +130,7 @@
 <p>“Not found” and “does not exist” are different claims. The model therefore does not assign zero merely because DetailerFit has not verified a feature. Unknown criteria use raw 50 and confidence 0 unless stronger evidence supports a different state. When official pages conflict, the model uses the conservative plan interpretation and lowers certainty or asks the reader to verify.</p>
 
 <h2 id="sources">10. Setup &amp; migration evidence reviewed</h2>
-<p>The v1.4.0 setup/migration normalization was checked against current first-party documentation on September 27, 2026. These are source families, not endorsements:</p>
+<p>The v1.5.0 setup/migration normalization was checked against current first-party documentation on September 27, 2026. These are source families, not endorsements:</p>
 <div class="tablewrap"><table><thead><tr><th>Vendor</th><th>Setup evidence</th><th>Migration evidence</th></tr></thead><tbody>
 <tr><td>QuoteIQ</td><td><a href="https://intercom.help/quoteiq/en/articles/11185940-how-to-set-up-your-account-in-quoteiq" rel="noopener" target="_blank">Account setup guide</a></td><td><a href="https://intercom.help/quoteiq/en/articles/14442924-ai-smart-import-migrate-your-data-from-any-crm-in-minutes" rel="noopener" target="_blank">AI Smart Import</a></td></tr>
 <tr><td>Mobile Tech RX</td><td><a href="https://www.mobiletechrx.com/lessons/get-started/" rel="noopener" target="_blank">Certification: Get Started</a></td><td><a href="https://www.mobiletechrx.com/plans/" rel="noopener" target="_blank">Plans / Batch Import</a></td></tr>
@@ -147,7 +155,7 @@
 <p>This refresh changes evidence-backed fit only. It does not introduce affiliate status, payout, popularity, review sentiment or editorial preference into the formula.</p>
 
 <h2 id="scope">12. Current scope and limitations</h2>
-<p>Model v1.4.0 scores the requirements currently collected by the Software Finder across eight vendors in the normalized ranking set. Strata and DetailPilot joined the normalized set only after first-party plan, booking, automation, device and migration rules were documented well enough to reproduce their scores. DetailPilot’s free Starter plan is treated as $0 monthly software cost while its published 1% payment fee is disclosed separately rather than hidden inside a guessed monthly amount. The current public pricing page does not publish a monthly booking/job cap for Starter, so the Finder does not invent one; this should be rechecked if DetailPilot republishes a volume limit. Setup and migration are now included only when the user activates those needs.</p>
+<p>Model v1.5.0 scores the requirements currently collected by the Software Finder across eight vendors in the normalized ranking set. Strata and DetailPilot joined the normalized set only after first-party plan, booking, automation, device and migration rules were documented well enough to reproduce their scores. DetailPilot’s free Starter plan is treated as $0 monthly software cost while its published 1% payment fee is disclosed separately rather than hidden inside a guessed monthly amount. The current public pricing page does not publish a monthly booking/job cap for Starter, so the Finder does not invent one; this should be rechecked if DetailPilot republishes a volume limit. Setup and migration are now included only when the user activates those needs.</p>
 <p>The model intentionally does not score claimed setup time, UI aesthetics, generic review sentiment or undocumented migration capabilities. A documented import path can still have real-world edge cases, and a successful migration may depend on the quality and structure of the source data.</p>
 <p>The Match Score should therefore be read as: “How well does this currently verified plan fit the requirements I entered?” It should not be read as “Which software company is objectively best?”</p>
 

@@ -1,4 +1,4 @@
-/* DetailerFit Evidence-Weighted Match Score v1.0.0
+/* DetailerFit Evidence-Weighted Match Score v1.1.0
  * Scope: Software Finder only.
  * Match Score is personalized fit, not a universal vendor quality rating.
  * Affiliate relationships and commission data are intentionally absent.
@@ -6,7 +6,7 @@
 (function(){
   'use strict';
 
-  const MODEL_VERSION='1.0.0';
+  const MODEL_VERSION='1.1.0';
   const LAST_VERIFIED='2026-09-27';
   const EVIDENCE={
     hands_on:1.00,
@@ -16,16 +16,6 @@
     vendor_confirmed:0.85,
     multi_third_party:0.70,
     unknown:0.00
-  };
-
-  const evidenceLabel={
-    hands_on:'Hands-on verified',
-    official_help:'Official help documentation',
-    official_product:'Official pricing / product documentation',
-    official_demo:'Official demo / release material',
-    vendor_confirmed:'Vendor-confirmed',
-    multi_third_party:'Multiple third-party sources',
-    unknown:'Not verified'
   };
 
   // Raw values use a conservative rubric:
@@ -94,9 +84,85 @@
     }
   };
 
-  function adjusted(raw,confidence){
-    return 50+(confidence*(raw-50));
-  }
+  const setupEvidence={
+    'QuoteIQ':{
+      guided:{raw:100,evidence:'official_help',note:'A current official account-setup guide provides a defined setup path.'},
+      training:{raw:100,evidence:'official_help',note:'Help documentation and guided support are documented; Done For You Plus also includes a training session.'},
+      human:{raw:100,evidence:'official_help',note:'Paid Done For You setup packages include migration and a 1-on-1 setup call.'}
+    },
+    'Mobile Tech RX':{
+      guided:{raw:100,evidence:'official_product',note:'The current Certification Class walks through Admin Portal setup and the estimate-to-invoice workflow.'},
+      training:{raw:100,evidence:'official_product',note:'Official pages document training/onboarding and a structured Certification Class.'},
+      human:{raw:100,evidence:'official_product',note:'The Get Started lesson offers a personal walkthrough with an app expert.'}
+    },
+    'ServiceM8':{
+      guided:{raw:100,evidence:'official_help',note:'The official Getting Started path covers account setup, imports, test jobs and go-live.'},
+      training:{raw:100,evidence:'official_help',note:'The official Learning Roadmap provides structured team training.'},
+      human:{raw:100,evidence:'official_help',note:'ServiceM8 documents a partner-assisted route for tailored setup and training.'}
+    },
+    'Jobber':{
+      guided:{raw:100,evidence:'official_help',note:'Jobber maintains a structured Basic and Advanced Account Setup series.'},
+      training:{raw:100,evidence:'official_help',note:'The official setup series and workflow overview provide a documented training path.'},
+      human:{raw:50,evidence:'official_help',note:'Product setup help is documented for higher plan paths; availability depends on the selected plan.'}
+    },
+    'Urable':{
+      guided:{raw:100,evidence:'official_help',note:'Urable documents an in-app setup guide for new trials.'},
+      training:{raw:100,evidence:'official_help',note:'Tutorials, demos, Q&A and office hours are documented in the official Help Center.'},
+      human:{raw:100,evidence:'official_help',note:'A paid New Account Set Up service is documented.'}
+    },
+    'Housecall Pro':{
+      guided:{raw:100,evidence:'official_help',note:'A current official Getting Started guide provides a structured account setup path.'},
+      training:{raw:100,evidence:'official_help',note:'Official onboarding documentation covers company, team and workflow configuration.'},
+      human:{raw:50,evidence:'official_help',note:'Dedicated onboarding/import assistance is documented most clearly for MAX; lower-plan setup help is kept neutral.'}
+    }
+  };
+
+  const migrationEvidence={
+    'QuoteIQ':{
+      customers:{raw:100,evidence:'official_help',note:'Contacts/customers can be imported from CSV, including AI Smart Import.'},
+      catalog:{raw:100,evidence:'official_help',note:'Services and price book data are supported by AI Smart Import.'},
+      history:{raw:100,evidence:'official_help',note:'Past invoices and estimates can be imported with AI Smart Import.'},
+      mapping:{raw:100,evidence:'official_help',note:'AI Smart Import automatically maps source CSV columns and allows review/correction.'},
+      assisted:{raw:100,evidence:'official_help',note:'Paid Done For You migration packages are documented.'}
+    },
+    'Mobile Tech RX':{
+      customers:{raw:100,evidence:'official_product',note:'Current pricing and certification pages document batch client uploads.'},
+      catalog:{raw:50,evidence:'unknown',note:'A normalized service/price-book migration path is not established in the current evidence set.'},
+      history:{raw:50,evidence:'unknown',note:'Past jobs/invoices/history migration breadth is not established in the current evidence set.'},
+      mapping:{raw:50,evidence:'unknown',note:'Automatic source-field mapping is not established in the current evidence set.'},
+      assisted:{raw:100,evidence:'official_product',note:'Official certification material says the sales team can help with bulk client import.'}
+    },
+    'ServiceM8':{
+      customers:{raw:100,evidence:'official_help',note:'Clients can be bulk imported from CSV.'},
+      catalog:{raw:100,evidence:'official_help',note:'Materials/services and price-list data can be bulk imported.'},
+      history:{raw:50,evidence:'unknown',note:'A normalized historical jobs/invoices import path is not established here.'},
+      mapping:{raw:75,evidence:'official_help',note:'The CSV flow includes field mapping and validation, but uses a defined import structure.'},
+      assisted:{raw:50,evidence:'unknown',note:'Partner-assisted setup is documented, but dedicated data-migration assistance is not treated as confirmed.'}
+    },
+    'Jobber':{
+      customers:{raw:100,evidence:'official_help',note:'Clients can be imported from CSV/TSV/PSV with validation.'},
+      catalog:{raw:100,evidence:'official_help',note:'Products and services support spreadsheet import.'},
+      history:{raw:100,evidence:'official_help',note:'Jobs, quotes and invoices have documented import paths; past jobs can also be imported.'},
+      mapping:{raw:100,evidence:'official_help',note:'Importers automatically map many headings and allow manual correction.'},
+      assisted:{raw:50,evidence:'unknown',note:'General setup support is documented, but a dedicated migration service is not scored without stronger evidence.'}
+    },
+    'Urable':{
+      customers:{raw:100,evidence:'official_help',note:'Customers can be imported by CSV.'},
+      catalog:{raw:100,evidence:'official_help',note:'Products/services can be imported by CSV.'},
+      history:{raw:50,evidence:'unknown',note:'Past job/invoice history migration breadth is not established in the current normalized evidence set.'},
+      mapping:{raw:50,evidence:'official_help',note:'The documented CSV flow requires exact template headers rather than arbitrary source-field mapping.'},
+      assisted:{raw:100,evidence:'official_help',note:'Urable documents spreadsheet help and an Account Transfer Service.'}
+    },
+    'Housecall Pro':{
+      customers:{raw:100,evidence:'official_help',note:'Customers can be imported from CSV, Excel and other supported file formats.'},
+      catalog:{raw:100,evidence:'official_help',note:'Price Book data is supported in documented migration paths.'},
+      history:{raw:100,evidence:'official_help',note:'Jobs and historical operational data have documented import paths.'},
+      mapping:{raw:100,evidence:'official_help',note:'The in-product wizard maps source columns and lets users fix errors before import.'},
+      assisted:{raw:50,evidence:'official_help',note:'Dedicated Data Import assistance is a MAX benefit; lower selected plans remain neutral for this subcriterion.'}
+    }
+  };
+
+  function adjusted(raw,confidence){return 50+(confidence*(raw-50));}
   function round1(n){return Math.round(n*10)/10;}
   function money(v){return Number.isFinite(v)?`$${v.toFixed(2).replace('.00','')}/mo`:'Price to verify';}
   function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
@@ -104,6 +170,50 @@
   function evidenceCriterion(key,label,base,weight){
     const conf=EVIDENCE[base.evidence]??0;
     return {key,label,raw:base.raw,confidence:conf,adjusted:adjusted(base.raw,conf),weight,note:base.note,evidence:base.evidence};
+  }
+
+  function compositeCriterion(key,label,parts,weight,note){
+    const total=parts.reduce((s,p)=>s+p.partWeight,0)||1;
+    const enriched=parts.map(p=>{
+      const confidence=EVIDENCE[p.evidence]??0;
+      return {...p,confidence,adjusted:adjusted(p.raw,confidence)};
+    });
+    const score=enriched.reduce((s,p)=>s+(p.adjusted*p.partWeight),0)/total;
+    const confidence=enriched.reduce((s,p)=>s+(p.confidence*p.partWeight),0)/total;
+    return {key,label,raw:50,confidence,adjusted:score,weight,note,evidence:'composite',parts:enriched};
+  }
+
+  function setupCriterion(name,plan){
+    const e=JSON.parse(JSON.stringify(setupEvidence[name]));
+    if(name==='Jobber'){
+      e.human = plan.plan==='Connect'
+        ? {raw:100,evidence:'official_help',note:'The setup series is designed around a product setup team call for Connect/Grow plan paths.'}
+        : {raw:50,evidence:'official_help',note:'Dedicated product-setup help is not treated as included for this selected plan path.'};
+    }
+    if(name==='Housecall Pro' && String(plan.plan).startsWith('Max')){
+      e.human={raw:100,evidence:'official_help',note:'MAX documentation includes onboarding-advisor and Data Import team assistance.'};
+    }
+    return compositeCriterion('setup','Setup readiness',[
+      {...e.guided,partWeight:40},
+      {...e.training,partWeight:35},
+      {...e.human,partWeight:25}
+    ],15,'Composite of documented setup path (40%), training/onboarding (35%), and human setup help (25%). It does not score vendor marketing claims about setup time.');
+  }
+
+  function migrationCriterion(name,plan){
+    const e=JSON.parse(JSON.stringify(migrationEvidence[name]));
+    if(name==='Housecall Pro'){
+      e.assisted=String(plan.plan).startsWith('Max')
+        ? {raw:100,evidence:'official_help',note:'MAX includes access to the Data Import team for supported migration data.'}
+        : {raw:50,evidence:'official_help',note:'Self-service import is documented; dedicated Data Import team access is a MAX benefit.'};
+    }
+    return compositeCriterion('migration','Migration readiness',[
+      {...e.customers,partWeight:25},
+      {...e.catalog,partWeight:20},
+      {...e.history,partWeight:20},
+      {...e.mapping,partWeight:15},
+      {...e.assisted,partWeight:20}
+    ],20,'Composite of customer import (25%), services/price book (20%), work/history import (20%), field mapping (15%), and assisted migration (20%). Unknown data types stay neutral.');
   }
 
   function quoteIqPlan(team,booking,needs){
@@ -193,9 +303,16 @@
 
   function bookingCriterion(plan,booking){
     if(booking!=='yes')return null;
-    if(plan.booking==='unverified')return {gate:'unverified',reason:'Native customer self-booking is required but is not verified in the current evidence set.'};
-    const raw=plan.booking===true?100:0,conf=EVIDENCE.official_product;
-    return {key:'booking',label:'Customer self-booking',raw,confidence:conf,adjusted:adjusted(raw,conf),weight:20,note:raw===100?'Customer-facing self-booking is confirmed on the selected plan.':'The selected plan does not satisfy the required self-booking workflow.',evidence:'official_product'};
+    if(plan.booking!=='true' && plan.booking!==true){
+      return {
+        gate:plan.booking==='unverified'?'unverified':'mismatch',
+        reason:plan.booking==='unverified'
+          ? 'Native customer self-booking is required but is not verified in the current evidence set.'
+          : 'Native customer self-booking is required but the selected plan does not satisfy that requirement.'
+      };
+    }
+    const raw=100,conf=EVIDENCE.official_product;
+    return {key:'booking',label:'Customer self-booking',raw,confidence:conf,adjusted:adjusted(raw,conf),weight:20,note:'Customer-facing self-booking is confirmed on the selected plan.',evidence:'official_product'};
   }
 
   function scoreVendor(name,input){
@@ -212,6 +329,8 @@
     if(input.needs.includes('vehicle'))criteria.push(evidenceCriterion('vehicle','Vehicle workflow',vendor.vehicle,25));
     if(input.needs.includes('automation'))criteria.push(evidenceCriterion('automation','Automation / admin',vendor.automation,20));
     if(input.needs.includes('scale'))criteria.push(evidenceCriterion('scale','Routing / dispatch / team growth',vendor.scale,20));
+    if(input.setup==='guided')criteria.push(setupCriterion(name,plan));
+    if(input.migration==='yes')criteria.push(migrationCriterion(name,plan));
 
     const totalWeight=criteria.reduce((s,c)=>s+c.weight,0)||1;
     const match=criteria.reduce((s,c)=>s+(c.adjusted*c.weight),0)/totalWeight;
@@ -239,6 +358,35 @@
       @media(max-width:520px){.df-factor{grid-template-columns:1fr auto}.df-factor-track{grid-column:1/-1;grid-row:2}.df-factor small{grid-column:2;grid-row:1}.df-score-badge b{font-size:1.2rem}}
     `;
     document.head.appendChild(style);
+  }
+
+  function ensureExtendedQuestions(form){
+    if(document.getElementById('df-setup-question'))return;
+    const submit=form.querySelector('button[type="submit"]');
+    if(!submit)return;
+    const wrapper=document.createElement('div');
+    wrapper.innerHTML=`
+      <div class="q" id="df-setup-question">
+        <span class="qtitle">7. How important is a guided, well-documented setup?</span>
+        <span class="qhelp">When selected, Setup Readiness scores the documented setup path, training/onboarding and human setup help. We do not score vendor marketing claims about setup speed.</span>
+        <div class="options">
+          <label class="opt"><input name="setupPreference" type="radio" value="guided"/>Important — I want a clear setup path and training/support</label>
+          <label class="opt"><input checked name="setupPreference" type="radio" value="unsure"/>No strong preference</label>
+        </div>
+      </div>
+      <div class="q" id="df-migration-question">
+        <span class="qtitle">8. Are you moving existing business data into the new system?</span>
+        <span class="qhelp">When yes, Migration Readiness compares verified customer, service/price-book, work-history, field-mapping and assisted-migration support.</span>
+        <div class="options">
+          <label class="opt"><input name="migrationRequirement" type="radio" value="yes"/>Yes — I need to move existing data</label>
+          <label class="opt"><input name="migrationRequirement" type="radio" value="no"/>No — I am starting fresh</label>
+          <label class="opt"><input checked name="migrationRequirement" type="radio" value="unsure"/>Not sure yet</label>
+        </div>
+      </div>`;
+    while(wrapper.firstChild)form.insertBefore(wrapper.firstChild,submit);
+
+    const eyebrow=document.querySelector('.heroMini .eyebrow');
+    if(eyebrow&&/V3\.0/.test(eyebrow.textContent))eyebrow.textContent=eyebrow.textContent.replace('V3.0','V3.1');
   }
 
   function factorHtml(c){
@@ -287,7 +435,30 @@
     const box=document.getElementById('resultsBox');
     box.style.display='block';
     if(typeof window.dfTrackEvent==='function'&&ranked.length){
-      window.dfTrackEvent('tool_result_view',{tool_name:'finder',result_count:ranked.length,top_vendor:ranked[0].name,top_plan:ranked[0].plan.plan,match_score:ranked[0].match,evidence_confidence:ranked[0].confidence,scoring_model:MODEL_VERSION,any_in_budget:anyInBudget});
+      window.dfTrackEvent('tool_result_view',{
+        tool_name:'finder',
+        result_count:ranked.length,
+        top_vendor:ranked[0].name,
+        top_plan:ranked[0].plan.plan,
+        match_score:ranked[0].match,
+        evidence_confidence:ranked[0].confidence,
+        scoring_model:MODEL_VERSION,
+        any_in_budget:anyInBudget,
+        setup_preference:input.setup,
+        migration_requirement:input.migration
+      });
+    }else if(typeof window.dfTrackEvent==='function'){
+      window.dfTrackEvent('tool_no_match',{
+        tool_name:'finder',
+        team_size:input.team,
+        jobs_per_month:input.jobs,
+        budget_monthly:input.budget,
+        booking_requirement:input.booking,
+        device_preference:input.device,
+        setup_preference:input.setup,
+        migration_requirement:input.migration,
+        scoring_model:MODEL_VERSION
+      });
     }
     box.scrollIntoView({behavior:window.matchMedia?.('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});
   }
@@ -302,9 +473,22 @@
       budget:Math.max(0,Number(d.get('budgetAmount'))||0),
       booking:d.get('booking')||'unsure',
       device:d.get('device')||'either',
-      needs:d.getAll('priority')
+      needs:d.getAll('priority'),
+      setup:d.get('setupPreference')||'unsure',
+      migration:d.get('migrationRequirement')||'unsure'
     };
-    if(typeof window.dfTrackEvent==='function')window.dfTrackEvent('tool_start',{tool_name:'finder',team_size:input.team,jobs_per_month:input.jobs,budget_monthly:input.budget,booking_requirement:input.booking,device_preference:input.device,priority_count:input.needs.length,scoring_model:MODEL_VERSION});
+    if(typeof window.dfTrackEvent==='function')window.dfTrackEvent('tool_start',{
+      tool_name:'finder',
+      team_size:input.team,
+      jobs_per_month:input.jobs,
+      budget_monthly:input.budget,
+      booking_requirement:input.booking,
+      device_preference:input.device,
+      priority_count:input.needs.length,
+      setup_preference:input.setup,
+      migration_requirement:input.migration,
+      scoring_model:MODEL_VERSION
+    });
     const scored=Object.keys(vendors).map(name=>scoreVendor(name,input));
     render(input,scored);
   }
@@ -313,6 +497,7 @@
     injectStyles();
     const form=document.getElementById('finderForm');
     if(!form)return;
+    ensureExtendedQuestions(form);
     form.addEventListener('submit',handleSubmit,{capture:true});
     window.DetailerFitMatchScore={version:MODEL_VERSION,lastVerified:LAST_VERIFIED,evidence:EVIDENCE,scoreVendor};
   });

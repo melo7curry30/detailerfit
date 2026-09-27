@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#090d12">
 <title>DetailerFit Match Score Methodology</title>
-<meta name="description" content="The transparent formula, evidence confidence rules, hard constraints and weighting used by the DetailerFit Software Finder Match Score.">
+<meta name="description" content="The transparent formula, evidence confidence rules, setup and migration rubrics, hard constraints and weighting used by the DetailerFit Software Finder Match Score.">
 <link rel="stylesheet" href="styles.css">
 <link rel="canonical" href="https://getdetailerfit.com/match-score-methodology">
 <meta property="og:url" content="https://getdetailerfit.com/match-score-methodology">
@@ -15,15 +15,27 @@
 <main id="main-content" tabindex="-1">
 <section class="heroMini"><div class="wrap">
 <div class="breadcrumbs"><a href="/">Home</a> / <a href="finder">Software Finder</a> / Match Score Methodology</div>
-<span class="eyebrow">MATCH SCORE MODEL V1.0.0 · VERIFIED SEP 27, 2026</span>
+<span class="eyebrow">MATCH SCORE MODEL V1.1.0 · VERIFIED SEP 27, 2026</span>
 <h1>A Match Score should be reproducible, not a gut feeling.</h1>
 <p class="lead">DetailerFit separates requirement fit from evidence strength. The score is personalized to the Finder inputs and is not a universal quality rating for a software vendor.</p>
 </div></section>
+
 <section class="section"><div class="wrap article">
 <div class="note"><b>Core rule:</b> unknown information is not scored as failure. Weak or missing evidence pulls a criterion toward neutral instead of toward zero. Affiliate relationships and commission amounts are not scoring inputs.</div>
 
 <details class="toc"><summary>On this page</summary><nav aria-label="On this page"><ol>
-<li><a href="#formula">The formula</a></li><li><a href="#raw">Raw criterion scores</a></li><li><a href="#confidence">Evidence confidence</a></li><li><a href="#weights">Personalized weights</a></li><li><a href="#gates">Hard constraints</a></li><li><a href="#price">Price fit</a></li><li><a href="#unknowns">Unknowns and conflicts</a></li><li><a href="#scope">Current scope and limitations</a></li><li><a href="#commercial">Commercial independence</a></li>
+<li><a href="#formula">The formula</a></li>
+<li><a href="#raw">Raw criterion scores</a></li>
+<li><a href="#confidence">Evidence confidence</a></li>
+<li><a href="#weights">Personalized weights</a></li>
+<li><a href="#gates">Hard constraints</a></li>
+<li><a href="#price">Price fit</a></li>
+<li><a href="#setup">Setup readiness</a></li>
+<li><a href="#migration">Migration readiness</a></li>
+<li><a href="#unknowns">Unknowns and conflicts</a></li>
+<li><a href="#sources">Setup &amp; migration evidence</a></li>
+<li><a href="#scope">Scope and limitations</a></li>
+<li><a href="#commercial">Commercial independence</a></li>
 </ol></nav></details>
 
 <h2 id="formula">1. The formula</h2>
@@ -66,6 +78,8 @@
 <tr><td>Vehicle workflow</td><td>25</td><td>Active when VIN / estimating / vehicle documentation is selected.</td></tr>
 <tr><td>Automation / admin</td><td>20</td><td>Active when automated follow-up/admin is selected.</td></tr>
 <tr><td>Routing / dispatch / growth</td><td>20</td><td>Active when the scale priority is selected.</td></tr>
+<tr><td>Setup readiness</td><td>15</td><td>Active only when the user says guided setup/training matters.</td></tr>
+<tr><td>Migration readiness</td><td>20</td><td>Active only when the user says existing business data must be moved.</td></tr>
 </tbody></table></div>
 <p>Weights are attached to requirements, not vendors. A vendor cannot receive a different weight because it has an affiliate program or a higher payout.</p>
 
@@ -73,7 +87,7 @@
 <p>Some inputs are requirements rather than preferences. The current Finder applies these gates before ranking:</p>
 <ul class="list">
 <li><b>Budget:</b> if at least one eligible configuration has a verified monthly cost within the stated budget, over-budget and price-unverified configurations are removed before Match Score ranking.</li>
-<li><b>Required customer self-booking:</b> a product is not presented as a verified match when native customer-facing self-booking is not established in the current evidence set.</li>
+<li><b>Required customer self-booking:</b> a product is not presented as a verified match when native customer-facing self-booking is either unverified or not available on the selected configuration.</li>
 <li><b>Plan capacity:</b> the Finder chooses the first plan configuration that can be supported by the current team-size/job-volume rules. Where the official documentation conflicts, the configuration is marked for verification instead of guessed.</li>
 </ul>
 
@@ -82,15 +96,47 @@
 <div class="callout"><p><strong>Raw Price Fit = 100 × (Budget ÷ Monthly cost)²</strong>, capped between 0 and 100.</p></div>
 <p>An exact price that is not verified receives neutral raw 50 with low confidence rather than a guessed dollar amount.</p>
 
-<h2 id="unknowns">7. Unknowns, conflicts and missing evidence</h2>
+<h2 id="setup">7. Setup readiness</h2>
+<p>Setup Readiness is only added when the user explicitly says a guided setup matters. It does <strong>not</strong> use subjective claims such as “easy to use” or a vendor's marketing estimate of how many minutes setup takes.</p>
+<p>Instead, it is a composite of three observable support dimensions. Each subcriterion is evidence-weighted with the same shrink-to-neutral formula before the composite is calculated:</p>
+<div class="tablewrap"><table><thead><tr><th>Setup subcriterion</th><th>Share of Setup Readiness</th><th>What counts</th></tr></thead><tbody>
+<tr><td>Documented setup path</td><td>40%</td><td>A current step-by-step account setup, onboarding or go-live path.</td></tr>
+<tr><td>Training / onboarding</td><td>35%</td><td>Structured tutorials, certification, workflow training, demos or onboarding material.</td></tr>
+<tr><td>Human setup help</td><td>25%</td><td>A documented setup call, onboarding specialist, partner-assisted setup or paid setup service.</td></tr>
+</tbody></table></div>
+<p>This means a vendor is not rewarded because DetailerFit “feels” it is simple. The model rewards verifiable setup infrastructure when that infrastructure matters to the user.</p>
+
+<h2 id="migration">8. Migration readiness</h2>
+<p>Migration Readiness is only added when the user says they are moving existing business data. The model separates the data types and migration mechanics so a vendor is not given a full migration score merely because it can import a contact CSV.</p>
+<div class="tablewrap"><table><thead><tr><th>Migration subcriterion</th><th>Share of Migration Readiness</th><th>What counts</th></tr></thead><tbody>
+<tr><td>Customers / contacts</td><td>25%</td><td>Documented bulk import of customer/contact records.</td></tr>
+<tr><td>Services / price book</td><td>20%</td><td>Documented import of services, materials, products or price-book data.</td></tr>
+<tr><td>Work / history</td><td>20%</td><td>Documented import of jobs, quotes, estimates, invoices or comparable historical work records.</td></tr>
+<tr><td>Field mapping</td><td>15%</td><td>Ability to map or validate source columns rather than requiring a guessed conversion.</td></tr>
+<tr><td>Assisted migration</td><td>20%</td><td>Documented vendor/partner help for moving data.</td></tr>
+</tbody></table></div>
+<p>Unsupported or unverified migration dimensions remain neutral instead of being silently counted as zero. Plan-limited assistance is also treated at the selected-plan level where the evidence allows it.</p>
+
+<h2 id="unknowns">9. Unknowns, conflicts and missing evidence</h2>
 <p>“Not found” and “does not exist” are different claims. The model therefore does not assign zero merely because DetailerFit has not verified a feature. Unknown criteria use raw 50 and confidence 0 unless stronger evidence supports a different state. When official pages conflict, the model uses the conservative plan interpretation and lowers certainty or asks the reader to verify.</p>
 
-<h2 id="scope">8. Current scope and limitations</h2>
-<p>Model v1.0.0 is intentionally narrower than a full universal vendor rating. It scores the requirements currently collected by the Software Finder and only where DetailerFit has enough normalized plan evidence to do so consistently.</p>
-<p><strong>Setup difficulty and migration difficulty are not yet included in the numeric Match Score.</strong> DetailerFit intends to add them only after a common rubric is populated across the scored vendor set. Leaving an immature dimension out is preferable to adding false precision. Until then, setup/migration findings can still appear in reviews and verification notes.</p>
+<h2 id="sources">10. Setup &amp; migration evidence reviewed</h2>
+<p>The v1.1.0 setup/migration normalization was checked against current first-party documentation on September 27, 2026. These are source families, not endorsements:</p>
+<div class="tablewrap"><table><thead><tr><th>Vendor</th><th>Setup evidence</th><th>Migration evidence</th></tr></thead><tbody>
+<tr><td>QuoteIQ</td><td><a href="https://intercom.help/quoteiq/en/articles/11185940-how-to-set-up-your-account-in-quoteiq" rel="noopener" target="_blank">Account setup guide</a></td><td><a href="https://intercom.help/quoteiq/en/articles/14442924-ai-smart-import-migrate-your-data-from-any-crm-in-minutes" rel="noopener" target="_blank">AI Smart Import</a></td></tr>
+<tr><td>Mobile Tech RX</td><td><a href="https://www.mobiletechrx.com/lessons/get-started/" rel="noopener" target="_blank">Certification: Get Started</a></td><td><a href="https://www.mobiletechrx.com/plans/" rel="noopener" target="_blank">Plans / Batch Import</a></td></tr>
+<tr><td>ServiceM8</td><td><a href="https://support.servicem8.com/help-center/getting-started" rel="noopener" target="_blank">Getting Started</a></td><td><a href="https://support.servicem8.com/help-center/advanced-setup/advanced-setup/how-to-import-materials-and-clients" rel="noopener" target="_blank">Import Materials and Clients</a></td></tr>
+<tr><td>Jobber</td><td><a href="https://help.getjobber.com/en/articles/first-steps-basic-account-set-up/" rel="noopener" target="_blank">Basic Account Setup</a></td><td><a href="https://help.getjobber.com/en/articles/import-clients/" rel="noopener" target="_blank">Import Clients</a> · <a href="https://help.getjobber.com/en/articles/import-jobs/" rel="noopener" target="_blank">Import Jobs</a></td></tr>
+<tr><td>Urable</td><td><a href="https://intercom.help/urable/en/articles/10002869-customer-support-in-urable" rel="noopener" target="_blank">Customer Support / Setup</a></td><td><a href="https://intercom.help/urable/en/articles/10069738-importing-customers-and-products-services" rel="noopener" target="_blank">Import Customers and Products/Services</a></td></tr>
+<tr><td>Housecall Pro</td><td><a href="https://help.housecallpro.com/en/articles/11115983-getting-started-with-housecall-pro" rel="noopener" target="_blank">Getting Started</a></td><td><a href="https://help.housecallpro.com/en/articles/6797101-how-to-import-export-jobs-and-customers" rel="noopener" target="_blank">Import / Export Jobs and Customers</a></td></tr>
+</tbody></table></div>
+
+<h2 id="scope">11. Current scope and limitations</h2>
+<p>Model v1.1.0 scores the requirements currently collected by the Software Finder across the six vendors in the normalized ranking set. Setup and migration are now included only when the user activates those needs.</p>
+<p>The model intentionally does not score claimed setup time, UI aesthetics, generic review sentiment or undocumented migration capabilities. A documented import path can still have real-world edge cases, and a successful migration may depend on the quality and structure of the source data.</p>
 <p>The Match Score should therefore be read as: “How well does this currently verified plan fit the requirements I entered?” It should not be read as “Which software company is objectively best?”</p>
 
-<h2 id="commercial">9. Commercial independence</h2>
+<h2 id="commercial">12. Commercial independence</h2>
 <p>The scoring implementation contains no commission amount, EPC, payout, affiliate-status bonus or revenue weight. Affiliate relationships can change the destination URL or disclosure text, but they do not change raw criterion scores, confidence multipliers, user weights, plan gates or the ranking formula.</p>
 <div class="actions"><a class="btn primary" href="finder">Run the Software Finder</a><a class="btn secondary" href="methodology">Read the broader review methodology</a><a class="btn ghost" href="affiliate-disclosure">Affiliate disclosure</a></div>
 </div></section>

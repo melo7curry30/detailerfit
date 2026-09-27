@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-09-27T08:18:03.976412+00:00",
-  "base_commit": "523e8812b34d89be2e2a932a9963761f6a133ed9",
-  "command_id": "match-score-v1-3-1-strata-evidence-20260927",
-  "last_uid": 309
+  "applied_at_utc": "2026-09-27T08:33:51.869082+00:00",
+  "base_commit": "a4d11d4b2e1ff7dd012b7697b284bc4ae8dec913",
+  "command_id": "match-score-v1-4-detailpilot-normalization-20260927",
+  "last_uid": 310
 }

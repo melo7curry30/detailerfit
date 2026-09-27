@@ -1,4 +1,4 @@
-/* DetailerFit Evidence-Weighted Match Score v1.3.1
+/* DetailerFit Evidence-Weighted Match Score v1.4.0
  * Scope: Software Finder only.
  * Match Score is personalized fit, not a universal vendor quality rating.
  * Affiliate relationships and commission data are intentionally absent.
@@ -6,7 +6,7 @@
 (function(){
   'use strict';
 
-  const MODEL_VERSION='1.3.1';
+  const MODEL_VERSION='1.4.0';
   const LAST_VERIFIED='2026-09-27';
   const EVIDENCE={
     hands_on:1.00,
@@ -82,6 +82,16 @@
       scale:{raw:50,evidence:'official_product',note:'Flow confirms unlimited team logins, roles and job assignment, but route optimization is not established in the current evidence set.'},
       vehicle:{raw:50,evidence:'official_product',note:'Vehicle CRM, service history, vehicle intake and photos are documented; VIN scanning is not established in the current evidence set.'}
     },
+    'DetailPilot':{
+      url:'detailpilot-review-auto-detailers',vendorUrl:'https://detailpilot.com/?via=ryo',vendorRel:'sponsored noopener',vendorTarget:'_blank',
+      why:'Detailing-only booking and business software with a free solo plan, vehicle-based pricing, deposits, reminders and paid growth/team tiers.',
+      watch:'Starter is $0/month but adds a 1% DetailPilot fee on payments. Team logins and roles are documented on Business. Route optimization and VIN/documentation workflows are not treated as confirmed.',
+      tags:['Detailing-only','Mobile web + iOS','Free solo plan'],
+      industry:{raw:100,evidence:'official_product',note:'DetailPilot is purpose-built specifically for car detailing businesses.'},
+      automation:{raw:100,evidence:'official_product',note:'DetailPilot documents automated appointment reminders and, on Growth and above, automated Google review requests; selecting automation moves the Finder to Growth.'},
+      scale:{raw:50,evidence:'official_product',note:'Business documents employee logins, crew schedules, roles/permissions and multi-location tools, but route optimization is not established.'},
+      vehicle:{raw:50,evidence:'official_product',note:'Vehicle-based pricing and multi-vehicle booking are documented, but VIN scanning and vehicle-condition documentation are not established.'}
+    },
     'Housecall Pro':{
       url:'housecall-pro',vendorUrl:'https://housecallpro.partnerlinks.io/lquesdqg2t22',vendorRel:'sponsored noopener',vendorTarget:'_blank',
       why:'Broad field-service platform with customer booking, scheduling/dispatch and larger-team plan paths.',
@@ -124,6 +134,11 @@
       guided:{raw:100,evidence:'official_product',note:'Strata publishes a step-by-step switching/setup guide covering import, booking page, texting, payments and team setup.'},
       training:{raw:50,evidence:'official_product',note:'Strata publishes guides and playbooks, but a formal structured training curriculum is not established.'},
       human:{raw:100,evidence:'official_product',note:'Strata’s company page explicitly offers onboarding and setup help through its support team.'}
+    },
+    'DetailPilot':{
+      guided:{raw:100,evidence:'official_product',note:'DetailPilot documents a step-by-step setup assistant that walks users through services and booking setup.'},
+      training:{raw:50,evidence:'official_product',note:'Public product guides explain setup and workflows, but a structured training curriculum is not established.'},
+      human:{raw:50,evidence:'official_product',note:'Email support is documented on Starter; custom onboarding is reserved for Business and is applied at the selected-plan level.'}
     },
     'Housecall Pro':{
       guided:{raw:100,evidence:'official_help',note:'A current official Getting Started guide provides a structured account setup path.'},
@@ -175,6 +190,13 @@
       mapping:{raw:100,evidence:'official_product',note:'The migration flow documents matching source columns to Strata’s template, previewing the result and undoing an import.'},
       assisted:{raw:100,evidence:'official_product',note:'Strata’s company page explicitly offers help bringing across an export from the old system; self-serve import remains available without a required onboarding call.'}
     },
+    'DetailPilot':{
+      customers:{raw:100,evidence:'official_product',note:'DetailPilot documents a customer CSV import for shops switching from other systems.'},
+      catalog:{raw:50,evidence:'unknown',note:'DetailPilot migration guidance tells shops to rebuild the service menu; a normalized service-catalog import is not established.'},
+      history:{raw:50,evidence:'unknown',note:'Historical jobs, invoices and payment-history migration breadth is not established in the current evidence set.'},
+      mapping:{raw:50,evidence:'unknown',note:'A customer CSV import is documented, but arbitrary source-field mapping is not established.'},
+      assisted:{raw:50,evidence:'official_product',note:'Business includes custom onboarding, but dedicated data-migration assistance is not separately documented.'}
+    },
     'Housecall Pro':{
       customers:{raw:100,evidence:'official_help',note:'Customers can be imported from CSV, Excel and other supported file formats.'},
       catalog:{raw:100,evidence:'official_help',note:'Price Book data is supported in documented migration paths.'},
@@ -211,6 +233,11 @@
       e.human = plan.plan==='Connect'
         ? {raw:100,evidence:'official_help',note:'The setup series is designed around a product setup team call for Connect/Grow plan paths.'}
         : {raw:50,evidence:'official_help',note:'Dedicated product-setup help is not treated as included for this selected plan path.'};
+    }
+    if(name==='DetailPilot'){
+      e.human = plan.plan==='Business'
+        ? {raw:100,evidence:'official_product',note:'Business explicitly includes custom onboarding and priority chat support.'}
+        : {raw:50,evidence:'official_product',note:'Email support is documented, but custom onboarding is reserved for Business.'};
     }
     if(name==='Housecall Pro' && String(plan.plan).startsWith('Max')){
       e.human={raw:100,evidence:'official_help',note:'MAX documentation includes onboarding-advisor and Data Import team assistance.'};
@@ -289,6 +316,12 @@
     return {plan:'Flow',cost:89,annual:'',users:'Unlimited team logins · up to 20,000 clients',booking:true,capacityConfidence:EVIDENCE.official_product};
   }
 
+  function detailPilotPlan(team,needs){
+    if(team>1||needs.includes('scale'))return {plan:'Business',cost:119,annual:'$928/year · about $77/mo effective',users:'Team logins, roles/permissions and multi-location tools',booking:true,capacityConfidence:EVIDENCE.official_product,note:'Business is the documented team/multi-location tier.'};
+    if(needs.includes('automation'))return {plan:'Growth',cost:29,annual:'$228/year · about $19/mo effective',users:'Solo / non-team plan path',booking:true,capacityConfidence:EVIDENCE.official_product,note:'Growth adds automated Google review requests and other repeat-business tools.'};
+    return {plan:'Starter',cost:0,annual:'',users:'Solo detailer entry plan',booking:true,capacityConfidence:EVIDENCE.official_product,note:'Starter is $0/month with a 1% DetailPilot fee on payments processed through the platform.'};
+  }
+
   function hcpPlan(team,needs){
     if(team===1&&!needs.includes('scale'))return {plan:'Basic',cost:79,annual:'$59/mo billed annually',users:'1 user',booking:true,capacityConfidence:EVIDENCE.official_product};
     if(team<=5)return {plan:'Essentials',cost:189,annual:'$149/mo billed annually',users:'5 users included',booking:true,capacityConfidence:EVIDENCE.official_product};
@@ -303,6 +336,7 @@
     if(name==='Jobber')return jobberPlan(team,needs);
     if(name==='Urable')return urablePlan(booking,needs);
     if(name==='Strata')return strataPlan(team);
+    if(name==='DetailPilot')return detailPilotPlan(team,needs);
     if(name==='Housecall Pro')return hcpPlan(team,needs);
   }
 
@@ -324,6 +358,9 @@
     let raw=100,ev='official_product',note='Current Finder research supports this device fit.';
     if(name==='ServiceM8'&&device==='android'){
       raw=50;ev='official_help';note='Android field staff use ServiceM8 Lite rather than the full Apple-first field experience.';
+    }
+    if(name==='DetailPilot'&&device==='android'){
+      raw=100;ev='official_product';note='DetailPilot documents mobile web operation on any phone. It also has a native iOS app; a native Android app is not required for the browser workflow.';
     }
     const conf=EVIDENCE[ev];
     return {key:'device',label:'Device fit',raw,confidence:conf,adjusted:adjusted(raw,conf),weight:15,note,evidence:ev};
@@ -414,7 +451,7 @@
     while(wrapper.firstChild)form.insertBefore(wrapper.firstChild,submit);
 
     const eyebrow=document.querySelector('.heroMini .eyebrow');
-    if(eyebrow&&/V3\.0/.test(eyebrow.textContent))eyebrow.textContent=eyebrow.textContent.replace('V3.0','V3.3');
+    if(eyebrow&&/EVIDENCE-WEIGHTED MATCHER/.test(eyebrow.textContent))eyebrow.textContent='EVIDENCE-WEIGHTED MATCHER · V3.4';
   }
 
   function factorHtml(c){
@@ -534,6 +571,8 @@
     document.querySelectorAll('.section.tight h2').forEach(h=>{
       if((h.textContent||'').trim()==='Also researching customer and vehicle management?')h.closest('section')?.remove();
     });
+    // DetailPilot is normalized in Match Score v1.4+, so remove the old out-of-band affiliate block.
+    document.querySelector('section[aria-label="Additional detailing software option"]')?.remove();
     form.addEventListener('submit',handleSubmit,{capture:true});
     window.DetailerFitMatchScore={version:MODEL_VERSION,lastVerified:LAST_VERIFIED,evidence:EVIDENCE,scoreVendor};
   });

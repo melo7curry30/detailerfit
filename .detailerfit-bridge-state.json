@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-09-28T03:55:10.170462+00:00",
-  "base_commit": "5b952d0e56c841e996c5acb5182802b802ca6c22",
-  "command_id": "strata-product-source-refresh-20260928",
-  "last_uid": 324
+  "applied_at_utc": "2026-09-28T04:50:43.537780+00:00",
+  "base_commit": "fc3cb549594a7d0a7725ad15b2c9ee2c5e9ff2ff",
+  "command_id": "detailbrain-review-discovery-sync-20260928-v2",
+  "last_uid": 329
 }

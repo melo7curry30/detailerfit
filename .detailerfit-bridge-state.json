@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-09-27T16:47:59.737849+00:00",
-  "base_commit": "1eb0a0dcb8da417589b25d8ed207e229065be241",
-  "command_id": "affiliate-disclosure-active21-20260928-v1",
-  "last_uid": 323
+  "applied_at_utc": "2026-09-28T03:55:10.170462+00:00",
+  "base_commit": "5b952d0e56c841e996c5acb5182802b802ca6c22",
+  "command_id": "strata-product-source-refresh-20260928",
+  "last_uid": 324
 }

@@ -1051,7 +1051,8 @@ document.addEventListener('DOMContentLoaded',()=>{
     'garagetool-vs-wrapstart':'df-gt-vs',
     'garagetool-alternatives-wrap-sign-shops':'df-gt-alts',
     'best-car-wrap-software':'df-wrap-best',
-    'reviews':'df-reviews'
+    'reviews':'df-reviews',
+    'compare':'df-gt-compare'
   };
   const pageKey=pageKeys[page];
   if(!pageKey)return;

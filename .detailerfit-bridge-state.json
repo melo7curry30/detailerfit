@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-09-28T04:50:43.537780+00:00",
-  "base_commit": "fc3cb549594a7d0a7725ad15b2c9ee2c5e9ff2ff",
-  "command_id": "detailbrain-review-discovery-sync-20260928-v2",
-  "last_uid": 329
+  "applied_at_utc": "2026-09-28T05:03:59.321270+00:00",
+  "base_commit": "9b102b65d8bf51bfdb8b0a44b4d3e96e326f0fc6",
+  "command_id": "detailbrain-vs-jobber-bof-20260928-v1",
+  "last_uid": 330
 }

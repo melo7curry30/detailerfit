@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-09-28T16:21:59.533435+00:00",
-  "base_commit": "5360a8c55c0b129bdbaed1df31f59fc07b972b59",
-  "command_id": "homepage-bof-discovery-20260929-v1",
-  "last_uid": 342
+  "applied_at_utc": "2026-09-28T16:39:12.975131+00:00",
+  "base_commit": "788c5f66b05e55020852ba21cce6c6a5ea693b52",
+  "command_id": "pricing-index-internal-links-20260929-v1",
+  "last_uid": 344
 }

@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-09-28T16:39:12.975131+00:00",
-  "base_commit": "788c5f66b05e55020852ba21cce6c6a5ea693b52",
-  "command_id": "pricing-index-internal-links-20260929-v1",
-  "last_uid": 344
+  "applied_at_utc": "2026-09-28T16:56:10.929586+00:00",
+  "base_commit": "4a0e50b66b9cc7932c99f2fa16e49b85851ec65a",
+  "command_id": "bof-discovery-quoteiq-jobber-bookingkoala-20260929-v1",
+  "last_uid": 345
 }

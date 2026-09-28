@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-09-28T16:56:10.929586+00:00",
-  "base_commit": "4a0e50b66b9cc7932c99f2fa16e49b85851ec65a",
-  "command_id": "bof-discovery-quoteiq-jobber-bookingkoala-20260929-v1",
-  "last_uid": 345
+  "applied_at_utc": "2026-09-28T23:17:38.173110+00:00",
+  "base_commit": "1d90d78b3e64eeadafbeafb9d111ea42fc80b2ce",
+  "command_id": "core-intent-mobile-crm-sprint-20260929-v2",
+  "last_uid": 347
 }

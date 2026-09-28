@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-09-28T05:03:59.321270+00:00",
-  "base_commit": "9b102b65d8bf51bfdb8b0a44b4d3e96e326f0fc6",
-  "command_id": "detailbrain-vs-jobber-bof-20260928-v1",
-  "last_uid": 330
+  "applied_at_utc": "2026-09-28T05:23:45.028941+00:00",
+  "base_commit": "252004d6a6bf93a9c2196c3aa3e0f433bcbc05de",
+  "command_id": "detailbrain-parent-intent-link-20260928-v1",
+  "last_uid": 332
 }

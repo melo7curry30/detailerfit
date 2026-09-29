@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-09-29T06:25:55.098538+00:00",
-  "base_commit": "aea87cf3edbc2c49f417683e2f3b0165a0ed68f4",
-  "command_id": "servicem8-guides-discovery-20260929-v1",
-  "last_uid": 375
+  "applied_at_utc": "2026-09-29T06:49:05.892333+00:00",
+  "base_commit": "ddf5331fc295f08074ef629446064e60b15ef76c",
+  "command_id": "invoicing-discovery-20260929-v1",
+  "last_uid": 378
 }

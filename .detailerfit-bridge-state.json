@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-09-29T06:49:05.892333+00:00",
-  "base_commit": "ddf5331fc295f08074ef629446064e60b15ef76c",
-  "command_id": "invoicing-discovery-20260929-v1",
-  "last_uid": 378
+  "applied_at_utc": "2026-09-29T07:03:48.162448+00:00",
+  "base_commit": "dc2c32caa02fcb9364af0910a722730d909ca17c",
+  "command_id": "orbisx-jobber-discovery-20260929-v1",
+  "last_uid": 380
 }

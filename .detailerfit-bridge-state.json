@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-09-29T15:43:24.815418+00:00",
-  "base_commit": "c96c5e7adc482c8feb5a565c02f12ce77f18ddce",
-  "command_id": "highlevel-cro-20260930-v1",
-  "last_uid": 388
+  "applied_at_utc": "2026-09-29T16:41:42.558201+00:00",
+  "base_commit": "61c4fd66fbd7a92e8395b52d07a640cf48836a0b",
+  "command_id": "strata-pricing-refresh-20260930-v1",
+  "last_uid": 389
 }

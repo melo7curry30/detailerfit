@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-09-29T03:48:25.649016+00:00",
-  "base_commit": "5069ee7f268e1302e4c231407b4b4caec780ef1b",
-  "command_id": "revenue-ctr-sprint-20260929-v5",
-  "last_uid": 356
+  "applied_at_utc": "2026-09-29T04:00:48.989795+00:00",
+  "base_commit": "acc2d2fd36585400a993faad9f96661018cdb417",
+  "command_id": "revenue-ctr-sprint-20260929-v10",
+  "last_uid": 360
 }

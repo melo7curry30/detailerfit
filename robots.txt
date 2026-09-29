@@ -2,3 +2,4 @@ User-agent: *
 Allow: /
 
 Sitemap: https://getdetailerfit.com/sitemap.xml
+Sitemap: https://getdetailerfit.com/sitemap-research.xml

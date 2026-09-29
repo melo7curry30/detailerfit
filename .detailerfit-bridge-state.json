@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-09-29T04:21:42.723751+00:00",
-  "base_commit": "2b4c2b885aa67c8a51c0b278403551396b7b0e1c",
-  "command_id": "semantic-internal-link-sprint-20260929-v1",
-  "last_uid": 362
+  "applied_at_utc": "2026-09-29T04:39:30.918625+00:00",
+  "base_commit": "0e95cedcc9003d840b53f2ad27148ffbd07abeb3",
+  "command_id": "active-indexing-paths-20260929-v1",
+  "last_uid": 363
 }

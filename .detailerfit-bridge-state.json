@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-09-29T04:55:07.671144+00:00",
-  "base_commit": "ad692752fc7bf81156b1ab2f9d2675a4200cc1a1",
-  "command_id": "content-count-consistency-20260929-v1",
-  "last_uid": 364
+  "applied_at_utc": "2026-09-29T05:12:29.565102+00:00",
+  "base_commit": "94f26a73190ffa29cc9cdd2e35fae2fe27432555",
+  "command_id": "decision-stage-pricing-links-20260929-v1",
+  "last_uid": 365
 }

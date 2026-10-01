@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-09-29T16:41:42.558201+00:00",
-  "base_commit": "61c4fd66fbd7a92e8395b52d07a640cf48836a0b",
-  "command_id": "strata-pricing-refresh-20260930-v1",
-  "last_uid": 389
+  "applied_at_utc": "2026-10-01T17:48:45.318724+00:00",
+  "base_commit": "77ce24fcdf3de26ac1564bd164de27bd86ab3255",
+  "command_id": "revenue-sprint-20261002-v1",
+  "last_uid": 394
 }

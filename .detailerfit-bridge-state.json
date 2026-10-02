@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-10-02T06:28:53.344766+00:00",
-  "base_commit": "6b0b3fcfcd261b7a7677272787ad89bc0d65cc69",
-  "command_id": "compare-housecall-offer-20261002-v1",
-  "last_uid": 402
+  "applied_at_utc": "2026-10-02T08:02:23.094959+00:00",
+  "base_commit": "16f18ff109d081ee7a3118c3d46953496ba467ab",
+  "command_id": "ai-receptionist-serp-ctr-20261002-v1",
+  "last_uid": 403
 }

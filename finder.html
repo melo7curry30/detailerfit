@@ -5,94 +5,156 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#090d12">
 <title>Auto Detailing Software Finder (2026) | DetailerFit</title>
-<meta name="description" content="Find auto detailing software by team size, monthly job volume, budget, online booking needs, device fit and workflow priorities with DetailerFit’s transparent matcher.">
+<meta name="description" content="Answer 3 quick questions to find auto detailing software that fits your team size, monthly job volume and budget. No email required.">
 <link rel="stylesheet" href="styles.css">
 <link rel="canonical" href="https://getdetailerfit.com/finder">
 <meta property="og:url" content="https://getdetailerfit.com/finder">
+<style>
+  .finder-fast-note{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 0}
+  .finder-fast-note span{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;padding:6px 9px;font-size:.78rem;color:var(--muted);background:#0d151d}
+  .finder-quick-grid{display:grid;gap:14px;margin:0 0 16px}
+  .finder-quick-card{border:1px solid var(--line);border-radius:14px;padding:14px;background:#0d141b}
+  .finder-quick-card .qtitle{display:block;margin-bottom:4px}
+  .finder-quick-card .qhelp{display:block;margin-bottom:10px}
+  .finder-choice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .finder-choice{position:relative;cursor:pointer}
+  .finder-choice input{position:absolute;opacity:0;pointer-events:none}
+  .finder-choice span{display:flex;min-height:48px;align-items:center;justify-content:center;text-align:center;padding:9px 10px;border:1px solid #2a3945;border-radius:10px;background:#101922;color:#e7eef4;font-weight:700;transition:border-color .15s ease,background .15s ease,transform .15s ease}
+  .finder-choice input:checked + span{border-color:var(--accent);background:#10241e;box-shadow:0 0 0 1px var(--accent) inset}
+  .finder-choice input:focus-visible + span{outline:2px solid var(--accent);outline-offset:2px}
+  .finder-choice:active span{transform:scale(.99)}
+  .finder-primary-cta{margin-top:4px;font-size:1rem}
+  .finder-refine{margin-top:14px;border:1px solid var(--line);border-radius:12px;background:#0b1218}
+  .finder-refine>summary{cursor:pointer;padding:12px 14px;font-weight:700;color:#dce6ed}
+  .finder-refine-body{padding:0 14px 14px}
+  .finder-refine .q{margin-top:12px}
+  .finder-refine .btn{margin-top:12px}
+  .finder-refine-hint{margin:0;color:var(--muted);font-size:.82rem}
+  @media(min-width:720px){
+    .finder-choice-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .finder-choice-grid.is-five{grid-template-columns:repeat(5,minmax(0,1fr))}
+  }
+</style>
 </head>
 <body class="finder-page"><a class="skip-link" href="#main-content">Skip to content</a>
 <header class="site-header"><div class="wrap nav"><a aria-label="DetailerFit home" class="brand" href="/">Detailer<b>Fit</b></a><button aria-controls="navlinks" aria-expanded="false" class="menuBtn" onclick="toggleMenu(this)" type="button">Menu</button><nav aria-label="Primary navigation" class="navlinks" id="navlinks"><a href="compare">Compare Software</a><a href="reviews">Reviews</a><a href="guides">Guides</a><a aria-current="page" href="finder">Software Finder</a><a href="methodology">How We Review</a><a href="about">About</a></nav></div></header>
 <main id="main-content" tabindex="-1">
+
 <section class="heroMini"><div class="wrap">
 <div class="breadcrumbs"><a href="/">Home</a> / Software Finder</div>
-<span class="eyebrow">EVIDENCE-WEIGHTED MATCHER · V3.4</span>
-<h1>Find the Right Auto Detailing Software Plan in 30 Seconds</h1>
-<p class="lead">Enter your team, job volume and budget. DetailerFit matches auto detailing software using published plan constraints, transparent criterion weights and evidence confidence instead of opaque bonus points.</p>
+<span class="eyebrow">3-QUESTION SOFTWARE MATCHER</span>
+<h1>Find the Best Software for Your Detailing Business</h1>
+<p class="lead">Answer 3 quick questions. Get a shortlist matched to your team, monthly job volume and software budget — no email required.</p>
+<div class="finder-fast-note" aria-label="Finder highlights"><span>3 quick questions</span><span>About 30 seconds</span><span>No email required</span><span>Transparent Match Score</span></div>
 </div></section>
+
 <section class="section"><div class="wrap"><div class="quiz">
-<form id="finderForm">
-<div class="number-grid">
-<label class="number-field">
-<span class="qtitle">1. People who need software access</span>
-<span class="qhelp">Count everyone who needs their own login.</span>
-<input class="number-input" id="teamCount" inputmode="numeric" max="100" min="1" name="teamCount" step="1" type="number" value="1"/>
-</label>
-<label class="number-field">
-<span class="qtitle">2. New jobs per month</span>
-<span class="qhelp">Important because some plans scale by job volume.</span>
-<input class="number-input" id="jobsCount" inputmode="numeric" max="5000" min="0" name="jobsCount" step="1" type="number" value="30"/>
-</label>
-<label class="number-field">
-<span class="qtitle">3. Monthly software budget</span>
-<span class="qhelp">We use flexible monthly pricing when a vendor publishes it. <span class="small" data-note="DETAILERFIT-BUDGET-RULE-2026-09-17">If at least one verified configuration fits your budget, the shortlist stays within it; if none fit, price fit is scored continuously and over-budget options are labeled clearly.</span></span>
-<div class="money-input"><span>$</span><input class="number-input" id="budgetAmount" inputmode="decimal" max="5000" min="0" name="budgetAmount" step="1" type="number" value="50"/></div>
-</label>
+<form id="finderForm" class="finder-fast-form" data-fast-finder="v1">
+<div class="finder-quick-grid">
+
+<fieldset class="finder-quick-card">
+<legend class="qtitle">1. How many people need software access?</legend>
+<span class="qhelp">Pick the closest range. The 11+ option checks against 25 seats to avoid underestimating team needs.</span>
+<div class="finder-choice-grid is-five">
+<label class="finder-choice"><input required name="teamCount" type="radio" value="1"><span>Solo</span></label>
+<label class="finder-choice"><input name="teamCount" type="radio" value="3"><span>2–3</span></label>
+<label class="finder-choice"><input name="teamCount" type="radio" value="5"><span>4–5</span></label>
+<label class="finder-choice"><input name="teamCount" type="radio" value="10"><span>6–10</span></label>
+<label class="finder-choice"><input name="teamCount" type="radio" value="25"><span>11+</span></label>
 </div>
+</fieldset>
+
+<fieldset class="finder-quick-card">
+<legend class="qtitle">2. About how many new jobs do you book each month?</legend>
+<span class="qhelp">Job volume can change which plan is the first realistic fit. The 100+ option checks against 200 jobs/month.</span>
+<div class="finder-choice-grid">
+<label class="finder-choice"><input required name="jobsCount" type="radio" value="25"><span>1–25</span></label>
+<label class="finder-choice"><input name="jobsCount" type="radio" value="50"><span>26–50</span></label>
+<label class="finder-choice"><input name="jobsCount" type="radio" value="100"><span>51–100</span></label>
+<label class="finder-choice"><input name="jobsCount" type="radio" value="200"><span>100+</span></label>
+</div>
+</fieldset>
+
+<fieldset class="finder-quick-card">
+<legend class="qtitle">3. What is your maximum monthly software budget?</legend>
+<span class="qhelp">If at least one verified configuration fits, the shortlist stays within your selected budget.</span>
+<div class="finder-choice-grid is-five">
+<label class="finder-choice"><input required name="budgetAmount" type="radio" value="50"><span>Up to $50</span></label>
+<label class="finder-choice"><input name="budgetAmount" type="radio" value="100"><span>Up to $100</span></label>
+<label class="finder-choice"><input name="budgetAmount" type="radio" value="200"><span>Up to $200</span></label>
+<label class="finder-choice"><input name="budgetAmount" type="radio" value="300"><span>Up to $300</span></label>
+<label class="finder-choice"><input name="budgetAmount" type="radio" value="500"><span>Up to $500</span></label>
+</div>
+</fieldset>
+
+</div>
+
+<button class="btn primary block finder-primary-cta" type="submit">Show My 3 Matches</button>
+
+<details class="finder-refine" id="finderRefine">
+<summary>Want a more precise match? Add optional preferences</summary>
+<div class="finder-refine-body">
+<p class="finder-refine-hint">These are optional. Your first shortlist only needs the 3 questions above.</p>
+
 <div class="q">
-<span class="qtitle">4. Do customers need to choose an appointment time themselves?</span>
-<span class="qhelp">This is different from you manually adding a customer to your internal calendar.</span>
+<span class="qtitle">Customer self-booking</span>
+<span class="qhelp">Do customers need to choose an appointment time themselves?</span>
 <div class="options">
-<label class="opt"><input name="booking" type="radio" value="yes"/>Yes — true online self-booking</label>
-<label class="opt"><input name="booking" type="radio" value="no"/>No — internal scheduling is enough</label>
-<label class="opt"><input checked="" name="booking" type="radio" value="unsure"/>Not sure yet</label>
+<label class="opt"><input name="booking" type="radio" value="yes">Yes — true online self-booking</label>
+<label class="opt"><input name="booking" type="radio" value="no">No — internal scheduling is enough</label>
+<label class="opt"><input checked name="booking" type="radio" value="unsure">Not sure yet</label>
 </div>
 </div>
+
 <div class="q">
-<span class="qtitle">5. What devices run the business?</span>
-<span class="qhelp">Device choice is a fit signal, not an automatic exclusion. ServiceM8 may still appear for Android because Android field staff can use ServiceM8 Lite, while the full field experience remains Apple-first.</span>
+<span class="qtitle">Devices</span>
+<span class="qhelp">Device choice is a fit signal, not an automatic exclusion.</span>
 <div class="options">
-<label class="opt"><input name="device" type="radio" value="iphone"/>Mainly iPhone / iPad</label>
-<label class="opt"><input name="device" type="radio" value="android"/>Mainly Android</label>
-<label class="opt"><input checked="" name="device" type="radio" value="either"/>Mixed / no preference</label>
+<label class="opt"><input name="device" type="radio" value="iphone">Mainly iPhone / iPad</label>
+<label class="opt"><input name="device" type="radio" value="android">Mainly Android</label>
+<label class="opt"><input checked name="device" type="radio" value="either">Mixed / no preference</label>
 </div>
 </div>
+
 <div class="q">
-<span class="qtitle">6. What else matters?</span>
+<span class="qtitle">What else matters?</span>
 <div class="checks">
-<label class="ck"><input name="priority" type="checkbox" value="detail"/>Automotive / detailing-specific workflow</label>
-<label class="ck"><input name="priority" type="checkbox" value="vehicle"/>VIN scanning, estimating &amp; vehicle documentation</label>
-<label class="ck"><input name="priority" type="checkbox" value="automation"/>Automated follow-up &amp; admin</label>
-<label class="ck"><input name="priority" type="checkbox" value="scale"/>Routing, dispatch &amp; team growth</label>
+<label class="ck"><input name="priority" type="checkbox" value="detail">Automotive / detailing-specific workflow</label>
+<label class="ck"><input name="priority" type="checkbox" value="vehicle">VIN scanning, estimating &amp; vehicle documentation</label>
+<label class="ck"><input name="priority" type="checkbox" value="automation">Automated follow-up &amp; admin</label>
+<label class="ck"><input name="priority" type="checkbox" value="scale">Routing, dispatch &amp; team growth</label>
 </div>
 </div>
-<button class="btn primary block" type="submit">Show My Matches</button>
+
+<div id="finderExtendedMount"></div>
+<button class="btn secondary block" type="submit">Update My Matches</button>
+</div>
+</details>
 </form>
 
-
 <div class="note" id="finder-filter-explainer">
-  <b>How the score works:</b> The Finder converts each relevant requirement to a 0–100 criterion score, then discounts that score toward neutral when the supporting evidence is weaker. Unknown does not equal zero. Explicit requirements such as customer self-booking can still act as hard gates.
-  <br><br><b>Finder scope:</b> Only products with plan rules complete enough for the current inputs are scored. Affiliate status, commission rate and commercial relationships are not inputs to the algorithm. <a href="match-score-methodology">Read the scoring model →</a>
+<b>How the score works:</b> The Finder converts relevant requirements to a 0–100 criterion score and discounts weaker evidence toward neutral. Unknown does not equal zero. Explicit requirements such as customer self-booking can still act as hard gates.
+<br><br><b>Finder scope:</b> Only products with plan rules complete enough for the current inputs are scored. Affiliate status, commission rate and commercial relationships are not inputs to the algorithm. <a href="match-score-methodology">Read the scoring model →</a>
 </div>
-
 
 <div aria-live="polite" class="results" id="resultsBox">
 <h2>Your shortlist</h2>
-<p class="small">Each result shows a personalized Match Score and a separate Evidence Confidence value. Match Score is not a universal product rating; it is calculated from your answers and the first plan configuration DetailerFit can verify for that use case. Each card also includes a non-scoring Trust &amp; Conversion snapshot for review, booking-page and domain features.</p>
+<p class="small">Each result shows a personalized Match Score and a separate Evidence Confidence value. Match Score is calculated from your answers and the first plan configuration DetailerFit can verify for that use case.</p>
 <div id="finderBudgetMessage"></div>
 <div id="finderResults"></div>
 <p class="small" style="margin-top:14px">Some vendor buttons may be affiliate links. Commercial relationships do not change criterion values, evidence confidence, weights or hard constraints. <a href="affiliate-disclosure">Affiliate disclosure</a> · <a href="match-score-methodology">Scoring methodology</a>.</p>
 </div>
 </div></div></section>
-<section class="section tight"><div class="wrap article">
-<div class="note"><b>How to read this:</b> “Plan to inspect first” is not a purchase instruction. Open the research notes, verify the vendor's current pricing, and confirm any feature that is critical to your workflow before subscribing. For Jobber teams above five users, DetailerFit currently flags the seat configuration for verification because the vendor's pricing page and Help Center are not perfectly aligned. For Mobile Tech RX, official sources reviewed clearly establish internal scheduling, but they did not clearly establish an equivalent native customer-facing self-booking flow; verify that workflow directly if it is required. <a href="match-score-methodology">See the Match Score methodology →</a></div>
-</div></section>
 
+<section class="section tight"><div class="wrap article">
+<div class="note"><b>How to read this:</b> “Plan to inspect first” is not a purchase instruction. Open the research notes, verify the vendor's current pricing, and confirm any feature that is critical to your workflow before subscribing. <a href="match-score-methodology">See the Match Score methodology →</a></div>
+</div></section>
 
 <section class="section tight" aria-labelledby="finder-decision-stage">
 <div class="wrap article"><div class="card">
 <div class="kicker">NEXT STEP · DECISION-STAGE RESEARCH</div>
 <h2 id="finder-decision-stage">Your shortlist is only step one. Open the page that matches the decision you are actually making.</h2>
-<p>The Finder narrows fit. These pages handle the purchase-stage questions the score cannot answer by itself: plan gates, real team cost, customer booking and direct head-to-head trade-offs.</p>
+<p>The Finder narrows fit. These pages handle purchase-stage questions the score cannot answer by itself: plan gates, real team cost, customer booking and direct head-to-head trade-offs.</p>
 <div class="actions">
 <a class="btn secondary" href="quoteiq-pricing-mobile-detailing">QuoteIQ Pricing</a>
 <a class="btn secondary" href="quoteiq-vs-housecall-pro">QuoteIQ vs Housecall Pro</a>
@@ -105,7 +167,6 @@
 </div>
 <p class="small">These links do not change Finder scoring or rankings. Some destination pages contain affiliate links; commercial relationships do not determine the shortlist.</p>
 </div></div></section>
-
 
 </main>
 <footer class="footer">
@@ -132,9 +193,69 @@
 </div>
 </div>
 </footer>
+
 <script src="app.js"></script>
 <script src="/match-score.js"></script>
 <script src="/finder-trust-conversion.js"></script>
+<script>
+(function(){
+  'use strict';
+
+  function initFastFinder(){
+    var form=document.getElementById('finderForm');
+    if(!form)return;
+
+    // Match Score injects Setup and Migration questions on DOMContentLoaded.
+    // Keep them available, but move them into the optional refinement panel
+    // so the first-view experience stays at three questions.
+    var mount=document.getElementById('finderExtendedMount');
+    ['df-setup-question','df-migration-question'].forEach(function(id){
+      var node=document.getElementById(id);
+      if(node&&mount)mount.appendChild(node);
+    });
+
+    var quickNames={teamCount:true,jobsCount:true,budgetAmount:true};
+    var firstInteractionTracked=false;
+    form.addEventListener('change',function(e){
+      var input=e.target;
+      if(!input||!quickNames[input.name]||firstInteractionTracked)return;
+      firstInteractionTracked=true;
+      if(typeof window.dfTrackEvent==='function'){
+        window.dfTrackEvent('finder_first_interaction',{
+          tool_name:'finder',
+          question_key:input.name,
+          option_value:input.value,
+          interaction_type:'tap_choice',
+          finder_experience:'quick_v1',
+          scoring_model:(window.DetailerFitMatchScore&&window.DetailerFitMatchScore.version)||'1.5.0'
+        });
+      }
+    });
+
+    var refine=document.getElementById('finderRefine');
+    var refineTracked=false;
+    if(refine){
+      refine.addEventListener('toggle',function(){
+        if(!refine.open||refineTracked)return;
+        refineTracked=true;
+        if(typeof window.dfTrackEvent==='function'){
+          window.dfTrackEvent('finder_refine_open',{
+            tool_name:'finder',
+            finder_experience:'quick_v1',
+            scoring_model:(window.DetailerFitMatchScore&&window.DetailerFitMatchScore.version)||'1.5.0'
+          });
+        }
+      });
+    }
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',initFastFinder,{once:true});
+  }else{
+    initFastFinder();
+  }
+})();
+</script>
 <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"25a4f3de7baa42bf8934155a29b6cc47","r":1,"spa":2}' crossorigin="anonymous"></script>
 </body>
 </html>

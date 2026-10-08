@@ -30,6 +30,20 @@
   .finder-refine .q{margin-top:12px}
   .finder-refine .btn{margin-top:12px}
   .finder-refine-hint{margin:0;color:var(--muted);font-size:.82rem}
+
+  /* Instagram in-app visitors arrive on a short-attention mobile surface.
+     Keep the canonical/SEO copy unchanged, but compact the first view at runtime. */
+  body.df-instagram-session .heroMini{padding-top:16px;padding-bottom:10px}
+  body.df-instagram-session .heroMini .breadcrumbs,
+  body.df-instagram-session .heroMini .eyebrow,
+  body.df-instagram-session .finder-fast-note{display:none}
+  body.df-instagram-session .heroMini h1{font-size:clamp(1.55rem,7vw,2rem);line-height:1.08;margin:0 0 6px}
+  body.df-instagram-session .heroMini .lead{font-size:.95rem;line-height:1.35;margin:0}
+  body.df-instagram-session .heroMini + .section{padding-top:10px}
+  body.df-instagram-session .finder-quick-grid{gap:10px;margin-bottom:12px}
+  body.df-instagram-session .finder-quick-card{padding:12px}
+  body.df-instagram-session .finder-quick-card .qhelp{display:none}
+  body.df-instagram-session .finder-choice span{min-height:44px;padding:8px}
   @media(min-width:720px){
     .finder-choice-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
     .finder-choice-grid.is-five{grid-template-columns:repeat(5,minmax(0,1fr))}
@@ -142,7 +156,7 @@
 <p class="small">Each result shows a personalized Match Score and a separate Evidence Confidence value. Match Score is calculated from your answers and the first plan configuration DetailerFit can verify for that use case.</p>
 <div id="finderBudgetMessage"></div>
 <div id="finderResults"></div>
-<p class="small" style="margin-top:14px">Some vendor buttons may be affiliate links. Commercial relationships do not change criterion values, evidence confidence, weights or hard constraints. <a href="affiliate-disclosure">Affiliate disclosure</a> · <a href="match-score-methodology">Scoring methodology</a>.</p>
+<p class="small" style="margin-top:14px">Some vendor buttons may be affilite links. Commercial relationships do not change criterion values, evidence confidence, weights or hard constraints. <a href="affiliate-disclosure">Affiliate disclosure</a> · <a href="match-score-methodology">Scoring methodology</a>.</p>
 </div>
 </div></div></section>
 
@@ -152,7 +166,7 @@
 
 <section class="section tight" aria-labelledby="finder-decision-stage">
 <div class="wrap article"><div class="card">
-<div class="kicker">NEXT STEP · DECISION-STAGE RESEARCH</div>
+<div class="kicker">NEXT STEP » DECISION-STAGE RESEARCH</div>
 <h2 id="finder-decision-stage">Your shortlist is only step one. Open the page that matches the decision you are actually making.</h2>
 <p>The Finder narrows fit. These pages handle purchase-stage questions the score cannot answer by itself: plan gates, real team cost, customer booking and direct head-to-head trade-offs.</p>
 <div class="actions">
@@ -254,6 +268,148 @@
   }else{
     initFastFinder();
   }
+})();
+</script>
+<script>
+(function(){
+  'use strict';
+
+  var SOURCE_KEY='df_session_source';
+  var ENTRY_EVENT_KEY='df_instagram_finder_entry_v1';
+  var RESULT_EVENT_KEY='df_instagram_finder_result_v1';
+  var params=new URLSearchParams(location.search);
+  var referrer=(document.referrer||'').toLowerCase();
+  var explicitSource=(params.get('src')||params.get('utm_source')||'').toLowerCase();
+  var arrivedFromInstagram=referrer.indexOf('instagram.com')!==-1 || explicitSource==='instagram';
+
+  try{
+    if(arrivedFromInstagram)sessionStorage.setItem(SOURCE_KEY,'instagram');
+  }catch(_sourceStorageError){}
+
+  var sessionSource='';
+  try{sessionSource=sessionStorage.getItem(SOURCE_KEY)||'';}catch(_readSourceError){}
+  if(sessionSource!=='instagram'&&!arrivedFromInstagram)return;
+
+  function trackOnce(key,eventName,payload){
+    var already=false;
+    try{
+      already=sessionStorage.getItem(key)==='1';
+      if(!already)sessionStorage.setItem(key,'1');
+    }catch(_eventStorageError){}
+    if(already)return;
+    if(typeof window.dfTrackEvent==='function')window.dfTrackEvent(eventName,payload||{});
+  }
+
+  function upgradeInstagramResults(){
+    var root=document.getElementById('finderResults');
+    if(!root||!root.children.length)return;
+
+    var labels={
+      'QuoteIQ':'Start 14-Day QuoteIQ Trial',
+      'Housecall Pro':'Get 20% Off Housecall Pro',
+      'Mobile Tech RX':'Explore Mobile Tech RX'
+    };
+
+    root.querySelectorAll('a[data-cta-position="finder_result"]').forEach(function(link){
+      var vendor=(link.dataset.vendor||'').trim();
+      if(labels[vendor])link.textContent=labels[vendor];
+      link.dataset.instagramFunnel='true';
+    });
+
+    var resultsBox=document.getElementById('resultsBox');
+    if(resultsBox&&!document.getElementById('instagramFinderNextStep')){
+      var note=document.createElement('div');
+      note.id='instagramFinderNextStep';
+      note.className='note goodnote';
+      note.style.margin='0 0 14px';
+      note.innerHTML='<b>Next step:</b> Start with your top match, then use the highlighted vendor button to check its current trial or offer. Affiliate relationships do not affect your Match Score or ranking.';
+      var budget=document.getElementById('finderBudgetMessage');
+      resultsBox.insertBefore(note,budget||root);
+    }
+
+    var top=root.querySelector('.result.top');
+    var topVendor=top&&top.querySelector('a[data-vendor]')?.dataset.vendor||'';
+    trackOnce(RESULT_EVENT_KEY,'instagram_finder_result_view',{
+      tool_name:'finder',
+      source:'instagram',
+      top_vendor:topVendor,
+      finder_experience:'quick_v1'
+    });
+  }
+
+  function initInstagramFinder(){
+    document.body.classList.add('df-instagram-session');
+
+    var heroTitle=document.querySelector('.heroMini h1');
+    var heroLead=document.querySelector('.heroMini .lead');
+    if(heroTitle)heroTitle.textContent='3 Questions. 3 Software Matches.';
+    if(heroLead)heroLead.textContent='Answer three quick questions to see the software and plan that best fits your detailing business.';
+
+    var form=document.getElementById('finderForm');
+    var instagramInteractionTracked=false;
+    if(form){
+      form.addEventListener('change',function(e){
+        var input=e.target;
+        if(!input||!['teamCount','jobsCount','budgetAmount'].includes(input.name))return;
+
+        if(!instagramInteractionTracked){
+          instagramInteractionTracked=true;
+          if(typeof window.dfTrackEvent==='function'){
+            window.dfTrackEvent('instagram_finder_first_interaction',{
+              source:'instagram',
+              tool_name:'finder',
+              question_key:input.name,
+              option_value:input.value,
+              finder_experience:'quick_v1'
+            });
+          }
+        }
+
+        var cards=[...form.querySelectorAll('.finder-quick-card')];
+        var current=input.closest('.finder-quick-card');
+        var index=cards.indexOf(current);
+        var target=index>=0&&index<cards.length-1?cards[index+1]:form.querySelector('.finder-primary-cta');
+        if(target){
+          var reduceMotion=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          window.setTimeout(function(){
+            target.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'center'});
+          },120);
+        }
+      });
+    }
+    trackOnce(ENTRY_EVENT_KEY,'instagram_finder_entry',{
+      tool_name:'finder',
+      source:'instagram',
+      source_detection:arrivedFromInstagram?'referrer_or_param':'session',
+      finder_experience:'quick_v1'
+    });
+
+    document.addEventListener('click',function(e){
+      var link=e.target.closest&&e.target.closest('a[data-instagram-funnel="true"]');
+      if(!link)return;
+      var rel=(link.getAttribute('rel')||'').toLowerCase().split(/\s+/);
+      if(rel.indexOf('sponsored')===-1&&link.dataset.affiliate!=='true')return;
+      if(typeof window.dfTrackEvent==='function'){
+        window.dfTrackEvent('instagram_affiliate_click',{
+          source:'instagram',
+          tool_name:'finder',
+          vendor:link.dataset.vendor||'',
+          result_rank:link.dataset.resultRank?Number(link.dataset.resultRank):undefined,
+          result_plan:link.dataset.resultPlan||undefined,
+          link_text:(link.textContent||'').trim().slice(0,120),
+          link_url:link.href
+        });
+      }
+    },true);
+
+    var root=document.getElementById('finderResults');
+    if(!root)return;
+    upgradeInstagramResults();
+    new MutationObserver(upgradeInstagramResults).observe(root,{childList:true,subtree:true});
+  }
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initInstagramFinder,{once:true});
+  else initInstagramFinder();
 })();
 </script>
 <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"25a4f3de7baa42bf8934155a29b6cc47","r":1,"spa":2}' crossorigin="anonymous"></script>

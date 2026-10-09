@@ -42,11 +42,27 @@
   body.df-instagram-session .heroMini + .section{padding-top:10px}
   body.df-instagram-session .finder-quick-grid{gap:10px;margin-bottom:12px}
   body.df-instagram-session .finder-quick-card{padding:12px}
-  body.df-instagram-session .finder-quick-card .qhelp{display:none}
+  body.df-instagram-session .finder-quick-card:not(:first-child) .qhelp{display:none}
   body.df-instagram-session .finder-choice span{min-height:44px;padding:8px}
   @media(min-width:720px){
     .finder-choice-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
     .finder-choice-grid.is-five{grid-template-columns:repeat(5,minmax(0,1fr))}
+  }
+
+  /* Finder first-answer UX: the question precedes explanatory marketing copy. */
+  .finder-page .finder-first-section{padding-top:14px}
+  .finder-page .finder-intro-after{border-top:1px solid var(--line);margin:20px 0 8px;padding:18px 2px 6px}
+  .finder-page .finder-intro-after h1{font-size:clamp(1.35rem,3.5vw,1.85rem);line-height:1.18;letter-spacing:-.035em;margin:10px 0 8px}
+  .finder-page .finder-intro-after .lead{font-size:.95rem;line-height:1.45}
+  .finder-page .finder-quick-card:first-child .qtitle{font-size:clamp(1.1rem,4.6vw,1.3rem);line-height:1.3;margin-bottom:13px}
+  .finder-page .finder-quick-card:first-child .qhelp{font-size:.8rem;line-height:1.45;margin:12px 0 0}
+  .finder-page .finder-quick-card:first-child .finder-choice span,
+  body.df-instagram-session .finder-quick-card:first-child .finder-choice span{min-height:58px;font-size:1rem}
+  @media(max-width:719px){
+    .finder-page .finder-first-section{padding-top:8px}
+    .finder-page .finder-first-section .quiz{padding:10px}
+    .finder-page .finder-quick-card:first-child{padding:12px}
+    .finder-page .finder-intro-after .finder-fast-note{display:none}
   }
 </style>
 </head>
@@ -54,21 +70,14 @@
 <header class="site-header"><div class="wrap nav"><a aria-label="DetailerFit home" class="brand" href="/">Detailer<b>Fit</b></a><button aria-controls="navlinks" aria-expanded="false" class="menuBtn" onclick="toggleMenu(this)" type="button">Menu</button><nav aria-label="Primary navigation" class="navlinks" id="navlinks"><a href="compare">Compare Software</a><a href="reviews">Reviews</a><a href="guides">Guides</a><a aria-current="page" href="finder">Software Finder</a><a href="methodology">How We Review</a><a href="about">About</a></nav></div></header>
 <main id="main-content" tabindex="-1">
 
-<section class="heroMini"><div class="wrap">
-<div class="breadcrumbs"><a href="/">Home</a> / Software Finder</div>
-<span class="eyebrow">3-QUESTION SOFTWARE MATCHER</span>
-<h1>Find the Best Software for Your Detailing Business</h1>
-<p class="lead">Answer 3 quick questions. Get a shortlist matched to your team, monthly job volume and software budget — no email required.</p>
-<div class="finder-fast-note" aria-label="Finder highlights"><span>3 quick questions</span><span>About 30 seconds</span><span>No email required</span><span>Transparent Match Score</span></div>
-</div></section>
 
-<section class="section"><div class="wrap"><div class="quiz">
+
+<section class="section finder-first-section"><div class="wrap"><div class="quiz">
 <form id="finderForm" class="finder-fast-form" data-fast-finder="v1">
 <div class="finder-quick-grid">
 
 <fieldset class="finder-quick-card">
-<legend class="qtitle">1. How many people need software access?</legend>
-<span class="qhelp">Pick the closest range. The 11+ option checks against 25 seats to avoid underestimating team needs.</span>
+<legend class="qtitle">How many people need software access?</legend>
 <div class="finder-choice-grid is-five">
 <label class="finder-choice"><input required name="teamCount" type="radio" value="1"><span>Solo</span></label>
 <label class="finder-choice"><input name="teamCount" type="radio" value="3"><span>2–3</span></label>
@@ -76,6 +85,7 @@
 <label class="finder-choice"><input name="teamCount" type="radio" value="10"><span>6–10</span></label>
 <label class="finder-choice"><input name="teamCount" type="radio" value="25"><span>11+</span></label>
 </div>
+<span class="qhelp">Pick the closest range. The 11+ option checks against 25 seats to avoid underestimating team needs.</span>
 </fieldset>
 
 <fieldset class="finder-quick-card">
@@ -145,6 +155,14 @@
 </div>
 </details>
 </form>
+
+<div class="heroMini finder-intro-after">
+<div class="breadcrumbs"><a href="/">Home</a> / Software Finder</div>
+<span class="eyebrow">3-QUESTION SOFTWARE MATCHER</span>
+<h1>Find the Best Software for Your Detailing Business</h1>
+<p class="lead">Answer 3 quick questions. Get a shortlist matched to your team, monthly job volume and software budget — no email required.</p>
+<div class="finder-fast-note" aria-label="Finder highlights"><span>3 quick questions</span><span>About 30 seconds</span><span>No email required</span><span>Transparent Match Score</span></div>
+</div>
 
 <div class="note" id="finder-filter-explainer">
 <b>How the score works:</b> The Finder converts relevant requirements to a 0–100 criterion score and discounts weaker evidence toward neutral. Unknown does not equal zero. Explicit requirements such as customer self-booking can still act as hard gates.

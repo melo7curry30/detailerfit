@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-10-10T14:48:04.732485+00:00",
-  "base_commit": "5dd90c773245fe27353e13d527d7e5f728ec2ff2",
-  "command_id": "affiliate-disclosure-active24-20261010-v1",
-  "last_uid": 424
+  "applied_at_utc": "2026-10-11T01:07:01.090495+00:00",
+  "base_commit": "97fc5c67015b54c5fe74fe842c4e80f06d5e1e14",
+  "command_id": "finder-ig-source-detection-20261011-v1",
+  "last_uid": 427
 }

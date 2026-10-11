@@ -298,7 +298,7 @@
   var params=new URLSearchParams(location.search);
   var referrer=(document.referrer||'').toLowerCase();
   var explicitSource=(params.get('src')||params.get('utm_source')||'').toLowerCase();
-  var arrivedFromInstagram=referrer.indexOf('instagram.com')!==-1 || explicitSource==='instagram';
+  var arrivedFromInstagram=referrer.indexOf('instagram.com')!==-1 || explicitSource==='instagram' || explicitSource==='ig';
 
   try{
     if(arrivedFromInstagram)sessionStorage.setItem(SOURCE_KEY,'instagram');

@@ -1,4 +1,3 @@
-
 :root{
   --bg:#090d12;--panel:#101720;--panel2:#141e29;--text:#f6f8fb;--muted:#a9b5c1;
   --line:#26323f;--accent:#66e1b5;--blue:#6fa8ff;--gold:#f6c766;--danger:#ff9b9b;
@@ -468,3 +467,61 @@ th:first-child,td:first-child{min-width:130px;max-width:190px}
 .software-card .kicker{min-height:2.8em}
 
 @media(min-width:600px) and (max-width:800px){.review-facts{grid-template-columns:1fr 1fr}}
+
+
+/* DetailerFit subtle motion — CSS-only, progressive enhancement (Oct 2026).
+   Deliberately avoids dependencies, layout shifts and changes to Match Score math. */
+@keyframes df-motion-choose{
+  0%{transform:scale(.975)}
+  100%{transform:scale(1)}
+}
+@keyframes df-motion-result{
+  from{opacity:.64;transform:translateY(10px)}
+  to{opacity:1;transform:none}
+}
+@keyframes df-motion-meter{
+  from{transform:scaleX(0)}
+  to{transform:scaleX(1)}
+}
+@keyframes df-motion-scroll{
+  from{opacity:.75;transform:translateY(12px)}
+  to{opacity:1;transform:none}
+}
+@media(prefers-reduced-motion:no-preference){
+  .btn{transition:transform .18s ease,background-color .18s ease,border-color .18s ease,box-shadow .18s ease}
+  .btn:active{transform:scale(.985)}
+  @media(hover:hover){
+    .btn:hover{transform:translateY(-1px)}
+    .card.interactive:hover,.intent-card:hover{transform:translateY(-2px);border-color:#3b5c55}
+  }
+  .finder-choice input:checked+span,.opt:has(input:checked){
+    animation:df-motion-choose .24s ease-out
+  }
+  #finderResults .result{
+    animation:df-motion-result .36s ease-out both
+  }
+  #finderResults .result:nth-of-type(2){animation-delay:60ms}
+  #finderResults .result:nth-of-type(3){animation-delay:120ms}
+  #finderResults .df-factor-fill{
+    transform-origin:left center;
+    animation:df-motion-meter .6s cubic-bezier(.2,.7,.2,1) both
+  }
+  /* View-timeline unsupported browsers simply show static cards. */
+  @supports(animation-timeline:view()){
+    .home-page .software-card,
+    .home-page .intent-card,
+    .home-page .card.interactive,
+    .home-page .booking-card,
+    body:not(.home-page):not(.finder-page) .software-card{
+      animation:df-motion-scroll 1s linear both;
+      animation-timeline:view();
+      animation-range:entry 0% entry 100%
+    }
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  #finderResults .result,
+  #finderResults .df-factor-fill,
+  .finder-choice input:checked+span,
+  .opt:has(input:checked){animation:none!important}
+}

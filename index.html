@@ -394,6 +394,75 @@
 </div>
 </footer>
 <script src="app.js"></script>
+<script>
+/* DetailerFit Motion v2: reliable, lightweight iOS/Android/desktop reveal.
+   Progressive enhancement: without JS, content remains visible; no scoring,
+   affiliate links, or analytics state is modified. */
+(function(){
+  'use strict';
+  function initMotion(){
+    var reduced=window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(reduced || !('IntersectionObserver' in window))return;
+    var style=document.createElement('style');
+    style.id='df-motion-v2-styles';
+    style.textContent=[
+      '.df-motion-stage{opacity:0;transform:translate3d(0,22px,0) scale(.985);transition:opacity .58s cubic-bezier(.2,.7,.25,1),transform .58s cubic-bezier(.2,.7,.25,1);animation:none!important;}',
+      '.df-motion-stage.df-motion-shown,.df-motion-stage:focus-within{opacity:1;transform:none;}',
+      '.df-motion-stage.df-motion-shown{will-change:auto;}',
+      '#finderResults .df-factor-fill{animation:none!important;transform:scaleX(0);transform-origin:left center;transition:transform .7s cubic-bezier(.2,.7,.25,1);}',
+      '#finderResults .df-motion-shown .df-factor-fill{transform:scaleX(1);}',
+      '.finder-page .finder-choice input:checked+span{animation:df-motion-choose .32s ease-out;}',
+      '.df-motion-stage .btn:active{transform:scale(.985);}',
+      '@media(prefers-reduced-motion:reduce){.df-motion-stage{opacity:1!important;transform:none!important;transition:none!important}#finderResults .df-factor-fill{transform:none!important;transition:none!important}}'
+    ].join('\n');
+    document.head.appendChild(style);
+
+    var observer=new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(!entry.isIntersecting)return;
+        entry.target.classList.add('df-motion-shown');
+        observer.unobserve(entry.target);
+      });
+    },{threshold:0.07,rootMargin:'0px 0px -12px 0px'});
+
+    function stage(el,index){
+      if(!el || el.dataset.dfMotionV2)return;
+      el.dataset.dfMotionV2='1';
+      var box=el.getBoundingClientRect();
+      // Never hide items a reader has already scrolled past.
+      if(box.bottom < 0)return;
+      el.classList.add('df-motion-stage');
+      el.style.transitionDelay=Math.min(index%3*65,130)+'ms';
+      observer.observe(el);
+    }
+
+    var targets=document.querySelectorAll(
+      '.home-page .hero h1,.home-page .hero .lead,'+
+      '.home-page .card,.home-page .intent-card,.home-page .booking-card,'+
+      '.finder-page .finder-quick-card,.finder-page .finder-intro-after,'+
+      '.software-card,.compare-card,.quickpick,.review-summary,.cost-result'
+    );
+    Array.prototype.forEach.call(targets,stage);
+
+    // Finder creates its scored shortlist after submit; animate newly
+    // inserted result cards without touching scores, rankings or CTA links.
+    var results=document.getElementById('finderResults');
+    if(results && 'MutationObserver' in window){
+      function syncResults(){
+        Array.prototype.forEach.call(results.querySelectorAll('article.result'),stage);
+      }
+      syncResults();
+      new MutationObserver(syncResults).observe(results,{childList:true});
+    }
+  }
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',initMotion,{once:true});
+  }else{
+    initMotion();
+  }
+})();
+
+</script>
 <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"25a4f3de7baa42bf8934155a29b6cc47","r":1,"spa":2}' crossorigin="anonymous"></script>
 </body>
 </html>

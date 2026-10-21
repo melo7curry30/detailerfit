@@ -50,6 +50,8 @@
     });
   }
 
+  // Reuse the same enrichment for comparison links created after load.
+  document.addEventListener('df:links-updated', enrich);
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',enrich,{once:true});
   else enrich();
 })();

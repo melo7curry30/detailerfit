@@ -525,3 +525,34 @@ th:first-child,td:first-child{min-width:130px;max-width:190px}
   .finder-choice input:checked+span,
   .opt:has(input:checked){animation:none!important}
 }
+/* Booking decision cards: mobile first, no sticky overlays. */
+.df-booking-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.df-booking-grid .card{min-width:0}
+.df-booking-grid .btn{min-height:44px;white-space:normal;text-align:center}
+@media(max-width:719px){.df-booking-grid{grid-template-columns:1fr}.df-booking-grid .actions{display:grid}.df-booking-grid .btn{width:100%}}
+/* DetailerFit UI Motion v3 — 2026-10-21.
+   Visual-only progressive enhancements; no content, scoring or link changes. */
+.df-reading-progress{position:fixed;inset:0 0 auto;z-index:70;height:3px;pointer-events:none;overflow:hidden}
+.df-reading-progress>span{display:block;width:100%;height:100%;transform:scaleX(0);transform-origin:0 50%;background:linear-gradient(90deg,var(--accent),var(--blue));will-change:transform}
+@keyframes df-ui-entrance{
+  from{opacity:.78;transform:translate3d(0,12px,0)}
+  to{opacity:1;transform:none}
+}
+@media(prefers-reduced-motion:no-preference){
+  .df-ui-entered{animation:df-ui-entrance .48s cubic-bezier(.18,.72,.22,1) both;animation-delay:var(--df-ui-delay,0ms)}
+  .desktop-compare tbody td{transition:background-color .2s ease}
+  .desktop-compare tbody tr:hover td,.desktop-compare tbody tr:focus-within td{background-color:#182735}
+}
+@media(prefers-reduced-motion:no-preference) and (hover:hover) and (pointer:fine){
+  .card.interactive,.intent-card,.booking-card,.quickpick,.compare-card,.cost-result{
+    transition:transform .22s cubic-bezier(.2,.72,.2,1),border-color .22s ease,box-shadow .22s ease
+  }
+  .card.interactive:hover,.intent-card:hover,.booking-card:hover,.quickpick:hover,.compare-card:hover,.cost-result:hover{
+    transform:translate3d(0,-4px,0);border-color:#427c7c;box-shadow:0 12px 28px rgba(0,0,0,.18)
+  }
+  .btn.primary:hover{box-shadow:0 6px 18px rgba(102,225,181,.16)}
+}
+@media(prefers-reduced-motion:reduce){
+  .df-reading-progress{display:none}
+  .df-ui-entered{animation:none!important;opacity:1!important;transform:none!important}
+}

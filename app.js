@@ -1207,3 +1207,72 @@ document.addEventListener('DOMContentLoaded',()=>{
     target.insertAdjacentElement('afterend',block);
   }
 });
+/* DetailerFit UI Motion v3 — visual feedback only; no analytics or ranking changes. */
+(function detailerfitUiMotionV3(){
+  'use strict';
+  function init(){
+    if(!document.body)return;
+    if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+    var track=document.createElement('div');
+    track.className='df-reading-progress';
+    track.setAttribute('aria-hidden','true');
+    var fill=document.createElement('span');
+    track.appendChild(fill);
+    document.body.appendChild(track);
+    var scheduled=false;
+    function paint(){
+      scheduled=false;
+      var root=document.scrollingElement||document.documentElement;
+      var max=root.scrollHeight-window.innerHeight;
+      var fraction=max>0?Math.max(0,Math.min(1,root.scrollTop/max)):0;
+      fill.style.transform='scaleX('+fraction+')';
+    }
+    function schedule(){
+      if(scheduled)return;
+      scheduled=true;
+      window.requestAnimationFrame(paint);
+    }
+    paint();
+    window.addEventListener('scroll',schedule,{passive:true});
+    window.addEventListener('resize',schedule,{passive:true});
+    var page=location.pathname.split('/').pop().replace(/\.html$/i,'');
+    if(page!=='compare'&&page!=='software-cost-calculator')return;
+    if(!('IntersectionObserver' in window))return;
+    var selector=page==='compare'
+      ? '.heroMini .wrap,.compare-section .note,.quickpick,.compare-card,.compare-section .tablewrap,.section .grid3>.card'
+      : '.heroMini .wrap,.calculator-shell,.calc-results-top,.cost-result';
+    var observed=new WeakSet();
+    var order=0;
+    var observer=new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(!entry.isIntersecting)return;
+        entry.target.style.setProperty('--df-ui-delay',(Math.min(order++%4,3)*45)+'ms');
+        entry.target.classList.add('df-ui-entered');
+        observer.unobserve(entry.target);
+      });
+    },{threshold:.12,rootMargin:'0px 0px -20px 0px'});
+    function scan(root){
+      if(!root||root.nodeType!==1)return;
+      var items=[];
+      if(root.matches&&root.matches(selector))items.push(root);
+      if(root.querySelectorAll)root.querySelectorAll(selector).forEach(function(el){items.push(el)});
+      items.forEach(function(el){
+        if(observed.has(el))return;
+        observed.add(el);
+        observer.observe(el);
+      });
+    }
+    scan(document.body);
+    if(page==='software-cost-calculator'&&'MutationObserver' in window){
+      var output=document.getElementById('costResults');
+      if(output)new MutationObserver(function(records){
+        records.forEach(function(record){
+          record.addedNodes.forEach(scan);
+        });
+        schedule();
+      }).observe(output,{childList:true,subtree:true});
+    }
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});
+  else init();
+})();

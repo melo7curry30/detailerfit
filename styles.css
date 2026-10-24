@@ -883,3 +883,225 @@ td:first-child{background:#fff}
  body{background:#fff;color:#111}
  .article p,.article li{color:#111}
 }
+
+
+/* Finder light-theme compatibility: score and trust snapshots (2026-10-24). */
+body.finder-page #finderResults .df-score-badge{
+  background:#e8efdf;
+  border-color:#a3b998;
+  color:#263b23;
+}
+body.finder-page #finderResults .df-score-badge b{color:#263b23}
+body.finder-page #finderResults .df-confidence-badge{
+  background:#f1f3ee;
+  border-color:#dce1d9;
+  color:#171b19;
+}
+body.finder-page #finderResults .df-confidence-warning{
+  background:#fff8e9;
+  border-color:#e0cb96;
+  color:#765b23;
+}
+body.finder-page #finderResults .df-factor-track{background:#e1e6dd}
+body.finder-page #finderResults .df-trust-axis{
+  background:#f8faf6;
+  border-color:#dce1d9;
+  color:#171b19;
+}
+body.finder-page #finderResults .df-trust-head strong{color:#171b19}
+body.finder-page #finderResults .df-trust-item{
+  background:#fff;
+  border-color:#dce1d9;
+  color:#171b19;
+}
+body.finder-page #finderResults .df-trust-item b{color:#171b19}
+body.finder-page #finderResults .df-trust-item .is-verified{color:#39542d}
+body.finder-page #finderResults .df-trust-item .is-qualified{color:#765b23}
+body.finder-page #finderResults .df-trust-item .is-verify{color:#59615c}
+body.finder-page #finderResults .df-trust-head span,
+body.finder-page #finderResults .df-trust-qualified,
+body.finder-page #finderResults .df-trust-note{color:#59615c}
+
+
+/* Finder result decision path: keep full evidence, surface actions before deep detail. */
+body.finder-page #finderResults article.result{
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+}
+/* Existing HTML preserves its reading and keyboard order; CSS changes visual order only.
+   Buttons remain in their original internal tab sequence. */
+body.finder-page #finderResults article.result > *{order:1}
+body.finder-page #finderResults article.result > .actions{
+  order:2;
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin:15px 0 16px;
+  padding:0 0 17px;
+  border-bottom:1px solid var(--line);
+}
+body.finder-page #finderResults article.result > .df-trust-axis{order:3}
+body.finder-page #finderResults article.result > .df-factors{order:4}
+body.finder-page #finderResults article.result > .df-score-note{order:5}
+body.finder-page #finderResults article.result > .result-watch{order:6}
+body.finder-page #finderResults article.result .actions .btn{
+  flex:1 1 155px;
+  min-height:48px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  white-space:normal;
+  line-height:1.25;
+}
+body.finder-page #finderResults article.result .actions .btn.primary{
+  background:#171b19;
+  border-color:#171b19;
+  color:#fff;
+  font-weight:750;
+}
+body.finder-page #finderResults article.result .actions .btn.primary:hover{
+  background:#2e382c;
+  border-color:#2e382c;
+}
+body.finder-page #finderResults article.result .actions .btn.secondary{
+  background:#fff;
+  border-color:#bdc9b8;
+  color:#171b19;
+}
+body.finder-page #finderResults article.result .actions .btn.ghost{
+  flex:1 1 100%;
+  border:1px solid var(--line);
+}
+/* Larger screens can inspect the two alternatives side by side while retaining
+   every score, feature, warning, description and outbound CTA. */
+@media(min-width:1120px){
+  body.finder-page #finderResults{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:18px;
+    align-items:start;
+  }
+  body.finder-page #finderResults > article.result{
+    margin:0;
+  }
+  body.finder-page #finderResults > article.result.top,
+  body.finder-page #finderResults > .warning{
+    grid-column:1/-1;
+  }
+}
+@media(max-width:390px){
+  body.finder-page #finderResults article.result .actions .btn{
+    flex-basis:100%;
+  }
+}
+
+
+/* Finder conversion clarity v1: make the ranked shortlist legible and actionable.
+   Presentation-only: preserve scores, vendors, full criterion detail and outbound URLs. */
+body.finder-page #resultsBox > h2{
+  font-size:clamp(1.45rem,3.2vw,2rem);
+  letter-spacing:-.035em;
+  margin:0 0 9px;
+}
+body.finder-page #resultsBox > .small{
+  max-width:72ch;
+  line-height:1.6;
+}
+body.finder-page #finderResults .result{
+  padding:clamp(16px,2.4vw,24px);
+  border-radius:16px;
+  margin:14px 0;
+}
+body.finder-page #finderResults .result.top{
+  border:2px solid #719663;
+  background:#f5f9f1;
+}
+body.finder-page #finderResults .result-head{
+  gap:12px;
+  flex-wrap:wrap;
+}
+body.finder-page #finderResults .result-head h3{
+  margin:6px 0 3px;
+  font-size:clamp(1.3rem,2.3vw,1.7rem);
+  line-height:1.25;
+}
+body.finder-page #finderResults .result-head .pill{
+  min-height:32px;
+  display:inline-flex;
+  align-items:center;
+  font-size:.79rem;
+  white-space:normal;
+}
+body.finder-page #finderResults .df-score-row{margin:15px 0 12px;gap:10px}
+body.finder-page #finderResults .df-score-badge{
+  min-height:50px;
+  align-items:center;
+  font-weight:700;
+}
+body.finder-page #finderResults .df-score-badge b{
+  font-size:clamp(1.45rem,3.3vw,1.8rem);
+  letter-spacing:-.04em;
+}
+body.finder-page #finderResults .df-confidence-badge{
+  line-height:1.35;
+  font-size:.84rem;
+  min-height:48px;
+}
+body.finder-page #finderResults .result-plan{
+  border-top:1px solid #dce1d9;
+  padding-top:13px;
+  margin:14px 0 8px;
+  font-size:.96rem;
+}
+body.finder-page #finderResults .df-factor{min-width:0}
+body.finder-page #finderResults .df-factor-track{min-width:0}
+body.finder-page #finderResults .df-factor small{white-space:nowrap}
+body.finder-page #finderResults .result .actions{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  margin-top:18px;
+  padding-top:16px;
+  border-top:1px solid #dce1d9;
+}
+body.finder-page #finderResults .result .actions .btn{
+  display:inline-flex;
+  width:100%;
+  min-height:49px;
+  padding:13px 15px;
+  text-align:center;
+  line-height:1.35;
+}
+body.finder-page #finderResults .result .actions .btn.primary{
+  background:#171b19;
+  color:#fff;
+  border-color:#171b19;
+  font-weight:750;
+}
+body.finder-page #finderResults .result .actions .btn.primary:hover{
+  background:#30412f;
+  border-color:#30412f;
+}
+body.finder-page #finderResults .result .actions .btn.secondary{
+  background:#fff;
+  color:#171b19;
+  border-color:#c9d1c5;
+}
+body.finder-page #finderResults .result .actions .btn.ghost{
+  grid-column:1/-1;
+  justify-self:start;
+  background:transparent;
+}
+body.finder-page #finderResults .result .actions .btn:focus-visible{
+  outline:3px solid #527c32;
+  outline-offset:3px;
+}
+@media(max-width:640px){
+  body.finder-page #finderResults .result .actions{grid-template-columns:1fr}
+  body.finder-page #finderResults .result .actions .btn.ghost{grid-column:auto}
+  body.finder-page #finderResults .df-confidence-badge{max-width:100%;overflow-wrap:anywhere}
+  body.finder-page #finderResults .result-head{display:block}
+  body.finder-page #finderResults .result-head .pill{margin-top:8px}
+}

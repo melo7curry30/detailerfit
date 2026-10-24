@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-10-24T05:18:08.821118+00:00",
-  "base_commit": "39216335257b2cebc87959302708e0f781acc919",
-  "command_id": "df-home-discovery-20261024-v1",
-  "last_uid": 453
+  "applied_at_utc": "2026-10-24T09:37:57.981377+00:00",
+  "base_commit": "085979515bb862322bd4f878e1e913a2928ad8b6",
+  "command_id": "df-home-discovery-20261024-verified",
+  "last_uid": 456
 }

@@ -19,4 +19,4 @@ Source-verified pricing corrections resolve an inherited release blocker: Detail
 ## Deployment protocol
 Existing .github/workflows/detailerfit-chatgpt-mail-bridge.yml scans Gmail Sent. Subject marker [DETAILERFIT-DEPLOY]; attachment detailerfit-deploy.zip. Root manifest uses schema 1, exact current main SHA, unique command ID, replace paths and no deletes. Payload paths are repository-relative. Maximum 250 operations / 20 MiB; protected paths are excluded. The workflow commits to main with its existing bot. This is a bridge commit, not a PR merge.
 
-Publication is pending until main and production are verified. Historical blocked handoff documents remain for continuity; this release record and latest WORK_PROGRESS.md entries supersede their next steps.
+Publication is now verified: production commit `085979515bb862322bd4f878e1e913a2928ad8b6`. See POST_DEPLOY.md for live checks and limitations. Historical blocked handoff documents remain for continuity; this release record and latest WORK_PROGRESS.md entries supersede their next steps.

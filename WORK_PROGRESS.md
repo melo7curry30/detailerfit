@@ -3,8 +3,8 @@
 ## Status
 - Branch: `redesign/home-discovery-20261023` (local only).
 - Base: `39216335257b2cebc87959302708e0f781acc919` (`main`, fetched 2026-10-23).
-- Published: **NO**. Production remains unchanged.
-- Phases 1–4 complete; Phase 5 resumed with user-authorized existing mail bridge. Release package prepared; awaiting send and verification. See the latest phase entries below.
+- Published: **YES**. Main commit `085979515bb862322bd4f878e1e913a2928ad8b6`; live site and critical flows verified on 2026-10-24.
+- Phases 1–5 complete within the stated test scope. Final verification notes are in `docs/redesign/POST_DEPLOY.md`; prior blocked/pending entries are historical.
 
 ## Phase 1 — Audit
 - Cloned current GitHub main into a separate checkout. No AGENTS.md or existing WORK_PROGRESS.md found.
@@ -101,3 +101,25 @@
 - Real-device Safari/Android, screen readers, axe, live CWV and conversion ingestion remain unverified. These are explicitly excluded from completed checks.
 - Current source files: homepage HTML/CSS/JS; shared pricing-data module; Finder/calculator integration; 28 pricing-related HTML pages; pricing CSV; regression tools; redesign docs and this progress file. Exact paths: `git diff --name-only 39216335257b2cebc87959302708e0f781acc919`.
 - Next: commit release; create validated bridge ZIP with `base_commit` matching current main; send once from DetailerFit Gmail to itself; read updated bridge state and compare deployed assets to package. Publication remains NO until verified.
+
+## Bridge command sent — 2026-10-24 02:19 UTC
+- Sent exactly once through the verified DetailerFit Gmail account to itself.
+- Command ID: `df-home-discovery-20261024-v1`; Gmail message ID `1a16bb477a2ce053`.
+- Source commit `131d800acb5d4a7ce8ed9aaada45976da02e5879`; base main `39216335257b2cebc87959302708e0f781acc919`.
+- Attachment `detailerfit-deploy.zip`: 281,793 bytes; SHA-256 `a4a9e459f49fb4484b54878192366fd52d425e9d69317bacc597db668d8466f8`; 45 replace operations, no deletes. Gmail read-back confirmed headers, attachment filename and decoded size.
+- Clean-base package application passed all release/pricing/home tests and JS syntax checks before sending.
+- Awaiting the existing scheduled bridge, then production verification. Do not resend this same command blindly. First run `git fetch origin main` and inspect `git show origin/main:.detailerfit-bridge-state.json`; only the matching command ID proves application.
+
+## Phase 5 — Production verified, 2026-10-24
+- Main commit: `085979515bb862322bd4f878e1e913a2928ad8b6`. Existing bridge run `40065709413` completed successfully at 05:18 UTC / 14:18 JST, including validation and push.
+- Remote bridge state matches command `df-home-discovery-20261024-v1`, base `39216335257b2cebc87959302708e0f781acc919`, Gmail UID 453.
+- All 45 replacement files on remote main exactly match the validated release ZIP. No deletes. The branch's staged development history remains local; the existing bridge creates one production commit directly on main, not a PR merge.
+- Live https://getdetailerfit.com/ renders the new hero, six cards and home.css. Verified desktop 1363 px; live iframe CSS viewports 390 / 412 / 768 px. No horizontal overflow in checked states.
+- Live checks passed: booking filter; ServiceLink/Zenbooker comparison; catalog/comparison attribution URLs and affiliate IDs; mobile menu open and Escape close; Finder solo/25 jobs/$50 result with DetailPilot Growth $29; 3-user QuoteIQ calculator $79.99, changing to Elite $299.99 when customer self-booking is required; pointer submit and Enter submit.
+- Screenshots captured: live desktop home, live mobile home, live mobile comparison. Live QA excludes this browser from analytics via the site's existing df_qa mechanism.
+- Browser harness notes: clipping screenshot API timed out once, then normal screenshot capture succeeded. A menu locator was corrected from Menu to its observed expanded label Close. A calculator click with the QA toolbar present did not submit; keyboard submit and a pointer click with the toolbar hidden both passed. These were handled as harness/locator observations, not silently counted as passes.
+- The terminal could not directly fetch production asset bytes (HTTP 403), so no HTTP byte-equality or Lighthouse result is claimed. Production rendering and interactions were checked through the browser; repository byte equality was checked locally against fetched main.
+- Not verified: physical iPhone/Android/Safari, screen reader/axe, measured field CWV, live analytics event ingestion, actual affiliate conversions. No revenue or speed improvement beyond source-byte reduction is claimed.
+- Final record checkpoint: update this file, BRIDGE_RELEASE.md and POST_DEPLOY.md through the same authorized bridge; records-only command uses current main as base and does not alter website assets.
+- Resume commands: `git fetch origin main`; `git show origin/main:.detailerfit-bridge-state.json`; read POST_DEPLOY.md. If checking the records-only command, look for `df-home-discovery-20261024-verified`. Do not resend the original v1 package. Run `python3 tools/check-home.py`, `python3 tools/check-release.py`, `node tools/check-pricing.cjs` before later code changes.
+- Future improvements: extend the visual system to comparison/review/guide pages; collect field performance and CTA-to-trial outcomes; continue source-dated pricing maintenance. Do not change affiliate ranking based on commission.

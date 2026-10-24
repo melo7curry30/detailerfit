@@ -22,26 +22,15 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const quoteIQ = (team, selfBooking, routeOpt) => {
-    const tiers = [
-      {plan:'Essentials', monthly:29.99, annualMonthly:25.00, annualTotal:299.99, users:'1 user'},
-      {plan:'Beginner', monthly:74.99, annualMonthly:62.50, annualTotal:749.99, users:'2 users'},
-      {plan:'Pro', monthly:149.99, annualMonthly:125.00, annualTotal:1499.99, users:'4 users'},
-      {plan:'Elite', monthly:299, annualMonthly:249, annualTotal:2990, users:'10 users'},
-      {plan:'Max', monthly:699, annualMonthly:582.50, annualTotal:6990, users:'Unlimited users'}
-    ];
-    let seatIndex = team <= 1 ? 0 : team <= 2 ? 1 : team <= 4 ? 2 : team <= 10 ? 3 : 4;
-    let featureIndex = (selfBooking || routeOpt) ? 3 : 0;
-    const p = tiers[Math.max(seatIndex, featureIndex)];
-    const pushes = [];
-    if (team > 1) pushes.push(`${team} users require enough seats`);
-    if (selfBooking) pushes.push('customer self-booking requires Elite or higher');
-    if (routeOpt) pushes.push('route optimization requires Elite or higher');
+    const p=window.DetailerFitPricing.quoteIQ(team,{booking:selfBooking,routing:routeOpt});
+    if(!p)return {name:'QuoteIQ',url:'quoteiq',plan:'Verify capacity',monthly:null,annualMonthly:null,annualTotal:null,complete:false,capacity:`${team} users`,why:'The request exceeds the published limit of 100 extra users per plan.',watch:'Confirm a suitable configuration with QuoteIQ.'};
     return {
-      name:'QuoteIQ', url:'quoteiq', plan:p.plan, monthly:p.monthly,
-      annualMonthly:p.annualMonthly, annualTotal:p.annualTotal, complete:true,
-      capacity:p.users,
-      why: pushes.length ? pushes.join('; ') + '.' : 'Essentials covers the entry workflow for one user when self-booking and route optimization are not required.',
-      watch:'Plan gates matter sharply: the $29.99 starting price is not the self-booking or route-optimization price.'
+      name:'QuoteIQ',url:'quoteiq',plan:p.plan,monthly:p.monthly,
+      annualMonthly:p.annualTotal/12,annualTotal:p.annualTotal,complete:true,
+      annualNote:`$${p.annualBase.toFixed(2)} annual base${p.extraMonthly ? ` + $${p.extraMonthly}/month for extra users` : ''}`,
+      capacity:p.capacity,
+      why:'Lowest published monthly configuration for the selected seats and features. '+(selfBooking||routeOpt ? 'Self-booking and route optimization require Elite or higher.' : 'Extra seats can be added to every paid plan.'),
+      watch:'New-subscription pricing checked October 24, 2026. Extra users cost $25/month each and are billed monthly even with an annual base plan. Confirm taxes, processing fees and optional usage charges.'
     };
   };
 
@@ -253,7 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ? r.monthly-lowest.monthly : null;
       const rank = r===lowest ? 'LOWEST KNOWN COMPLETE COST' : r.complete ? 'COMPLETE PUBLISHED BASE COST' : 'TOTAL NEEDS VERIFICATION';
       const annualBlock = Number.isFinite(r.annualMonthly)
-        ? `<div><span>Annual billing</span><b>${money(r.annualMonthly)}/mo effective</b><small>${money(r.annualTotal)} billed/12 months</small></div>`
+        ? `<div><span>Annual billing</span><b>${money(r.annualMonthly)}/mo effective</b><small>${r.annualNote || `${money(r.annualTotal)} billed/12 months`}</small></div>`
         : `<div><span>Annual billing</span><b>Not used</b><small>Compare the vendor’s current billing options</small></div>`;
       const monthlyTotal = Number.isFinite(r.monthly) ? total12(r.monthly) : '—';
       const delta = diff!==null && diff>0 ? `<span class="cost-delta">+${money(diff)}/mo vs lowest</span>` : '';

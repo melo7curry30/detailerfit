@@ -1,0 +1,13 @@
+{
+  "verified": "2026-10-24",
+  "sources": [
+    "https://detailpilot.com/pricing",
+    "https://myquoteiq.com/pricing/",
+    "https://intercom.help/quoteiq/en/articles/16152075-quoteiq-pricing-plans-2026"
+  ],
+  "reason": "Source-verified pricing correction and loading shared plan facts; no analytics/style/security changes.",
+  "reviewed_hashes": {
+    "compare.html": "b638113f28fa01cb71df2fc0a5f2fd3515ac6f2107756137a0aee29931077097",
+    "finder.html": "e2a7d56b30786bcc1a56a02f68d18fb9cbe07e45516551d4caabb9111fda3255"
+  }
+}

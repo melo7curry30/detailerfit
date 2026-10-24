@@ -6,8 +6,9 @@
 (function(){
   'use strict';
 
-  const MODEL_VERSION='1.5.0';
-  const LAST_VERIFIED='2026-09-27';
+  const MODEL_VERSION='1.5.1';
+  const LAST_VERIFIED='2026-09-27'; // General evidence; plan refresh is dated separately.
+  const pricing=window.DetailerFitPricing;
   const EVIDENCE={
     hands_on:1.00,
     official_help:0.98,
@@ -25,7 +26,7 @@
     'QuoteIQ':{
       url:'quoteiq',vendorUrl:'https://admin-quoteiq.web.app/register?via=ryo',vendorRel:'sponsored noopener',
       why:'Detailing-oriented quoting, invoicing and scheduling with deeper communications and operations on higher tiers.',
-      watch:'Customer self-booking uses InstaSchedule and starts on Elite. Seat limits are plan-gated.',
+      watch:'Customer self-booking uses InstaSchedule and starts on Elite. Included seats vary; extra users cost $25/month on any paid plan.',
       tags:['Web + iOS + Android','Detailing-focused'],
       industry:{raw:100,evidence:'official_product',note:'Purpose-built detailing workflow.'},
       automation:{raw:100,evidence:'official_product',note:'Automation/admin capability is plan-gated and the Finder moves to the first eligible tier.'},
@@ -84,11 +85,11 @@
     },
     'DetailPilot':{
       url:'detailpilot-review-auto-detailers',vendorUrl:'https://detailpilot.com/?via=ryo',vendorRel:'sponsored noopener',vendorTarget:'_blank',
-      why:'Detailing-only booking and business software with a free solo plan, vehicle-based pricing, deposits, reminders and paid growth/team tiers.',
-      watch:'Starter is $0/month but adds a 1% DetailPilot fee on payments. Team logins and roles are documented on Business. Route optimization and VIN/documentation workflows are not treated as confirmed.',
-      tags:['Detailing-only','Mobile web + iOS','Free solo plan'],
+      why:'Detailing-only booking and business software with vehicle-based pricing, deposits and reminders; paid plans start at $29/month after a 14-day trial.',
+      watch:'Growth is $29/month after a trial, with no DetailPilot commission. Payment-processor fees still apply. Team logins and roles are documented on Business. Route optimization and VIN/documentation workflows are not treated as confirmed.',
+      tags:['Detailing-only','Mobile web + iOS','14-day trial'],
       industry:{raw:100,evidence:'official_product',note:'DetailPilot is purpose-built specifically for car detailing businesses.'},
-      automation:{raw:100,evidence:'official_product',note:'DetailPilot documents automated appointment reminders and, on Growth and above, automated Google review requests; selecting automation moves the Finder to Growth.'},
+      automation:{raw:100,evidence:'official_product',note:'DetailPilot documents automated appointment reminders and, on Growth and above, automated Google review requests; Growth is now the paid entry plan.'},
       scale:{raw:50,evidence:'official_product',note:'Business documents employee logins, crew schedules, roles/permissions and multi-location tools, but route optimization is not established.'},
       vehicle:{raw:50,evidence:'official_product',note:'Vehicle-based pricing and multi-vehicle booking are documented, but VIN scanning and vehicle-condition documentation are not established.'}
     },
@@ -138,7 +139,7 @@
     'DetailPilot':{
       guided:{raw:100,evidence:'official_product',note:'DetailPilot documents a step-by-step setup assistant that walks users through services and booking setup.'},
       training:{raw:50,evidence:'official_product',note:'Public product guides explain setup and workflows, but a structured training curriculum is not established.'},
-      human:{raw:50,evidence:'official_product',note:'Email support is documented on Starter; custom onboarding is reserved for Business and is applied at the selected-plan level.'}
+      human:{raw:50,evidence:'official_product',note:'Email support is documented on Growth; custom onboarding is reserved for Business and is applied at the selected-plan level.'}
     },
     'Housecall Pro':{
       guided:{raw:100,evidence:'official_help',note:'A current official Getting Started guide provides a structured account setup path.'},
@@ -272,18 +273,9 @@
   }
 
   function quoteIqPlan(team,booking,needs){
-    const tiers=[
-      {plan:'Essentials',cost:29.99,annual:'$25/mo effective annual',users:'1 user',booking:false},
-      {plan:'Beginner',cost:74.99,annual:'$62.50/mo effective annual',users:'2 users',booking:false},
-      {plan:'Pro',cost:149.99,annual:'$125/mo effective annual',users:'4 users',booking:false},
-      {plan:'Elite',cost:299,annual:'$249/mo effective annual',users:'10 users',booking:true},
-      {plan:'Max',cost:699,annual:'$582.50/mo effective annual',users:'Unlimited users',booking:true}
-    ];
-    let seatIndex=team<=1?0:team<=2?1:team<=4?2:team<=10?3:4;
-    let featureIndex=0;
-    if(needs.includes('automation'))featureIndex=Math.max(featureIndex,2);
-    if(booking==='yes'||needs.includes('scale'))featureIndex=Math.max(featureIndex,3);
-    return {...tiers[Math.max(seatIndex,featureIndex)],capacityConfidence:EVIDENCE.official_product};
+    const p=pricing.quoteIQ(team,{booking:booking==='yes',automation:needs.includes('automation'),routing:needs.includes('scale')});
+    if(!p)return {plan:'Verify capacity',cost:null,annual:'',users:`${team} users · published extra-seat limit exceeded`,booking:'unverified',capacityConfidence:0.35};
+    return {plan:p.plan,cost:p.monthly,annual:`$${(p.annualTotal/12).toFixed(2)}/mo effective · $${p.annualBase.toFixed(2)}/year base${p.extraMonthly ? ` + $${p.extraMonthly}/month for extra users` : ''}`,users:p.capacity,booking:p.booking,capacityConfidence:EVIDENCE.official_help,note:'New-subscription pricing checked October 24, 2026. Extra seats are billed monthly, including with an annual base plan.'};
   }
 
   function mobileTechRxPlan(team,needs){
@@ -323,9 +315,8 @@
   }
 
   function detailPilotPlan(team,needs){
-    if(team>1||needs.includes('scale'))return {plan:'Business',cost:119,annual:'$928/year · about $77/mo effective',users:'Team logins, roles/permissions and multi-location tools',booking:true,capacityConfidence:EVIDENCE.official_product,note:'Business is the documented team/multi-location tier.'};
-    if(needs.includes('automation'))return {plan:'Growth',cost:29,annual:'$228/year · about $19/mo effective',users:'Solo / non-team plan path',booking:true,capacityConfidence:EVIDENCE.official_product,note:'Growth adds automated Google review requests and other repeat-business tools.'};
-    return {plan:'Starter',cost:0,annual:'',users:'Solo detailer entry plan',booking:true,capacityConfidence:EVIDENCE.official_product,note:'Starter is $0/month with a 1% DetailPilot fee on payments processed through the platform.'};
+    const plan=pricing.detailPilot(team,needs);
+    return {...plan,capacityConfidence:team>1 ? 0.50 : EVIDENCE.official_product};
   }
 
   function hcpPlan(team,needs){

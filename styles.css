@@ -762,3 +762,124 @@ p{overflow-wrap:break-word}
  .df-product-buttons button:last-child{grid-column:1/-1}
 }
 @media(prefers-reduced-motion:reduce){.df-path-card,.df-proof-links a{transition:none!important}.df-path-card:hover{transform:none}}
+
+/* DetailerFit site-wide light theme layer, 2026-10-24.
+ * Applies only to legacy pages via styles.css, not the homepage (home.css).
+ * No application logic, pricing, affiliate destination or rankings are altered.
+ */
+:root{
+  color-scheme:light;
+  --bg:#f8f9f6;--panel:#fff;--panel2:#f1f3ee;
+  --text:#171b19;--muted:#59615c;--line:#dce1d9;
+  --accent:#39542d;--blue:#39542d;--gold:#765b23;
+  --danger:#a33232;--shadow:0 10px 28px #1723190b;--radius:18px;
+}
+body{background:var(--bg);color:var(--text);line-height:1.55;-webkit-font-smoothing:antialiased}
+a{text-underline-offset:4px}
+::selection{background:#cdeb99;color:#171b19}
+:focus-visible{outline:3px solid #527c32;outline-offset:3px}
+.wrap{max-width:1180px}
+.site-header{background:rgba(248,249,246,.98);border-bottom:1px solid var(--line);backdrop-filter:none;-webkit-backdrop-filter:none}
+.nav{min-height:80px;gap:24px}
+.brand{display:inline-flex;align-items:center;gap:0;font-size:1.3125rem;font-weight:750;letter-spacing:-.8px;color:var(--text)}
+.brand b{color:inherit}
+.navlinks{gap:24px}
+.navlinks a{font-size:.8125rem;font-weight:650;color:var(--text);min-height:44px}
+.navlinks a:hover,.navlinks a[aria-current=page]{color:var(--accent)}
+.menuBtn{border:1px solid var(--line);background:transparent;color:var(--text);border-radius:8px;font-weight:650;min-height:44px}
+.hero,.heroMini{background:transparent}
+.heroMini{padding:44px 0 18px}
+h1,h2,h3{color:var(--text);font-weight:650}
+h1,.heroMini h1{letter-spacing:-.045em}
+h2{letter-spacing:-.035em}
+.lead,.sub,.small,.research-context,.hero-proof,.breadcrumbs{color:var(--muted)}
+.eyebrow,.kicker{display:inline-flex;align-items:center;gap:6px;background:transparent;border:0;border-radius:0;padding:0;color:var(--muted);font-size:.6875rem;font-weight:700;letter-spacing:.12em}
+.section{padding-block:42px}
+.card,.card.flat,.intent-card,.compare-card,.quiz,.calculator-shell,.cost-result,
+.calculator-home-card,.metric,.fact,.number-field,.calc-fieldset,.review-summary,
+.sourcebox,.toc,.callout,.result,.result.top,.calc-answer,
+.cost-result.best,.cost-numbers>div,.tablewrap,.df-path-card,.df-compare-card{
+  background:var(--panel);color:var(--text);border:1px solid var(--line);
+  box-shadow:none;border-radius:14px;
+}
+.card,.intent-card,.compare-card,.calculator-shell,.cost-result{box-shadow:0 8px 20px #17231907}
+.card.interactive:hover,.intent-card:hover,.compare-card:hover{border-color:#a9b5a3}
+.btn{min-height:46px;border-radius:8px;font-weight:650;padding:12px 18px;box-shadow:none}
+.btn.primary,.article .btn.primary{background:var(--text);border-color:var(--text);color:#fff}
+.btn.primary:hover,.article .btn.primary:hover{background:#303a2e;border-color:#303a2e;color:#fff;box-shadow:none}
+.btn.secondary{background:#fff;color:var(--text);border:1px solid var(--line)}
+.btn.secondary:hover{background:#f1f3ee;color:var(--text)}
+.btn.ghost{color:var(--text)}
+.text-link,.linkarrow,.article a:not(.btn),.article a:not(.btn):visited,
+.sourcebox a,.research-context a,.toc a,.directory-list a{color:#39542d}
+.article p,.article li,.article .small,.list,.cost-why,.cost-capacity,
+.result-plan,.trustbar,.review-facts dd{color:var(--text)}
+.article .small,.article .research-context,.review-facts small{color:var(--muted)}
+.article h2{margin-top:38px}
+.article h3{margin-top:26px}
+.sourcebox,.toc,.note,.warning,.verdict,.result-watch{background:#f1f3ee;color:var(--text);border-color:var(--line)}
+.note{border-left:3px solid #7b9870}
+.warning,.result-watch{border-left:3px solid #a38b51}
+.result.top,.cost-result.best,.calc-answer{border-color:#a3b998;background:#eef3e9}
+.calc-answer span,.calc-answer b,.money-input>span,.score,.good{color:#39542d}
+.review-summary{border-top:3px solid #647e53}
+.verdict{border-left:3px solid #647e53}
+.opt,.ck,.number-input,.finder-choice span,.finder-quick-card,
+.finder-refine,.finder-refine>summary,.finder-fast-note span{
+  background:#fff;color:var(--text);border-color:var(--line);
+}
+.number-input,select,input,textarea{color:var(--text)}
+.number-input{background:#fff;border-color:var(--line)}
+.opt:has(input:checked),.ck:has(input:checked),body .finder-choice input:checked+span{
+  background:#e8efdf;color:var(--text);border-color:#6e915d;
+  box-shadow:0 0 0 1px #6e915d inset;
+}
+body .finder-choice span{background:#fff;color:var(--text);border-color:var(--line)}
+body .finder-quick-card,body .finder-refine{background:var(--panel);border-color:var(--line)}
+body .finder-refine>summary{background:transparent;color:var(--text)}
+body .finder-fast-note span{background:#f1f3ee;color:var(--muted)}
+.pill,.tag,.result-tag,.trustitem,.cost-delta,.badge,.badge.blue,.badge.gold{
+  background:#f1f3ee;border-color:var(--line);color:var(--text);
+}
+.pill.goodpill{background:#e8efdf;border-color:#a3b998;color:#39542d}
+.pill.blue{background:#edf2f7;border-color:#cbd7e3;color:#314f70}
+.pill.overpill{background:#faf2df;border-color:#e0cb96;color:#73581d}
+table,th,td,th:first-child,td:first-child{background:#fff;color:var(--text);border-color:var(--line)}
+th,th:first-child{background:#f1f3ee;font-weight:700}
+td:first-child{background:#fff}
+.tablewrap{overflow-x:auto}
+.tablewrap th:first-child,.tablewrap td:first-child{box-shadow:1px 0 0 var(--line)}
+.footer{background:transparent;border-top:1px solid var(--line);color:var(--muted)}
+.footer a,.footer strong,.footer .brand{color:var(--text)}
+.footer a:hover{color:var(--accent)}
+.skip-link{background:var(--text);color:#fff}
+/* Restore readable colors for legacy components using hardcoded dark-theme values. */
+.quickpick,.booking-card{background:#fff;color:var(--text);border-color:var(--line)}
+.compare-card dd,.quickpick b,.booking-card b,.booking-card strong{color:var(--text)}
+.quickpick span,.compare-card-head>a,.booking-card strong{color:#39542d}
+.navlinks.open a{background:#fff;color:var(--text);border-color:var(--line)}
+.desktop-compare tbody tr:hover td,.desktop-compare tbody tr:focus-within td{background:#edf2e8}
+.cost-result p,.compare-card p{color:var(--muted)}
+.finder-choice input:checked+span{color:var(--text)}
+.result-watch{background:#faf2df;color:#73581d}
+@media(hover:hover) and (pointer:fine){
+ .card.interactive:hover,.intent-card:hover,.booking-card:hover,.quickpick:hover,
+ .compare-card:hover,.cost-result:hover{border-color:#a3b998;box-shadow:0 8px 20px #17231914}
+ .btn.primary:hover{box-shadow:none}
+}
+@media(max-width:800px){
+ .nav{min-height:68px}
+ .navlinks.open{top:100%;background:var(--bg);border-bottom:1px solid var(--line);box-shadow:0 12px 24px #1723191a}
+ .navlinks.open a{color:var(--text)}
+ .navlinks.open a[aria-current=page]{color:var(--accent)}
+ .heroMini{padding-top:30px}
+ .section{padding-block:30px}
+ .card,.quiz,.calculator-shell,.cost-result{border-radius:12px}
+}
+@media(prefers-reduced-motion:reduce){
+ *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+@media print{
+ body{background:#fff;color:#111}
+ .article p,.article li{color:#111}
+}

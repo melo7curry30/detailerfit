@@ -1,0 +1,1023 @@
+{
+  "viewport": "1280,900",
+  "checked": 127,
+  "failed": [],
+  "all": [
+    {
+      "page": "/",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 3879,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/finder",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 2511,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/404",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 975,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/about",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 2133,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/activecampaign-alternatives-auto-detailers",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 3882,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/activecampaign-pricing-auto-detailers",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 3661,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/activecampaign-review-auto-detailers",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 4272,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/affiliate-disclosure",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 4045,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/ai-receptionist-review-auto-detailers",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 3685,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/arrively-review-mobile-detailers",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 4927,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/auto-detailing-crm-review",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 5487,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/auto-detailing-software-pricing",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 11056,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/autohustl-review-auto-detailers",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 6798,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/best-ai-receptionists-auto-detailing",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 20179,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/best-ai-software-auto-detailing",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 17878,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/best-auto-detailing-estimating-software",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 5342,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/best-auto-detailing-invoicing-software",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 5432,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/best-auto-detailing-job-management-software",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 4985,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/best-auto-detailing-lead-management-software",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 5358,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/best-auto-detailing-marketing-automation-software",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 5988,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/best-auto-detailing-payment-software",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 5583,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/best-auto-detailing-quoting-software",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 5026,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/best-auto-detailing-route-optimization-software",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 4877,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/best-auto-detailing-software-2026",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 7727,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/best-car-wrap-software",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 17343,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/best-crm-solo-mobile-detailers",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 19033,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/best-mobile-detailing-software",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 13336,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/best-software-ceramic-coating-business",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 12957,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/best-software-ppf-business",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 13237,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/best-window-tint-software",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 12190,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/bookingkoala",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 4826,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/buffr-review-auto-detailers",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 9139,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/compare",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 6694,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/contact",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 1531,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/detailbrain-review",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 6395,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/detailbrain-vs-jobber-mobile-detailers",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 7482,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/detailer-flow-review-mobile-detailers",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 4991,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/detailforge-review-ai-quoting-wrap-ppf",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 12709,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/detailpilot-review-auto-detailers",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 4303,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/engagebay-review-auto-detailers",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 5429,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/filmiq-review",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 8607,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/free-auto-detailing-software",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 10420,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/garagetool-alternatives-wrap-sign-shops",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 7818,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/garagetool-pricing-wrap-sign-shops",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 6931,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/garagetool-review-wrap-sign-shops",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 11551,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/garagetool-vs-wrapstart",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 9259,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/gohighlevel-alternatives-auto-detailers",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 6148,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/guides",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 11940,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/highlevel-auto-detailers",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 5211,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/highlevel-pricing-auto-detailers",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 7847,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/highlevel-vs-bookingkoala-auto-detailers",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 6052,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/housecall-pro",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 4424,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/housecall-pro-alternatives-auto-detailers",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 7591,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/housecall-pro-pricing-auto-detailers",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 5408,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/how-to-avoid-unpaid-detailing-invoices",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 2898,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/how-to-follow-up-auto-detailing-quotes-no-response",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 5893,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/how-to-get-more-google-reviews-auto-detailing",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 3158,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/how-to-get-repeat-detailing-customers-without-spamming",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 2978,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/how-to-handle-price-shoppers-auto-detailing",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 2453,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/how-to-manage-facebook-instagram-leads-auto-detailing",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 4827,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/how-to-organize-customer-vehicle-records-auto-detailing",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 4710,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/how-to-protect-detailing-business-damage-claims",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 8721,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/how-to-reduce-repetitive-booking-questions-auto-detailing",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 2656,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/how-to-respond-faster-auto-detailing-leads",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 2627,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/how-to-set-mobile-detailing-service-area-travel-fees",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 2711,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/how-to-stop-losing-detailing-leads-missed-calls",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 4805,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/how-to-stop-losing-money-underquoted-detailing-jobs",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 2939,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/how-to-stop-no-shows-mobile-detailing",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 7854,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/how-to-stop-wasting-time-back-and-forth-scheduling-auto-detailing",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 5237,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/how-to-switch-detailing-software-without-losing-customer-data",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 5898,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/jobber",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 4929,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/jobber-vs-housecall-pro-auto-detailing",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 10949,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/jobfield-review-auto-detailers",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 5953,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/jotform-review-auto-detailers",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 4953,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/marlie-ai-pricing-auto-detailers",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 6523,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/marlie-ai-review-auto-detailers",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 6625,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/marlie-ai-vs-my-ai-front-desk-auto-detailers",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 7162,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/match-score-methodology",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 9266,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/methodology",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 4023,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/mobile-detailing-scheduling-software",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 13946,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/mobile-tech-rx-alternatives-auto-detailers",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 12810,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/mobile-tech-rx-pricing-auto-detailers",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 9959,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/mobile-tech-rx-review-auto-detailers",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 10991,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/mobile-tech-rx-vs-jobber-auto-detailing",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 16341,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/my-ai-front-desk-review-auto-detailers",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 6679,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/omniplot-review-ppf-tint-software",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 12981,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/onepagecrm-review-auto-detailers",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 4494,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/orbisx-alternatives",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 4949,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/orbisx-pricing",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 4280,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/orbisx-review-auto-detailers",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 9186,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/orbisx-vs-jobber-auto-detailing",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 13285,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/orbisx-vs-quoteiq",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 9561,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/privacy",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 2204,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/quoteiq",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 10853,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/quoteiq-alternatives-mobile-detailing",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 10900,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/quoteiq-pricing-mobile-detailing",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 5610,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/quoteiq-vs-housecall-pro",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 8482,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/quoteiq-vs-jobber",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 8123,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/quoteiq-vs-mobile-tech-rx",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 10838,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/quoteiq-vs-servicem8-mobile-detailers",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 10223,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/quoteiq-vs-urable",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 9189,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/reviews",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 4851,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/ro-app-review-auto-detailers",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 3256,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/salesthumb-review",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 10716,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/servicelink-review-mobile-detailers",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 5705,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/servicem8",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 4277,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/servicem8-vs-jobber-mobile-detailers",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 5710,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/shophawk-review",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 9590,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/shopwrk-review",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 8674,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/smarfle-review-auto-detailers",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 3209,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/software-cost-calculator",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 3735,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/strata-crm-pricing-auto-detailers",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 6227,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/strata-crm-review",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 4475,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/strata-crm-vs-quoteiq-auto-detailers",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 7038,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/tint-wiz-review",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 12649,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/truereview-review-auto-detailers",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 4700,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/urable",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 3847,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/urable-alternatives",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 4942,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/urable-pricing",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 4650,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/urable-vs-housecall-pro",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 10035,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/urable-vs-jobber",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 9717,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/urable-vs-mobile-tech-rx",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 10545,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/urable-vs-orbisx",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 13191,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/urable-vs-servicem8-mobile-detailers",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 10211,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/urable-vs-tint-wiz",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 13037,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/when-should-detailer-replace-spreadsheets-crm",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 8029,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    },
+    {
+      "page": "/zenbooker-review-mobile-detailers",
+      "width": 1280,
+      "documentWidth": 1265,
+      "height": 6022,
+      "bodyBackground": "rgb(248, 249, 246)",
+      "errors": []
+    }
+  ]
+}

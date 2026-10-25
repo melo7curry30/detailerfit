@@ -408,13 +408,13 @@
     style.id='df-match-score-style';
     style.textContent=`
       .df-score-row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 6px}
-      .df-score-badge{display:inline-flex;align-items:baseline;gap:5px;border:1px solid #3d7663;background:#10211c;border-radius:10px;padding:8px 10px}
+      .df-score-badge{display:inline-flex;align-items:baseline;gap:5px;border:1px solid #a3b998;background:var(--sage);border-radius:10px;padding:8px 10px}
       .df-score-badge b{font-size:1.35rem;color:var(--accent)}
-      .df-confidence-badge{display:inline-flex;align-items:center;border:1px solid var(--line);background:#0f171f;border-radius:10px;padding:8px 10px;font-size:.875rem;color:#cbd6df}
-      .df-confidence-warning{margin:8px 0 2px;padding:9px 10px;border:1px solid var(--line);border-radius:9px;background:#121a22;font-size:.82rem;color:#d7e0e7}
+      .df-confidence-badge{display:inline-flex;align-items:center;border:1px solid var(--line);background:var(--panel2);border-radius:10px;padding:8px 10px;font-size:.875rem;color:var(--ink)}
+      .df-confidence-warning{margin:8px 0 2px;padding:9px 10px;border:1px solid var(--line);border-radius:9px;background:#faf7ef;font-size:.82rem;color:var(--ink)}
       .df-factors{display:grid;gap:7px;margin:12px 0}
       .df-factor{display:grid;grid-template-columns:minmax(120px,1fr) minmax(100px,1.5fr) auto;gap:8px;align-items:center;font-size:.82rem}
-      .df-factor-track{height:7px;background:#26323d;border-radius:999px;overflow:hidden}
+      .df-factor-track{height:7px;background:var(--line);border-radius:999px;overflow:hidden}
       .df-factor-fill{height:100%;background:var(--accent);border-radius:inherit}
       .df-factor small{color:var(--muted)}
       .df-score-note{font-size:.82rem;color:var(--muted);margin:8px 0}
@@ -484,11 +484,12 @@
         <div class="df-score-row"><div class="df-score-badge"><b>${Math.round(x.match)}%</b><span>Match</span></div><div class="df-confidence-badge">Evidence confidence&nbsp;<strong>${Math.round(x.confidence)}%</strong>&nbsp;·&nbsp;${esc(band.label)}</div></div>${confidenceWarning}
         <div class="result-plan"><strong>Plan to inspect first:</strong> ${esc(p.plan)} · ${money(p.cost)}</div>${annual}<div class="small"><strong>Capacity:</strong> ${esc(p.users)}</div>${planNote}
         <p class="small">${esc(v.why)}</p>
+        <div class="actions"><a class="btn secondary" href="${esc(v.url)}">See research notes</a><a class="btn primary" data-vendor="${esc(x.name)}" data-cta-position="finder_result" data-tool-name="finder" data-result-rank="${i+1}" data-result-plan="${esc(p.plan)}" href="${esc(v.vendorUrl)}" rel="${esc(v.vendorRel||'noopener')}"${v.vendorTarget?` target="${esc(v.vendorTarget)}"`:''}>Visit ${esc(x.name)}</a>${i===0?'<a class="btn ghost" href="compare">Open comparison hub</a>':''}</div>
         <div class="result-tags">${v.tags.map(tag=>`<span class="result-tag">${esc(tag)}</span>`).join('')}</div>
-        <div class="df-factors">${factors}</div>
+        <details class="result-evidence"><summary>Why this match? View the scoring factors</summary><div class="df-factors">${factors}</div></details>
         <p class="df-score-note">Unknown or weakly supported criteria are pulled toward neutral 50 rather than treated as failures. <a href="match-score-methodology">How scoring works</a>.</p>
         <div class="result-watch"><strong>Verify before buying:</strong> ${esc(v.watch)}</div>
-        <div class="actions"><a class="btn secondary" href="${esc(v.url)}">See research notes</a><a class="btn primary" data-vendor="${esc(x.name)}" data-cta-position="finder_result" data-tool-name="finder" data-result-rank="${i+1}" data-result-plan="${esc(p.plan)}" href="${esc(v.vendorUrl)}" rel="${esc(v.vendorRel||'noopener')}"${v.vendorTarget?` target="${esc(v.vendorTarget)}"`:''}>Visit ${esc(x.name)}</a>${i===0?'<a class="btn ghost" href="compare">Open comparison hub</a>':''}</div>
+
       </article>`;
     }).join('');
 

@@ -1,0 +1,20 @@
+{
+  "field_cwv": {
+    "source": "GSC Wizard Chrome UX Report",
+    "formFactor": "PHONE",
+    "status": "notConfigured",
+    "measured": false
+  },
+  "notes": [
+    "No API key/authentication/settings changes.",
+    "Source-byte sizes are not measured loading-speed or CWV improvements."
+  ],
+  "source_bytes": {
+    "base_commit": "690521e8872d0af1018f12218a767102887b7fc5",
+    "shared_css_before": 60550,
+    "shared_css_after_including_tokens": 29716,
+    "homepage_first_party_before": 125759,
+    "homepage_first_party_after_including_new_shell_js_and_logo": 151013,
+    "measurement": "Uncompressed local source bytes; excludes third-party analytics; not network or CWV timing."
+  }
+}

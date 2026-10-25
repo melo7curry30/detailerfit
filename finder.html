@@ -3,79 +3,33 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#090d12">
+<meta name="theme-color" content="#f8f9f6">
 <title>Auto Detailing Software Finder (2026) | DetailerFit</title>
 <meta name="description" content="Answer 3 quick questions to find auto detailing software that fits your team size, monthly job volume and budget. No email required.">
 <link rel="stylesheet" href="styles.css">
 <link rel="canonical" href="https://getdetailerfit.com/finder">
 <meta property="og:url" content="https://getdetailerfit.com/finder">
-<style>
-  .finder-fast-note{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 0}
-  .finder-fast-note span{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;padding:6px 9px;font-size:.78rem;color:var(--muted);background:#0d151d}
-  .finder-quick-grid{display:grid;gap:14px;margin:0 0 16px}
-  .finder-quick-card{border:1px solid var(--line);border-radius:14px;padding:14px;background:#0d141b}
-  .finder-quick-card .qtitle{display:block;margin-bottom:4px}
-  .finder-quick-card .qhelp{display:block;margin-bottom:10px}
-  .finder-choice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-  .finder-choice{position:relative;cursor:pointer}
-  .finder-choice input{position:absolute;opacity:0;pointer-events:none}
-  .finder-choice span{display:flex;min-height:48px;align-items:center;justify-content:center;text-align:center;padding:9px 10px;border:1px solid #2a3945;border-radius:10px;background:#101922;color:#e7eef4;font-weight:700;transition:border-color .15s ease,background .15s ease,transform .15s ease}
-  .finder-choice input:checked + span{border-color:var(--accent);background:#10241e;box-shadow:0 0 0 1px var(--accent) inset}
-  .finder-choice input:focus-visible + span{outline:2px solid var(--accent);outline-offset:2px}
-  .finder-choice:active span{transform:scale(.99)}
-  .finder-primary-cta{margin-top:4px;font-size:1rem}
-  .finder-refine{margin-top:14px;border:1px solid var(--line);border-radius:12px;background:#0b1218}
-  .finder-refine>summary{cursor:pointer;padding:12px 14px;font-weight:700;color:#dce6ed}
-  .finder-refine-body{padding:0 14px 14px}
-  .finder-refine .q{margin-top:12px}
-  .finder-refine .btn{margin-top:12px}
-  .finder-refine-hint{margin:0;color:var(--muted);font-size:.82rem}
 
-  /* Instagram in-app visitors arrive on a short-attention mobile surface.
-     Keep the canonical/SEO copy unchanged, but compact the first view at runtime. */
-  body.df-instagram-session .heroMini{padding-top:16px;padding-bottom:10px}
-  body.df-instagram-session .heroMini .breadcrumbs,
-  body.df-instagram-session .heroMini .eyebrow,
-  body.df-instagram-session .finder-fast-note{display:none}
-  body.df-instagram-session .heroMini h1{font-size:clamp(1.55rem,7vw,2rem);line-height:1.08;margin:0 0 6px}
-  body.df-instagram-session .heroMini .lead{font-size:.95rem;line-height:1.35;margin:0}
-  body.df-instagram-session .heroMini + .section{padding-top:10px}
-  body.df-instagram-session .finder-quick-grid{gap:10px;margin-bottom:12px}
-  body.df-instagram-session .finder-quick-card{padding:12px}
-  body.df-instagram-session .finder-quick-card:not(:first-child) .qhelp{display:none}
-  body.df-instagram-session .finder-choice span{min-height:44px;padding:8px}
-  @media(min-width:720px){
-    .finder-choice-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
-    .finder-choice-grid.is-five{grid-template-columns:repeat(5,minmax(0,1fr))}
-  }
-
-  /* Finder first-answer UX: the question precedes explanatory marketing copy. */
-  .finder-page .finder-first-section{padding-top:14px}
-  .finder-page .finder-intro-after{border-top:1px solid var(--line);margin:20px 0 8px;padding:18px 2px 6px}
-  .finder-page .finder-intro-after h1{font-size:clamp(1.35rem,3.5vw,1.85rem);line-height:1.18;letter-spacing:-.035em;margin:10px 0 8px}
-  .finder-page .finder-intro-after .lead{font-size:.95rem;line-height:1.45}
-  .finder-page .finder-quick-card:first-child .qtitle{font-size:clamp(1.1rem,4.6vw,1.3rem);line-height:1.3;margin-bottom:13px}
-  .finder-page .finder-quick-card:first-child .qhelp{font-size:.8rem;line-height:1.45;margin:12px 0 0}
-  .finder-page .finder-quick-card:first-child .finder-choice span,
-  body.df-instagram-session .finder-quick-card:first-child .finder-choice span{min-height:58px;font-size:1rem}
-  @media(max-width:719px){
-    .finder-page .finder-first-section{padding-top:8px}
-    .finder-page .finder-first-section .quiz{padding:10px}
-    .finder-page .finder-quick-card:first-child{padding:12px}
-    .finder-page .finder-intro-after .finder-fast-note{display:none}
-  }
-.finder-entry-promise{font-size:.9rem;line-height:1.5;margin:0 0 14px;color:var(--muted)}
-.finder-entry-promise strong{color:var(--text,#edf2f7)}
-</style>
+<link rel="stylesheet" href="/design-system.css">
+<link rel="icon" href="/assets/brand/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/brand/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png">
 </head>
 <body class="finder-page"><a class="skip-link" href="#main-content">Skip to content</a>
-<header class="site-header"><div class="wrap nav"><a aria-label="DetailerFit home" class="brand" href="/">Detailer<b>Fit</b></a><button aria-controls="navlinks" aria-expanded="false" class="menuBtn" onclick="toggleMenu(this)" type="button">Menu</button><nav aria-label="Primary navigation" class="navlinks" id="navlinks"><a href="compare">Compare Software</a><a href="reviews">Reviews</a><a href="guides">Guides</a><a aria-current="page" href="finder">Software Finder</a><a href="methodology">How We Review</a><a href="about">About</a></nav></div></header>
+<header class="site-header"><div class="wrap nav"><a class="brand" href="/" aria-label="DetailerFit home"><img src="/assets/brand/detailerfit-dark.svg" width="328" height="60" alt="DetailerFit" fetchpriority="high"></a><button class="menuBtn" type="button" aria-controls="navlinks" aria-expanded="false" onclick="toggleMenu(this)" hidden>Menu</button><nav class="navlinks" id="navlinks" aria-label="Primary navigation"><a href="compare">Compare</a><a href="software-cost-calculator">Costs</a><a href="reviews">Reviews</a><a href="guides">Guides</a><a class="nav-cta" href="finder" aria-current="page">Find my match <span aria-hidden="true">↗</span></a></nav></div></header>
 <main id="main-content" tabindex="-1">
 
 
 
 <section class="section finder-first-section"><div class="wrap"><div class="quiz">
-<p class="finder-entry-promise"><strong>Find your software shortlist.</strong> 3 questions · No email required. <a href="/compare">Prefer a comparison table?</a></p>
+<div class="heroMini finder-intro-after">
+<div class="breadcrumbs"><a href="/">Home</a> / Software Finder</div>
+<span class="eyebrow">3-QUESTION SOFTWARE MATCHER</span>
+<h1>Find the Best Software for Your Detailing Business</h1>
+<p class="lead">Answer 3 quick questions. Get a shortlist matched to your team, monthly job volume and software budget — no email required.</p>
+
+</div>
+<p class="finder-entry-promise"><a href="/compare">Already have a shortlist? Compare software →</a></p>
 <form id="finderForm" class="finder-fast-form" data-fast-finder="v1">
 <div class="finder-quick-grid">
 
@@ -159,13 +113,7 @@
 </details>
 </form>
 
-<div class="heroMini finder-intro-after">
-<div class="breadcrumbs"><a href="/">Home</a> / Software Finder</div>
-<span class="eyebrow">3-QUESTION SOFTWARE MATCHER</span>
-<h1>Find the Best Software for Your Detailing Business</h1>
-<p class="lead">Answer 3 quick questions. Get a shortlist matched to your team, monthly job volume and software budget — no email required.</p>
-<div class="finder-fast-note" aria-label="Finder highlights"><span>3 quick questions</span><span>About 30 seconds</span><span>No email required</span><span>Transparent Match Score</span></div>
-</div>
+
 
 <div class="note" id="finder-filter-explainer">
 <b>How the score works:</b> The Finder converts relevant requirements to a 0–100 criterion score and discounts weaker evidence toward neutral. Unknown does not equal zero. Explicit requirements such as customer self-booking can still act as hard gates.
@@ -204,30 +152,7 @@
 </div></div></section>
 
 </main>
-<footer class="footer">
-<div class="wrap footergrid">
-<div>
-<a class="brand" href="/">Detailer<b>Fit</b></a>
-<p>Independent research for mobile detailers choosing business software.</p>
-<p>Research-based unless a page is explicitly labeled hands-on tested.</p>
-</div>
-<div>
-<strong>Research</strong>
-<a href="finder">Software Finder</a>
-<a href="compare">Compare tools</a>
-<a href="mobile-detailing-scheduling-software">Scheduling guide</a>
-<a href="best-mobile-detailing-software">Buying guide</a>
-<a href="methodology">How we rank</a>
-<a href="reviews">Software reviews</a><a href="guides">All guides</a><a href="software-cost-calculator">Cost calculator</a></div>
-<div>
-<strong>Company</strong>
-<a href="about">About</a>
-<a href="contact">Contact</a>
-<a href="affiliate-disclosure">Affiliate disclosure</a>
-<a href="privacy">Privacy</a>
-</div>
-</div>
-</footer>
+<footer class="site-footer"><div class="wrap"><div class="footer-grid"><div class="footer-about"><a class="brand" href="/" aria-label="DetailerFit home"><img src="/assets/brand/detailerfit-dark.svg" width="328" height="60" alt="DetailerFit" loading="lazy"></a><p>Independent research for detailers choosing business software. A clearer path from shortlist to decision.</p></div><nav aria-label="Software tools"><h2>Find your fit</h2><a href="finder">Software Finder</a><a href="compare">Compare software</a><a href="software-cost-calculator">Cost calculator</a><a href="auto-detailing-software-pricing">Pricing directory</a></nav><nav aria-label="Research"><h2>Research</h2><a href="reviews">Software reviews</a><a href="guides">All guides</a><a href="best-mobile-detailing-software">Buying guide</a><a href="mobile-detailing-scheduling-software">Scheduling guide</a><a href="best-auto-detailing-software-2026">Best detailing software</a><a href="best-crm-solo-mobile-detailers">Software for solo detailers</a><a href="methodology">How we review</a><a href="match-score-methodology">Match Score method</a></nav><nav aria-label="About DetailerFit"><h2>DetailerFit</h2><a href="about">About</a><a href="contact">Contact</a><a href="affiliate-disclosure">Affiliate disclosure</a><a href="privacy">Privacy</a></nav></div><div class="footer-bottom"><p>Some links may earn us a commission. Commercial relationships do not determine rankings. <a href="affiliate-disclosure">How we’re funded</a>.</p><p>Research-based unless explicitly labeled hands-on tested.</p></div></div></footer>
 
 <script src="app.js"></script>
 <script>
@@ -504,5 +429,6 @@
 })();
 </script>
 <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"25a4f3de7baa42bf8934155a29b6cc47","r":1,"spa":2}' crossorigin="anonymous"></script>
+<script src="/site-ui.js" defer></script>
 </body>
 </html>

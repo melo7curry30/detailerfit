@@ -4,7 +4,7 @@ from pathlib import Path
 from html.parser import HTMLParser
 from html import unescape
 from urllib.parse import urlsplit, unquote
-import hashlib, json, re
+import hashlib, json, re, subprocess
 
 class Page(HTMLParser):
     def __init__(self):
@@ -50,11 +50,15 @@ for a in vendors:
     assert a['data-cta-position']=='home_catalog'
 assert p.sources.index('home.js') < p.sources.index('affiliate-deep-attribution.js'), 'Capture issued URLs before enrichment'
 for script in p.sources:
-    if not urlsplit(script).scheme:assert Path(script).exists()
+    if not urlsplit(script).scheme:assert Path(script.lstrip('/')).exists()
 # compare/finder received an explicit source-verified pricing refresh before release.
 refresh=json.loads(Path('docs/redesign/pricing-refresh.json').read_text())['reviewed_hashes']
 assert set(refresh)=={'compare.html','finder.html'}
+# The later sitewide project explicitly owns the three presentation files.
+# Its whole-site checks cover their SEO, facts and destinations against current main.
+sitewide=Path('docs/sitewide/baseline.json').exists()
 for name,digest in base['hashes'].items():
+    if sitewide and name in {'compare.html','finder.html','styles.css'}:continue
     digest=refresh.get(name,digest)
     assert hashlib.sha256(Path(name).read_bytes()).hexdigest()==digest,f'Protected shared/SEO file changed: {name}'
 for schema in re.findall(r'<script type="application/ld\+json">(.*?)</script>',html,re.S):
@@ -64,6 +68,10 @@ assert 'prefers-reduced-motion' in Path('home.css').read_text()
 assert len(re.findall(r'data-fact="(?:price|plan|booking|capacity|watch)"',html))==6*5
 assert 'df-experience.js' not in p.sources
 baseline=sum(base['bytes'].values())
-after=sum(Path(x).stat().st_size for x in ['index.html','home.css','app.js','home.js','affiliate-deep-attribution.js'])
+if sitewide:
+    current_base=json.loads(Path('docs/sitewide/baseline.json').read_text())['base']
+    baseline=sum(len(subprocess.check_output(['git','show',f'{current_base}:{x}'])) for x in ['index.html','home.css','app.js','home.js','affiliate-deep-attribution.js'])
+after=sum(Path(x).stat().st_size for x in ['index.html','home.css','app.js','home.js','affiliate-deep-attribution.js'] + (['design-system.css','site-ui.js','assets/brand/detailerfit-dark.svg'] if sitewide else []))
 print(f'PASS: metadata, {len(base["internal_links"])} prior internal destinations, six profile schemas, affiliate IDs/rel, anchors, JSON-LD and protected shared files.')
-print(f'First-party HTML+CSS+JS bytes: {baseline:,} -> {after:,} ({(1-after/baseline)*100:.1f}% reduction). Third-party analytics excluded.')
+change=(after/baseline-1)*100
+print(f'First-party homepage source bytes versus project base: {baseline:,} -> {after:,} ({change:+.1f}%). Includes shared shell/logo; excludes third-party analytics. Not a speed measurement.')

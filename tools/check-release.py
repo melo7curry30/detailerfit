@@ -18,7 +18,8 @@ class Page(HTMLParser):
         if tag=='script' and a.get('src'): self.scripts.append(a['src'])
         if tag=='link' and a.get('rel')=='canonical': self.canonical=a.get('href')
 
-changed=subprocess.check_output(['git','diff','--name-only',BASE,'--','*.html'],text=True).splitlines()
+# Static shell templates are fragments, not published pages with titles/H1s.
+changed=[name for name in subprocess.check_output(['git','diff','--name-only',BASE,'--','*.html'],text=True).splitlines() if Path(name).parent == Path('.')]
 for name in changed:
     old=subprocess.check_output(['git','show',f'{BASE}:{name}'],text=True)
     new=Path(name).read_text(); before=Page(old); after=Page(new)

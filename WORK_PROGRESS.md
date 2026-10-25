@@ -1,3 +1,23 @@
+# Sitewide UI and brand continuation — 2026-10-24 JST
+
+## Current checkpoint
+- Branch: `redesign/sitewide-brand-20261024`.
+- Base main: `690521e8872d0af1018f12218a767102887b7fc5`. Original audit used f42c7b6; subsequent Finder contrast/CTA patch 690521e was reviewed and integrated.
+- Prior records command `df-home-discovery-20261024-verified` applied successfully in `8cedbceb8f9577cbc3b39fef9bf21df927965ac3` at 09:37 UTC. Do not resend.
+- Current new release: NOT published. Existing homepage publication remains live.
+- Phase 2 complete: shared design contract committed as `dbce5e0`; reference-derived SVG/PNG logo prepared.
+- Phase 3 implemented: all 127 pages use shared static shell; clean shared styles, native mobile table labels, selected comparison, Finder handoff, directory search and reordered calculator inputs.
+- Phase 4 complete: 127/127 at 390px and 127/127 at 1280px pass; 24 representative checks at 320/412/768px pass. Finder, Compare, Cost, Home, menus, 39-review/59-guide searches and no-JS fallback tested. Full evidence in docs/sitewide/VALIDATION.md and browser JSON reports.
+- CrUX field measurement unavailable: GSC Wizard returns `notConfigured` (no API key); no settings changed.
+- Phase 1 complete: 127 rendered HTML pages, 183 tables, one Google verification HTML excluded. Static vanilla stack; no application build/dependencies. Latest light-theme CSS patch retained as baseline, not overwritten with old branch.
+- Baseline: `docs/sitewide/baseline.json` records all page metadata, titles, H1s, schemas, internal and vendor links. Source hashes record current state.
+- Main findings: multiple header/footer variants, dark hardcoded styles and repeated CSS layers, long Finder result details, unselected Compare directory, mobile article-table scrolling, calculator inputs buried below extra calls to action. DetailPilot comparison CTA still says free plan despite paid pricing; correct wording without changing its URL.
+- Changed in Phase 1: audit utilities, baseline, this progress entry. Browser baseline Finder reviewed. Automated checks pending after implementation.
+- Next: package the committed, tested diff against 690521e for the existing self-email bridge; check Sent for df-sitewide-brand-20261025-v1 before sending once, then verify bridge state, remote payload bytes and production UI. No settings changes.
+- Limits: no real-device/CWV/revenue claims without measurements. No security, authentication, hosting or workflow changes.
+
+---
+
 # DetailerFit homepage redesign — 2026-10-23 JST
 
 ## Status
@@ -123,3 +143,20 @@
 - Final record checkpoint: update this file, BRIDGE_RELEASE.md and POST_DEPLOY.md through the same authorized bridge; records-only command uses current main as base and does not alter website assets.
 - Resume commands: `git fetch origin main`; `git show origin/main:.detailerfit-bridge-state.json`; read POST_DEPLOY.md. If checking the records-only command, look for `df-home-discovery-20261024-verified`. Do not resend the original v1 package. Run `python3 tools/check-home.py`, `python3 tools/check-release.py`, `node tools/check-pricing.cjs` before later code changes.
 - Future improvements: extend the visual system to comparison/review/guide pages; collect field performance and CTA-to-trial outcomes; continue source-dated pricing maintenance. Do not change affiliate ranking based on commission.
+
+## Continuation — 2026-10-25 JST
+- Main advanced to 690521e via `df-finder-contrast-conversion-v1-20261025` while this branch was in progress. Only styles.css and bridge state changed. Merged current main; retained the shared CSS implementation and integrated the equivalent contrast, top-match, earlier CTA and desktop alternative-grid improvements. CTA order now matches DOM/keyboard order.
+- First full 390px pass inspected 127 pages: one real overflow on GarageTool caused by the visually hidden table header. Fixed with overflow clipping. Lazy footer images were incorrectly flagged by the first harness; the check now excludes deliberately unloaded lazy images and production images will be inspected when visible. Initial report saved outside repo.
+- Review filter initially covered only 10 legacy cards. Replaced with a 39-entry alphabetical published-review directory, including Zenbooker; original research and links remain in a native details section. No ranking changes.
+- Prior desktop-wide pass was interrupted before its result was saved; do not claim it passed. Resume final audits and functional checks before release.
+
+## Sitewide Phase 4 complete — 2026-10-25 JST
+- Fixed the actual GarageTool overflow: long slash-separated integration names now wrap; hidden table headers use block clipping. All 127 pages pass both final 390px and desktop 1280px layout sweeps. 24 more representative 320/412/768px checks pass.
+- Search includes all 39 review-directory cards and both Guide grids (59 cards). Queries, no-result states and clearing tested; all static content retained.
+- Finder 3-product handoff, Compare 2/3 selection and fourth rejection/removal/clear, QuoteIQ 3-seat $79.99 → self-booking $299.99 calculator gate, Home booking filter/comparison, menu Escape and no-JS navigation verified. QuoteIQ CTA opened official registration with via=ryo; no signup submitted.
+- Screenshots: desktop Reviews, mobile Finder/Compare, white/black/small-size logo proof. All baseline/SEO/link/pricing/scoring tests and JS syntax checks pass. Validation helper now distinguishes static templates from complete pages, and source-byte reporting uses the current project base.
+- Source bytes: shared CSS 60,550 → 29,716; Home 125,759 → 151,013 including shared shell/JS/logo. These are not measured speed/CWV gains.
+- Files changed in final QA: styles.css, site-ui.js, tools/check-home.py, tools/check-release.py, docs/sitewide/*, WORK_PROGRESS.md. Full implementation list comes from git diff --name-only 690521e HEAD.
+- Latest main remains 690521e; earlier homepage record and Finder patch commands already applied. Do not resend them.
+- Release status: validated but NOT SENT / NOT PUBLISHED at this checkpoint. Next package command: python3 /workspace/scratch/867ec8fd6b76/prepare-sitewide-release.py after committing this checkpoint.
+- After interruption: git fetch origin; git show origin/main:.detailerfit-bridge-state.json; inspect docs/sitewide/BRIDGE_RELEASE.md and Gmail Sent for the exact command ID before doing anything.

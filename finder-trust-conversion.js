@@ -96,12 +96,12 @@
       .filter(function(pair){return pair[1]&&pair[1][0]==='qualified';})
       .map(function(pair){return '<li><strong>'+esc(pair[0])+':</strong> '+esc(pair[1][1])+'</li>';})
       .join('');
-    return '<section class="df-trust-axis" data-df-trust-axis="true" aria-label="Trust and Conversion feature snapshot">'+
-      '<div class="df-trust-head"><strong>Trust &amp; Conversion</strong><span>Non-scoring comparison axis</span></div>'+
+    return '<details class="df-trust-axis" data-df-trust-axis="true" aria-label="Trust and Conversion feature snapshot">'+
+      '<summary class="df-trust-head"><strong>Trust &amp; conversion features</strong><span>View research snapshot</span></summary>'+
       '<div class="df-trust-grid">'+rows+'</div>'+
       (qualified?'<ul class="df-trust-qualified">'+qualified+'</ul>':'')+
       '<p class="df-trust-note">Informational only — this snapshot does not change Match Score or ranking. “Verify” means DetailerFit does not yet have enough normalized evidence to call the feature present or absent.</p>'+
-      '</section>';
+      '</details>';
   }
 
   function injectStyles(){
@@ -109,14 +109,14 @@
     const style=document.createElement('style');
     style.id='df-trust-conversion-style';
     style.textContent='\
-      .df-trust-axis{margin:12px 0;padding:11px;border:1px solid var(--line);border-radius:10px;background:#0c141b}\
+      .df-trust-axis{margin:12px 0;padding:11px;border:1px solid var(--line);border-radius:10px;background:var(--panel2)}\
       .df-trust-head{display:flex;justify-content:space-between;gap:10px;align-items:baseline;margin-bottom:8px}\
       .df-trust-head span{font-size:.75rem;color:var(--muted)}\
       .df-trust-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}\
-      .df-trust-item{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:7px 8px;border:1px solid #24313c;border-radius:8px;background:#101922;font-size:.8rem}\
+      .df-trust-item{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:7px 8px;border:1px solid var(--line);border-radius:8px;background:#fff;font-size:.8rem}\
       .df-trust-item b{font-size:.72rem;white-space:nowrap}\
       .df-trust-item .is-verified{color:var(--accent)}\
-      .df-trust-item .is-qualified{color:#e3c87a}\
+      .df-trust-item .is-qualified{color:#765b23}\
       .df-trust-item .is-verify{color:var(--muted)}\
       .df-trust-qualified{margin:8px 0 0;padding-left:18px;font-size:.75rem;color:var(--muted)}\
       .df-trust-note{margin:8px 0 0;font-size:.75rem;color:var(--muted)}\

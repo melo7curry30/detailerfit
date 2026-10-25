@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#090d12">
+<meta name="theme-color" content="#f8f9f6">
 <title>Strata CRM Pricing (2026): Focus vs Flow vs Reach | DetailerFit</title>
 <meta name="description" content="Strata CRM pricing starts at $39/mo. Current founder pricing lists Focus at $29 and Flow at $59 while spots last, plus a 30-day trial with no card.">
 <link rel="stylesheet" href="styles.css">
@@ -50,14 +50,14 @@
   ]
 }
 </script>
+<link rel="stylesheet" href="/design-system.css">
+<link rel="icon" href="/assets/brand/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/brand/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png">
 </head>
 <body>
 <a class="skip-link" href="#main-content">Skip to content</a>
-<header class="site-header"><div class="wrap nav">
-<a aria-label="DetailerFit home" class="brand" href="/">Detailer<b>Fit</b></a>
-<button aria-controls="navlinks" aria-expanded="false" class="menuBtn" onclick="toggleMenu(this)" type="button">Menu</button>
-<nav aria-label="Primary navigation" class="navlinks" id="navlinks"><a href="compare">Compare Software</a><a href="reviews">Reviews</a><a href="guides">Guides</a><a href="finder">Software Finder</a><a href="methodology">How We Review</a><a href="about">About</a></nav>
-</div></header>
+<header class="site-header"><div class="wrap nav"><a class="brand" href="/" aria-label="DetailerFit home"><img src="/assets/brand/detailerfit-dark.svg" width="328" height="60" alt="DetailerFit" fetchpriority="high"></a><button class="menuBtn" type="button" aria-controls="navlinks" aria-expanded="false" onclick="toggleMenu(this)" hidden>Menu</button><nav class="navlinks" id="navlinks" aria-label="Primary navigation"><a href="compare">Compare</a><a href="software-cost-calculator">Costs</a><a href="reviews">Reviews</a><a href="guides">Guides</a><a class="nav-cta" href="finder">Find my match <span aria-hidden="true">↗</span></a></nav></div></header>
 
 
 <main id="main-content" tabindex="-1">
@@ -115,12 +115,12 @@
 
 <h2 id="plans">Strata Plans & Pricing</h2>
 <div class="tablewrap" role="region" tabindex="0" aria-label="Strata CRM plan comparison">
-<table>
-<thead><tr><th>Plan</th><th>Standard price</th><th>Current founder promo*</th><th>Logins</th><th>Client limit</th><th>Main reason to upgrade</th></tr></thead>
+<table role="table" class="responsive-table">
+<thead><tr role="row"><th scope="col" role="columnheader">Plan</th><th scope="col" role="columnheader">Standard price</th><th scope="col" role="columnheader">Current founder promo*</th><th scope="col" role="columnheader">Logins</th><th scope="col" role="columnheader">Client limit</th><th scope="col" role="columnheader">Main reason to upgrade</th></tr></thead>
 <tbody>
-<tr><td><strong>Focus</strong></td><td>$39/mo</td><td>$29/mo</td><td>1</td><td>Up to 2,000</td><td>Entry plan for one operator</td></tr>
-<tr><td><strong>Flow</strong></td><td>$89/mo</td><td>$59/mo</td><td>Unlimited</td><td>Up to 20,000</td><td>Team roles, permissions and job assignment</td></tr>
-<tr><td><strong>Reach</strong></td><td>$179/mo</td><td>No separate promo shown</td><td>Unlimited</td><td>Unlimited</td><td>Local number provisioned and carrier registration handled</td></tr>
+<tr role="row"><td role="cell"><span class="cell-label" aria-hidden="true">Plan</span><strong>Focus</strong></td><td role="cell"><span class="cell-label" aria-hidden="true">Standard price</span>$39/mo</td><td role="cell"><span class="cell-label" aria-hidden="true">Current founder promo*</span>$29/mo</td><td role="cell"><span class="cell-label" aria-hidden="true">Logins</span>1</td><td role="cell"><span class="cell-label" aria-hidden="true">Client limit</span>Up to 2,000</td><td role="cell"><span class="cell-label" aria-hidden="true">Main reason to upgrade</span>Entry plan for one operator</td></tr>
+<tr role="row"><td role="cell"><span class="cell-label" aria-hidden="true">Plan</span><strong>Flow</strong></td><td role="cell"><span class="cell-label" aria-hidden="true">Standard price</span>$89/mo</td><td role="cell"><span class="cell-label" aria-hidden="true">Current founder promo*</span>$59/mo</td><td role="cell"><span class="cell-label" aria-hidden="true">Logins</span>Unlimited</td><td role="cell"><span class="cell-label" aria-hidden="true">Client limit</span>Up to 20,000</td><td role="cell"><span class="cell-label" aria-hidden="true">Main reason to upgrade</span>Team roles, permissions and job assignment</td></tr>
+<tr role="row"><td role="cell"><span class="cell-label" aria-hidden="true">Plan</span><strong>Reach</strong></td><td role="cell"><span class="cell-label" aria-hidden="true">Standard price</span>$179/mo</td><td role="cell"><span class="cell-label" aria-hidden="true">Current founder promo*</span>No separate promo shown</td><td role="cell"><span class="cell-label" aria-hidden="true">Logins</span>Unlimited</td><td role="cell"><span class="cell-label" aria-hidden="true">Client limit</span>Unlimited</td><td role="cell"><span class="cell-label" aria-hidden="true">Main reason to upgrade</span>Local number provisioned and carrier registration handled</td></tr>
 </tbody>
 </table>
 </div>
@@ -221,11 +221,8 @@
 </main>
 
 
-<footer class="footer"><div class="wrap footergrid">
-<div><a class="brand" href="/">Detailer<b>Fit</b></a><p>Independent research for mobile detailers choosing business software.</p><p>Research-based unless a page is explicitly labeled hands-on tested.</p></div>
-<div><strong>Research</strong><a href="finder">Software Finder</a><a href="compare">Compare tools</a><a href="methodology">How we rank</a><a href="reviews">Software reviews</a><a href="guides">All guides</a><a href="software-cost-calculator">Cost calculator</a></div>
-<div><strong>Company</strong><a href="about">About</a><a href="contact">Contact</a><a href="affiliate-disclosure">Affiliate disclosure</a><a href="privacy">Privacy</a></div>
-</div></footer>
+<footer class="site-footer"><div class="wrap"><div class="footer-grid"><div class="footer-about"><a class="brand" href="/" aria-label="DetailerFit home"><img src="/assets/brand/detailerfit-dark.svg" width="328" height="60" alt="DetailerFit" loading="lazy"></a><p>Independent research for detailers choosing business software. A clearer path from shortlist to decision.</p></div><nav aria-label="Software tools"><h2>Find your fit</h2><a href="finder">Software Finder</a><a href="compare">Compare software</a><a href="software-cost-calculator">Cost calculator</a><a href="auto-detailing-software-pricing">Pricing directory</a></nav><nav aria-label="Research"><h2>Research</h2><a href="reviews">Software reviews</a><a href="guides">All guides</a><a href="best-mobile-detailing-software">Buying guide</a><a href="mobile-detailing-scheduling-software">Scheduling guide</a><a href="best-auto-detailing-software-2026">Best detailing software</a><a href="best-crm-solo-mobile-detailers">Software for solo detailers</a><a href="methodology">How we review</a><a href="match-score-methodology">Match Score method</a></nav><nav aria-label="About DetailerFit"><h2>DetailerFit</h2><a href="about">About</a><a href="contact">Contact</a><a href="affiliate-disclosure">Affiliate disclosure</a><a href="privacy">Privacy</a></nav></div><div class="footer-bottom"><p>Some links may earn us a commission. Commercial relationships do not determine rankings. <a href="affiliate-disclosure">How we’re funded</a>.</p><p>Research-based unless explicitly labeled hands-on tested.</p></div></div></footer>
 <script src="app.js"></script>
+<script src="/site-ui.js" defer></script>
 </body>
 </html>

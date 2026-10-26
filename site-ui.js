@@ -59,7 +59,7 @@
       const sorted=[...grid.children].sort((a,b)=>a.querySelector('h2')?.textContent.localeCompare(b.querySelector('h2')?.textContent,'en'));
       grid.append(...sorted);
       const lead=grid.parentElement.querySelector('p.small');
-      if(lead) lead.textContent=lead.textContent.replace(/\b39 published reviews\b/,'41 published reviews');
+      if(lead) lead.textContent=lead.textContent.replace(/\b\d+ published reviews\b/,`${grid.querySelectorAll('.review-directory-card').length} published reviews`);
     }
   }
   if (page === '/mobile-detailing-scheduling-software' || page === '/compare' || page === '/finder') {
@@ -158,6 +158,14 @@
   const heading = make('h2','','Your selected comparison'); heading.tabIndex = -1;
   const columns = make('div','comparison-picked'); output.append(heading,columns);
   directory.parentElement.prepend(panel,output);
+  const updateUrl = () => {
+    const url = new URL(location.href);
+    if (selected.size) url.searchParams.set('products',[...selected].join(','));
+    else url.searchParams.delete('products');
+    if (opened && selected.size >= 2) url.hash = 'selected-comparison';
+    else if (url.hash === '#selected-comparison') url.hash = '';
+    history.replaceState(null,'',url);
+  };
   const render = () => {
     columns.replaceChildren(); output.hidden = !opened || selected.size < 2;
     if (output.hidden) return;
@@ -177,16 +185,18 @@
     clear.hidden = selected.size === 0;
     status.textContent = selected.size ? `Selected: ${[...selected].join(' · ')} (${selected.size}/3)` : 'No tools selected. Choose your first two.';
     render();
+    // Keep a previously opened comparison shareable after removal or replacement.
+    if (opened) updateUrl();
   };
   clear.addEventListener('click', () => {
     selected.clear(); inputs.forEach(input => {input.checked=false;}); opened=false; sync(); inputs.values().next().value.focus();
-    const url = new URL(location.href); url.searchParams.delete('products'); if(url.hash==='#selected-comparison')url.hash=''; history.replaceState(null,'',url);
+    updateUrl();
     track('software_compare_clear',{cta_position:'compare_selector'});
   });
   const show = () => {
     if (selected.size < 2) return;
     opened=true; render(); heading.focus({preventScroll:true}); output.scrollIntoView({block:'start',behavior:'auto'});
-    const url = new URL(location.href); url.searchParams.set('products',[...selected].join(',')); url.hash='selected-comparison'; history.replaceState(null,'',url);
+    updateUrl();
     track('software_comparison_view',{vendors:[...selected].join(','),selected_count:selected.size,cta_position:'compare_selection'});
   };
   open.addEventListener('click',show);

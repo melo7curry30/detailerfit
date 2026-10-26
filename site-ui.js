@@ -23,6 +23,68 @@
 
   // All directory entries remain available to search engines and without JS.
   const page = location.pathname.replace(/\.html$/,'').replace(/\/$/,'') || '/';
+  // DetailerFit independent, unranked partner research, 2026-10-26.
+  // Does not change the six homepage profiles, Match Score, price data or ranking.
+  const partnerOptions = [
+    {name:'Rinse',path:'/rinse-review-mobile-detailers',url:'https://rinsehq.com/?ref=detailerfit',summary:'Free CRM with up to 5 active jobs; $6/mo Pro adds public booking.',fit:'LOW-COST DETAILING CRM'},
+    {name:'RouteShine',path:'/routeshine-review-mobile-detailers',url:'https://routeshine.com/register?ref=detailerfit',summary:'$49/mo early-access booking, service-area checks and Square deposits.',fit:'MOBILE BOOKING + DEPOSITS'}
+  ];
+  const partnerCard = option => {
+    const card=make('article','card review-directory-card');
+    const heading=make('h2'); const link=make('a','',option.name); link.href=option.path;
+    heading.append(link); card.append(heading,make('p','',option.summary));
+    const review=make('a','text-link','Read review ↗'); review.href=option.path;
+    card.append(review); return card;
+  };
+  if (page === '/affiliate-disclosure') {
+    const relationshipList = document.getElementById('current-relationships')?.nextElementSibling?.nextElementSibling;
+    if (relationshipList?.matches('ul.list')) {
+      partnerOptions.forEach(option => {
+        const exists = [...relationshipList.querySelectorAll('li')].some(li => li.textContent.trim() === option.name);
+        if (!exists) relationshipList.append(make('li','',option.name));
+      });
+      relationshipList.append(...[...relationshipList.children].sort((a,b) => a.textContent.localeCompare(b.textContent,'en')));
+      const asOf = relationshipList.previousElementSibling;
+      if (asOf?.textContent.includes('As of October 10, 2026')) {
+        asOf.textContent = asOf.textContent.replace('As of October 10, 2026', 'As of October 26, 2026');
+      }
+    }
+  }
+  if (page === '/reviews') {
+    const grid = document.querySelector('[data-ui-generated="review-directory"] .review-directory-grid');
+    if(grid) {
+      partnerOptions.forEach(option => {
+        if (!grid.querySelector(`a[href="${option.path.slice(1)}"]`)) grid.append(partnerCard(option));
+      });
+      const sorted=[...grid.children].sort((a,b)=>a.querySelector('h2')?.textContent.localeCompare(b.querySelector('h2')?.textContent,'en'));
+      grid.append(...sorted);
+      const lead=grid.parentElement.querySelector('p.small');
+      if(lead) lead.textContent=lead.textContent.replace(/\b39 published reviews\b/,'41 published reviews');
+    }
+  }
+  if (page === '/mobile-detailing-scheduling-software' || page === '/compare' || page === '/finder') {
+    const anchor = page === '/mobile-detailing-scheduling-software' ? document.getElementById('booking-options-sprint')?.closest('section') : page === '/compare' ? document.getElementById('additional-research-options')?.closest('section') : document.getElementById('finder-decision-stage')?.closest('section');
+    if(anchor && !document.getElementById('df-new-research-20261026')) {
+      const section=make('section','section tight'); section.id='df-new-research-20261026';
+      section.setAttribute('aria-labelledby','df-new-research-heading');
+      const wrap=make('div','wrap article'); const inner=make('div','card');
+      const heading=make('h2','','Other booking and CRM tools to research'); heading.id='df-new-research-heading';
+      inner.append(make('p','kicker','NEW INDEPENDENT RESEARCH · OUTSIDE MATCH SCORE'),heading,make('p','','These unranked options serve different needs. Affiliate relationships do not determine rankings or shortlist scores. Compare current vendor terms before signing up.'));
+      partnerOptions.forEach(option=>{
+        inner.append(make('h3','',option.name),make('p','',option.summary));
+        const actions=make('div','actions');
+        const review=make('a','btn secondary',`Read ${option.name} review`); review.href=option.path;
+        const visit=make('a','btn secondary',`Explore ${option.name}`); visit.href=option.url;
+        visit.target='_blank'; visit.rel='sponsored noopener'; visit.dataset.vendor=option.name; visit.dataset.ctaPosition=page.slice(1).replace(/[^a-z0-9]+/g,'_')+'_partner_research';
+        actions.append(review,visit);inner.append(actions);
+      });
+      const note=make('p','cta-disclosure small');
+      note.textContent='Affiliate links. DetailerFit may earn a commission from qualifying signups at no extra cost to you. ';
+      const disclosure=make('a','','Affiliate disclosure');disclosure.href='/affiliate-disclosure';note.append(disclosure);
+      inner.append(note);wrap.append(inner);section.append(wrap);anchor.after(section);
+    }
+  }
+
   if (page === '/reviews' || page === '/guides') {
     const grids = [...document.querySelectorAll('.guide-grid,.review-directory-grid')];
     if (!grids.length) {

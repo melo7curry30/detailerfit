@@ -329,7 +329,8 @@
 
     root.querySelectorAll('a[data-cta-position="finder_result"]').forEach(function(link){
       var vendor=(link.dataset.vendor||'').trim();
-      if(labels[vendor])link.textContent=labels[vendor];
+      // Leave an already-correct label untouched so the subtree observer settles.
+      if(labels[vendor]&&link.textContent!==labels[vendor])link.textContent=labels[vendor];
       link.dataset.instagramFunnel='true';
     });
 

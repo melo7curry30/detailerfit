@@ -19,7 +19,7 @@
         const budget = Number(data.get('budgetAmount'));
         const booking = data.get('booking');
         const needs = data.getAll('priority');
-        const baseline = team === 1 ? 39 : 89;
+        const baseline = team === 1 ? 59 : 89;
 
         if (!Number.isFinite(team) || !Number.isFinite(budget)) return;
         if (!Number.isInteger(team) || team < 1 || team > 5) return;
@@ -32,8 +32,8 @@
         candidate.className = 'result';
 
         const plan = team === 1
-          ? 'Focus: $39/month, one login, up to 2,000 clients'
-          : 'Flow: $89/month, unlimited team logins, up to 20,000 clients';
+          ? 'Solo: $59/month list ($39 first 3 months), one login, up to 500 clients; no two-way SMS'
+          : 'Pro: $89/month list ($69 first 3 months), up to 5 logins, up to 1,000 clients, SMS included';
 
         candidate.innerHTML = `
           <div class="kicker">ADDITIONAL CRM CANDIDATE</div>
@@ -47,22 +47,22 @@
           <strong>Verify plan fit:</strong>
           Your client count may require a higher plan.
           This form does not establish an exact Strata cost match.
-          Confirm texting setup and charges; official pages disagree.
+          Two-way SMS begins on Pro. Confirm messaging charges at checkout.
           Route optimization, VIN scanning and offline operation
-          are not verified. Source check: September 15, 2026.
+          are not verified. Pricing verified: October 29, 2026.
           </div>
           <div class="actions">
           <a class="btn secondary" href="/strata-crm-review">
           Read the Strata CRM review</a>
           <a class="btn primary" data-vendor="Strata"
           data-cta-position="finder_result" data-tool-name="finder"
-          data-result-plan="${team === 1 ? 'Focus' : 'Flow'}"
+          data-result-plan="${team === 1 ? 'Solo' : 'Pro'}"
           href="${affiliate}" rel="sponsored noopener" target="_blank">
           Try Strata Free for 30 Days</a>
           </div>
-          <p class="small">No card required to start, according to Strata's
+          <p class="small">Strata's pricing FAQ currently says a card is required before the 30-day trial;
           <a href="https://stratacrm.app/pricing" rel="noopener" target="_blank">published trial terms</a>
-          checked September 19, 2026. Confirm current terms before signing up.</p>
+          checked October 29, 2026. Confirm live checkout before signing up.</p>
           <p class="cta-disclosure small">
           DetailerFit may earn a commission if you sign up through
           this link, at no extra cost to you.

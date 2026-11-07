@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-11-01T02:38:55.174944+00:00",
-  "base_commit": "cb251effaca2da128677d30a41ba1e708dfef6d2",
-  "command_id": "df-business-doctor-pilot-20261101-v1",
-  "last_uid": 482
+  "applied_at_utc": "2026-11-07T06:57:52.662718+00:00",
+  "base_commit": "9ba3a90de6af9d4d2cecd7ba1360410b197d5ab6",
+  "command_id": "df-hcp-nonaffiliate-correction-20261107-v1",
+  "last_uid": 485
 }

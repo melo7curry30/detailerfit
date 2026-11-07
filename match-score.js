@@ -94,7 +94,7 @@
       vehicle:{raw:50,evidence:'official_product',note:'Vehicle-based pricing and multi-vehicle booking are documented, but VIN scanning and vehicle-condition documentation are not established.'}
     },
     'Housecall Pro':{
-      url:'housecall-pro',vendorUrl:'https://housecallpro.partnerlinks.io/lquesdqg2t22',vendorRel:'sponsored noopener',vendorTarget:'_blank',
+      url:'housecall-pro',vendorUrl:'https://www.housecallpro.com/pricing/',vendorRel:'noopener',vendorTarget:'_blank',
       why:'Broad field-service platform with customer booking, scheduling/dispatch and larger-team plan paths.',
       watch:'Built for general home-service operations rather than vehicle-care businesses. User counts are plan-gated.',
       tags:['iOS + Android','Dispatch-focused'],

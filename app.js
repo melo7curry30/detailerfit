@@ -117,7 +117,7 @@ function dfTrackEvent(eventName, params={}){
 const DF_AFFILIATE_VENDOR_HOSTS={
   'admin-quoteiq.web.app':'QuoteIQ',
   'detailpilot.com':'DetailPilot',
-  'housecallpro.partnerlinks.io':'Housecall Pro',
+  'housecallpro.com':'Housecall Pro',
   'orbisx.com':'OrbisX',
   'mobiletechrx.com':'Mobile Tech RX',
   'marlie.ai':'Marlie AI',
@@ -414,7 +414,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   const decisionExits={
     'jobber-vs-housecall-pro-auto-detailing':[
       {label:'Check Jobber Pricing',url:'https://www.getjobber.com/pricing/',vendor:'Jobber',rel:'noopener'},
-      {label:'See Current Housecall Pro Offer',url:'https://housecallpro.partnerlinks.io/lquesdqg2t22',vendor:'Housecall Pro',rel:'sponsored noopener',target:'_blank'}
+      {label:'View Housecall Pro plans',url:'https://www.housecallpro.com/pricing/',vendor:'Housecall Pro',rel:'noopener',target:'_blank'}
     ],
     'orbisx-vs-jobber-auto-detailing':[
       {label:'Try OrbisX Free',url:'https://orbisx.com/detailerfit/',vendor:'OrbisX',rel:'sponsored noopener',target:'_blank'},
@@ -422,7 +422,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     ],
     'urable-vs-housecall-pro':[
       {label:'Check Urable Pricing',url:'https://urable.com/pricing/',vendor:'Urable',rel:'noopener'},
-      {label:'See Current Housecall Pro Offer',url:'https://housecallpro.partnerlinks.io/lquesdqg2t22',vendor:'Housecall Pro',rel:'sponsored noopener',target:'_blank'}
+      {label:'View Housecall Pro plans',url:'https://www.housecallpro.com/pricing/',vendor:'Housecall Pro',rel:'noopener',target:'_blank'}
     ],
     'urable-vs-orbisx':[
       {label:'Check Urable Pricing',url:'https://urable.com/pricing/',vendor:'Urable',rel:'noopener'},
@@ -446,7 +446,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   // Keep vendor CTA treatment visually consistent on the ceramic-coating guide.
   // Each CTA is inserted at the end of its own product block, not at the end of the whole article.
-  // QuoteIQ, Mobile Tech RX and Housecall Pro remain explicitly marked as sponsored affiliate links.
+  // QuoteIQ and Mobile Tech RX remain explicitly marked as sponsored affiliate links.
   if(pageName==='best-software-ceramic-coating-business'){
     const vendorCtas={
       'section-3':{label:'Check Urable Pricing',url:'https://urable.com/pricing/',vendor:'Urable',rel:'noopener',match:'urable.com/pricing'},
@@ -454,7 +454,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       'section-5':{label:'Check Mobile Tech RX Pricing',url:'https://www.mobiletechrx.com/?_by=detailerfit-5e824c',vendor:'Mobile Tech RX',rel:'sponsored noopener',match:'mobiletechrx.com/?_by=detailerfit-5e824c'},
       'section-6':{label:'Start QuoteIQ Trial',url:'https://admin-quoteiq.web.app/register?via=ryo',vendor:'QuoteIQ',rel:'sponsored noopener',match:'admin-quoteiq.web.app/register?via=ryo'},
       'section-7':{label:'Check Jobber Pricing',url:'https://www.getjobber.com/pricing/',vendor:'Jobber',rel:'noopener',match:'getjobber.com/pricing'},
-      'section-8':{label:'See Current Housecall Pro Offer',url:'https://housecallpro.partnerlinks.io/lquesdqg2t22',vendor:'Housecall Pro',rel:'sponsored noopener',target:'_blank',match:'housecallpro.partnerlinks.io/lquesdqg2t22'}
+      'section-8':{label:'View Housecall Pro plans',url:'https://www.housecallpro.com/pricing/',vendor:'Housecall Pro',rel:'noopener',target:'_blank',match:'housecallpro.com/pricing/'}
     };
 
     Object.entries(vendorCtas).forEach(([id,x])=>{
@@ -565,8 +565,8 @@ document.addEventListener('DOMContentLoaded',()=>{
     "Housecall Pro":{
       s:0,
       url:"housecall-pro",
-      vendorUrl:"https://housecallpro.partnerlinks.io/lquesdqg2t22",
-      vendorRel:"sponsored noopener",
+      vendorUrl:"https://www.housecallpro.com/pricing/",
+      vendorRel:"noopener",
       vendorTarget:"_blank",
       why:"A broad field-service platform with online booking and scheduling/dispatch on Basic, then stronger routing and team controls above it.",
       baseWatch:"It is built for general home-service operations rather than vehicle-care businesses. Basic includes 1 user, Essentials 5 and Max 8; additional users are currently published only on Max at $35/month each.",

@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     'ServiceM8': {url:'https://www.servicem8.com/us/pricing', rel:'noopener'},
     'Jobber': {url:'https://www.getjobber.com/pricing/', rel:'noopener'},
     'Urable': {url:'https://urable.com/pricing/', rel:'noopener'},
-    'Housecall Pro': {url:'https://housecallpro.partnerlinks.io/lquesdqg2t22', rel:'sponsored noopener', target:'_blank'}
+    'Housecall Pro': {url:'https://www.housecallpro.com/pricing/', rel:'noopener', target:'_blank'}
   };
 
   const quoteIQ = (team, selfBooking, routeOpt) => {

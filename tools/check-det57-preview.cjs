@@ -180,7 +180,7 @@ async function main() {
             return { violations: res.violations.map(v => ({ id:v.id, impact:v.impact, description:v.help, nodes:v.nodes.map(n => n.target).slice(0,5) })) };
           });
           const safe = path.replace(/[^a-z0-9]/gi, '-');
-          fs.writeFileSync('qa-artifacts/axe' + safe + '.json', JSON.stringify(resultAxe,null,2) + '\\n');
+          fs.writeFileSync('qa-artifacts/axe' + safe + '.json', JSON.stringify(resultAxe,null,2));
           const severe = resultAxe.violations.filter(v => v.impact === 'critical' || v.impact === 'serious');
           assert.equal(severe.length, 0, 'axe serious/critical issues on '+path+': '+JSON.stringify(severe));
         }

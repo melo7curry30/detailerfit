@@ -5,6 +5,7 @@ from html.parser import HTMLParser
 from html import unescape
 from urllib.parse import urlsplit, unquote
 import hashlib, json, re, subprocess
+from release_baseline import BASE
 
 class Page(HTMLParser):
     def __init__(self):
@@ -43,9 +44,12 @@ assert len(vendors)==6
 expected=['housecall-pro','jobber','servicelink','servicem8','urable','zenbooker']
 assert p.profiles==expected, 'Expected alphabetical profile ordering'
 for a in vendors:
-    if a['data-vendor'] in ('Housecall Pro','ServiceLink','Zenbooker'):
+    if a['data-vendor'] in ('ServiceLink','Zenbooker'):
         assert 'sponsored' in a.get('rel','').split()
     else:assert 'sponsored' not in a.get('rel','').split()
+    if a['data-vendor']=='Housecall Pro':
+        assert a['href']=='https://www.housecallpro.com/pricing/'
+        assert a.get('data-affiliate')!='true'
     assert 'noopener' in a.get('rel','').split()
     assert a['data-cta-position']=='home_catalog'
 assert p.sources.index('home.js') < p.sources.index('affiliate-deep-attribution.js'), 'Capture issued URLs before enrichment'
@@ -59,7 +63,8 @@ assert set(refresh)=={'compare.html','finder.html'}
 sitewide=Path('docs/sitewide/baseline.json').exists()
 for name,digest in base['hashes'].items():
     if sitewide and name in {'compare.html','finder.html','styles.css'}:continue
-    digest=refresh.get(name,digest)
+    # Protect the latest accepted runtime; older redesign hashes predate DET-54.
+    digest=hashlib.sha256(subprocess.check_output(['git','show',f'{BASE}:{name}'])).hexdigest()
     assert hashlib.sha256(Path(name).read_bytes()).hexdigest()==digest,f'Protected shared/SEO file changed: {name}'
 for schema in re.findall(r'<script type="application/ld\+json">(.*?)</script>',html,re.S):
     data=json.loads(schema);assert data['@context']=='https://schema.org'

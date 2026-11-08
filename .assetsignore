@@ -1,0 +1,21 @@
+# Limit Cloudflare Worker static uploads to public website assets.
+# The repository root contains bridge state, development records, and workflows.
+.git/
+.github/
+docs/
+templates/
+tools/
+.assetsignore
+.detailerfit-bridge-state.json
+*.md
+*.txt
+!robots.txt
+*.json
+*.jsonc
+*.yml
+*.yaml
+*.zip
+*.py
+*.cjs
+*.map
+*.__query_*

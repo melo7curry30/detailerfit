@@ -23,8 +23,8 @@ jobs:
           node tools/check-pricing.cjs
       - name: Install isolated browser runner
         run: |
-          npm install --no-save --no-audit --no-fund playwright@1.56.1
-          npx playwright install --with-deps chromium
+          npm install --no-save --no-audit --no-fund playwright@1.56.1 axe-core@4.11.0
+          npx playwright install --with-deps chromium webkit
       - name: Run public preview read-only acceptance
         env:
           DET57_PREVIEW_URL: https://det-57-release-reconciled-20261108-detailerfit-git.carmelo7kobe24.workers.dev

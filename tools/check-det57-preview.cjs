@@ -1,6 +1,6 @@
 'use strict';
 /* DET-57 read-only preview acceptance. No affiliate navigation, no real analytics sends. */
-const { chromium } = require('playwright');
+const { chromium, webkit } = require('playwright');
 const fs = require('node:fs');
 const assert = require('node:assert/strict');
 const base = process.env.DET57_PREVIEW_URL || 'https://det-57-release-reconciled-20261108-detailerfit-git.carmelo7kobe24.workers.dev';
@@ -135,6 +135,56 @@ async function main() {
           assert.equal(response.status(), 404, 'private asset exposed: ' + privatePath);
         }
       } finally { await page.close(); }
+    });
+
+    await check('WebKit Safari-engine mobile/desktop smoke and menu', async () => {
+      const wk = await webkit.launch({ headless: true });
+      try {
+        for (const width of [390, 1440]) {
+          const context = await wk.newContext({ viewport: { width, height: 844 }, reducedMotion: 'reduce' });
+          const page = await context.newPage();
+          const jsErrors = [];
+          page.on('pageerror', e => jsErrors.push(String(e)));
+          try {
+            const resp = await page.goto(base + '/?df_qa=1', { waitUntil: 'domcontentloaded', timeout: 30000 });
+            assert(resp?.ok(), 'WebKit home response');
+            assert.equal(await page.locator('.software-card').count(), 6);
+            const dims = await page.evaluate(() => ({width:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth}));
+            assert(dims.scroll <= dims.width + 2, 'WebKit horizontal overflow: ' + JSON.stringify(dims));
+            if (width === 390) {
+              const menu = page.locator('.menuBtn');
+              assert.equal(await menu.isVisible(), true);
+              await menu.click();
+              assert.equal(await menu.getAttribute('aria-expanded'), 'true', 'mobile menu expanded state');
+              assert.equal(await page.locator('#navlinks').isVisible(), true, 'mobile menu links visible');
+              await menu.click();
+              assert.equal(await menu.getAttribute('aria-expanded'), 'false', 'mobile menu close state');
+              await page.goto(base + '/finder?df_qa=1', { waitUntil: 'domcontentloaded' });
+              assert.equal(await page.locator('#finderForm input[name="teamCount"]').count(), 5);
+            }
+            assert.deepEqual(jsErrors, [], 'WebKit JS errors');
+            await page.screenshot({ path:'qa-artifacts/webkit-' + width + '.png', fullPage: true, animations:'disabled' });
+          } finally { await context.close(); }
+        }
+      } finally { await wk.close(); }
+    });
+    await check('axe WCAG 2.0/2.1 A and AA serious/critical issues', async () => {
+      const context = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
+      const page = await context.newPage();
+      try {
+        for (const path of ['/', '/finder', '/software-cost-calculator']) {
+          await page.goto(base + path + '?df_qa=1', { waitUntil: 'domcontentloaded' });
+          await page.addScriptTag({ path: require.resolve('axe-core/axe.min.js') });
+          const resultAxe = await page.evaluate(async () => {
+            const res = await window.axe.run(document, { runOnly: { type:'tag', values:['wcag2a','wcag2aa','wcag21a','wcag21aa'] }});
+            return { violations: res.violations.map(v => ({ id:v.id, impact:v.impact, description:v.help, nodes:v.nodes.map(n => n.target).slice(0,5) })) };
+          });
+          const safe = path.replace(/[^a-z0-9]/gi, '-');
+          fs.writeFileSync('qa-artifacts/axe' + safe + '.json', JSON.stringify(resultAxe,null,2) + '\\n');
+          const severe = resultAxe.violations.filter(v => v.impact === 'critical' || v.impact === 'serious');
+          assert.equal(severe.length, 0, 'axe serious/critical issues on '+path+': '+JSON.stringify(severe));
+        }
+      } finally { await context.close(); }
     });
   } finally { await browser.close(); }
   fs.writeFileSync('qa-artifacts/results.json', JSON.stringify(result, null, 2) + '\n');

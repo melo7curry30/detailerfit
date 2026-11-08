@@ -42,6 +42,14 @@ jobs:
         env:
           DET57_PREVIEW_URL: https://det-57-release-reconciled-20261108-detailerfit-git.carmelo7kobe24.workers.dev
         run: node tools/check-det57-preview.cjs
+      - name: Stage guarded bridge ZIP (do NOT send)
+        run: python3 tools/stage-det57-bridge.py
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: det57-bridge-candidate-NOT-SENT
+          path: qa-artifacts/bridge-candidate/
+          if-no-files-found: error
       - uses: actions/upload-artifact@v4
         if: always()
         with:

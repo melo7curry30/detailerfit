@@ -21,22 +21,27 @@ jobs:
         run: |
           python3 tools/check-home.py
           node tools/check-pricing.cjs
+      - name: DET-54 revoked affiliate source sweep
+        run: node tools/check-det54-integrity.cjs
       - name: Install isolated browser runner
         run: |
           npm install --no-save --no-audit --no-fund playwright@1.56.1 axe-core@4.11.0 lighthouse@13.6.0
           npx playwright install --with-deps chromium webkit
-      - name: DET-54 revoked-link source and preview audit
-        env:
-          DET57_PREVIEW_URL: https://det-57-release-reconciled-20261108-detailerfit-git.carmelo7kobe24.workers.dev
-        run: node tools/check-det54-integrity.cjs
+      - name: Lighthouse same-run local main vs PR candidate
+        run: |
+          mkdir -p /tmp/det57-main qa-artifacts
+          git archive 6ec4c63a49f2763036eff223ecc2b061f6decb0b | tar -x -C /tmp/det57-main
+          python3 -m http.server 4173 --bind 127.0.0.1 --directory /tmp/det57-main > qa-artifacts/server-main.log 2>&1 &
+          pid1=$!
+          python3 -m http.server 4174 --bind 127.0.0.1 --directory . > qa-artifacts/server-candidate.log 2>&1 &
+          pid2=$!
+          trap 'kill $pid1 $pid2 2>/dev/null || true' EXIT
+          sleep 2
+          node tools/check-det57-performance.cjs
       - name: Run public preview read-only acceptance
         env:
           DET57_PREVIEW_URL: https://det-57-release-reconciled-20261108-detailerfit-git.carmelo7kobe24.workers.dev
         run: node tools/check-det57-preview.cjs
-      - name: Same-run live vs candidate Lighthouse lab comparison
-        env:
-          DET57_PREVIEW_URL: https://det-57-release-reconciled-20261108-detailerfit-git.carmelo7kobe24.workers.dev
-        run: node tools/check-det57-performance.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:

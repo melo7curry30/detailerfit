@@ -1,9 +1,9 @@
 'use strict';
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),cp=require('node:child_process');
 const chromium=require('playwright').chromium;
-const preview=process.env.DET57_PREVIEW_URL||'https://det-57-release-reconciled-20261108-detailerfit-git.carmelo7kobe24.workers.dev';
+const preview=process.env.DET57_CANDIDATE_ORIGIN||'http://127.0.0.1:4174';
 const cli=path.resolve('node_modules','.bin','lighthouse');assert(fs.existsSync(cli),'Lighthouse CLI missing');
-const targets=[['live','https://getdetailerfit.com','mobile'],['candidate',preview,'mobile'],['live','https://getdetailerfit.com','desktop'],['candidate',preview,'desktop']];
+const targets=[['baseline','http://127.0.0.1:4173','mobile'],['candidate',preview,'mobile'],['baseline','http://127.0.0.1:4173','desktop'],['candidate',preview,'desktop']];
 const reports=[];fs.mkdirSync('qa-artifacts',{recursive:true});
 for(const [target,origin,device] of targets){
  const out=path.resolve('qa-artifacts','lh-'+target+'-'+device+'.json');
@@ -18,8 +18,8 @@ for(const [target,origin,device] of targets){
  reports.push(entry);console.log('LIGHTHOUSE',JSON.stringify(entry));
 }
 for(const device of ['mobile','desktop']){
- const l=reports.find(x=>x.device===device&&x.target==='live'),c=reports.find(x=>x.device===device&&x.target==='candidate');
+ const l=reports.find(x=>x.device===device&&x.target==='baseline'),c=reports.find(x=>x.device===device&&x.target==='candidate');
  if(l&&c)console.log('LAB DELTA',device,'performance:',c.performance-l.performance,'LCP ms:',Math.round((c.LCPms||0)-(l.LCPms||0)));
 }
-fs.writeFileSync('qa-artifacts/lighthouse-summary.json',JSON.stringify({note:'Single same-run lab checks; not field CWV or release approval.',reports},null,2)+'\n');
+fs.writeFileSync('qa-artifacts/lighthouse-summary.json',JSON.stringify({note:'Same-run local main-vs-PR Lighthouse laboratory; not live CDN, field CWV or release approval.',reports},null,2)+'\n');
 if(reports.length!==4)process.exitCode=1;

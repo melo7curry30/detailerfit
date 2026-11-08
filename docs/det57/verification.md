@@ -1,13 +1,13 @@
 # DET-57 — Homepage integration review
 
-検証日: 2026-11-08 JST。**実装・ローカル検証済み／未公開／PR未作成。公開承認ではありません。**
+検証日: 2026-11-08 JST。**実装・過去のローカル検証済み／ドラフトPR #2作成済み／未公開。公開承認ではありません。** PR: https://github.com/melo7curry30/detailerfit/pull/2
 
 ## 対象と実装
 
 - Repository: https://github.com/melo7curry30/detailerfit
 - Linear: https://linear.app/detailerfit/issue/DET-57/homepage-ux-refresh-finder-first-mobile-first-conversion-path
 - Integration base: `6ec4c63a49f2763036eff223ecc2b061f6decb0b`（DET-54修正を含むmain）。2026-11-08の再取得でも同じSHA。
-- Local branch: `det-57-finder-first-integrated-20261108`。
+- Original local branch: `det-57-finder-first-integrated-20261108`。現在のリモートPRブランチ: `det-57-release-reconciled-20261108`（main向けドラフトPR #2）。
 - 本番用の変更: `index.html`、`home.css`、`assets/brand/detailerfit-hero-car.webp`。追加: 回帰チェック `tools/check-det57.py` と本記録。
 - `home.js`、`app.js`、Finder、比較・料金ロジック、全レビュー、共通スタイル・ナビゲーションスクリプト、分析スキーマ、ブリッジ・ワークフローは基準SHAと同一。
 - 既存のV3デザイン案を実際のリポジトリへ統合し、H1の復元、CTAの優先順位、可読性、比較データとの接続、スマホ表示を調整。単体のイメージ用モックではなく、既存のスクリプト・ページを使う実装。
@@ -72,15 +72,15 @@
 | `node --check home.js` | PASS |
 | `node tools/check-pricing.cjs` | PASS。料金・機能条件・追加人数境界・年間料金・Finder予算条件・既存送客先 |
 | `git diff --check` | PASS |
-| `python3 tools/check-home.py` | FAIL。47行目がHousecall Proにもsponsoredを要求する古い期待値。未変更の基準SHAでも同じ失敗を再現 |
+| `python3 tools/check-home.py` | 旧版はFAIL（Housecall Proにもsponsoredを要求）。PR #2で期待値を修正済み。ただし本監査環境で改訂版の再実行は未確認 |
 
-旧チェックを通すために提携リンクへ戻すことはしていない。旧チェックの更新と、その先の全スイート通過は公開前に必要。全CI合格とは扱わない。
+旧チェックを通すために提携リンクへ戻すことはしていない。PR #2に旧チェックの修正を含むが、全スイートの再実行と候補版ブラウザー検証は公開前に必要。2026-11-08時点でPRヘッドにGitHub Actions実行履歴とcommit statusの報告は確認できない。全CI合格とは扱わない。
 
 追加転送量の目安: index.html gzip 6,394→6,614 bytes、home.css gzip 5,136→8,113 bytes、WebP 18,734 bytes。合計増分約21.9KB（ヘッダー・実際の圧縮設定を除く）。新規JS/外部フォントなし。**これは速度測定ではなく、Lighthouse/CWVの合格証明ではない。**
 
 ## 公開前に残る課題
 
-1. GitHubのブランチ作成は403 `Resource not accessible by integration`。リモートブランチ・PRは未作成。ローカルcommitと適用可能なpatch、PR説明案を成果物に含める。権限変更や別経路のpushは行っていない。
+1. 以前のGitHub書き込み403は解消し、ドラフトPR #2（`det-57-release-reconciled-20261108` → `main`）が作成された。ただし未マージで本番未公開。最新PRヘッドのActions workflow run／commit statusは未報告のためCI完了とは判断しない。
 2. DET-54はLinear上In Progress。mainには修正が入り、本番ホームでもHousecall Proの公式・非提携リンクを確認したが、全体の公開受入完了とは扱わない。ブリッジは `df-hcp-nonaffiliate-correction-20261107-v1`、適用2026-11-07 06:57:52 UTC、base `9ba3a90…`。既存指令を再送せず、公開はAI COOのリリース判断に残す。
 3. Safari実機、支援技術を使う完全なアクセシビリティ検証、Lighthouseの同条件比較、フィールドCWV、全CI、分析サービスの受信、実CVは未検証。
 4. 取り込み時に最新mainとの差分を再確認し、レビュー済みブランチ経由で扱う。今回のパッケージをそのまま本番へ送る指令ではない。

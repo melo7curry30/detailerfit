@@ -1,0 +1,35 @@
+name: DET-57 preview browser QA
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+permissions:
+  contents: read
+jobs:
+  browser-qa:
+    if: ${{ github.event.pull_request.number == 2 }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Source regression checks
+        run: |
+          python3 tools/check-home.py
+          node tools/check-pricing.cjs
+      - name: Install isolated browser runner
+        run: |
+          npm install --no-save --no-audit --no-fund playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Run public preview read-only acceptance
+        env:
+          DET57_PREVIEW_URL: https://det-57-release-reconciled-20261108-detailerfit-git.carmelo7kobe24.workers.dev
+        run: node tools/check-det57-preview.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: det57-browser-qa
+          path: qa-artifacts/
+          if-no-files-found: ignore

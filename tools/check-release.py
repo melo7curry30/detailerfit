@@ -1,11 +1,11 @@
-"""Validate all modified pages against the pre-redesign commit. No dependencies."""
+"""Validate release changes against independently verified GitHub main."""
 from collections import Counter
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import urlsplit
 import csv, io, json, re, subprocess
 
-BASE = '39216335257b2cebc87959302708e0f781acc919'
+from release_baseline import BASE
 class Page(HTMLParser):
     def __init__(self, text):
         super().__init__(); self.vendors=[]; self.ids=[]; self.scripts=[]; self.canonical=None

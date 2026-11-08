@@ -28,7 +28,7 @@ for(const route of routes){
   const hits=matches(body);
   const entry={route,status:response.status,hits};
   dest.push(entry);
-  assert(response.ok(),route+' HTTP '+response.status);
+  assert(response.ok,route+' HTTP '+response.status);
   if(isPreview){
    assert.equal(hits.length,0,'Candidate has obsolete HCP text '+route+': '+JSON.stringify(hits));
    if(route==='/quoteiq-vs-housecall-pro')assert(/Housecall Pro buttons? (?:link|links|go) to (?:its|the) official/i.test(body),'Mixed disclosure missing update');

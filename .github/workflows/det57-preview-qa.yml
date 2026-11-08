@@ -44,6 +44,36 @@ jobs:
         run: node tools/check-det57-preview.cjs
       - name: Stage guarded bridge ZIP (do NOT send)
         run: python3 tools/stage-det57-bridge.py
+      - name: Reproduce exact bridge ZIP changes on detached main
+        run: |
+          set -euo pipefail
+          git worktree add --detach /tmp/det57-bridge-fixture origin/main
+          python3 - <<'PY'
+          from pathlib import Path
+          from zipfile import ZipFile
+          import json
+          root=Path('/tmp/det57-bridge-fixture')
+          archive=Path('qa-artifacts/bridge-candidate/detailerfit-deploy.zip')
+          with ZipFile(archive) as z:
+              assert z.testzip() is None
+              m=json.loads(z.read('detailerfit-command.json'))
+              assert m['base_commit']=='6ec4c63a49f2763036eff223ecc2b061f6decb0b'
+              assert m['delete']==[]
+              assert len(m['replace'])==11
+              for name in m['replace']:
+                  dest=root/name
+                  dest.parent.mkdir(parents=True,exist_ok=True)
+                  dest.write_bytes(z.read('payload/'+name))
+          print('STAGED FILES REAPPLIED TO FRESH MAIN:',len(m['replace']))
+          PY
+          cd /tmp/det57-bridge-fixture
+          git diff --check
+          python3 tools/check-home.py
+          python3 tools/check-release.py
+          python3 tools/check-sitewide.py
+          python3 tools/check-det57.py
+          node tools/check-pricing.cjs
+          echo "PASS exact mailed ZIP applied over clean main and release suites"
       - uses: actions/upload-artifact@v4
         if: success()
         with:

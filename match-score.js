@@ -418,6 +418,15 @@
       .df-factor-fill{height:100%;background:var(--accent);border-radius:inherit}
       .df-factor small{color:var(--muted)}
       .df-score-note{font-size:.82rem;color:var(--muted);margin:8px 0}
+      .finder-page #finderResults .result-decision{display:grid;gap:11px;margin:12px 0 0}
+      .finder-page #finderResults .result-decision .result-plan{margin:0;padding-top:12px}
+      .finder-page #finderResults .result-reason{font-size:.9rem;line-height:1.6;margin:0;color:var(--ink)}
+      .finder-page #finderResults .result-decision .result-watch{margin:0}
+      .finder-page #finderResults .result-deep-dive{margin:12px 0 0}
+      .finder-page #finderResults .result-deep-details{padding:0 0 12px}
+      .finder-page #finderResults .result-deep-details .df-confidence-badge{margin:6px 0 10px}
+      .finder-page #finderResults .result-deep-details .result-tags{margin:12px 0}
+      .finder-page #finderResults .result-deep-details h4{font-size:.875rem;margin:16px 0 8px}
       @media(max-width:520px){.df-factor{grid-template-columns:1fr auto}.df-factor-track{grid-column:1/-1;grid-row:2}.df-factor small{grid-column:2;grid-row:1}.df-score-badge b{font-size:1.2rem}}
     `;
     document.head.appendChild(style);
@@ -501,14 +510,24 @@
       const confidenceWarning=x.confidence<75?`<div class="df-confidence-warning"><strong>${esc(band.label)} evidence:</strong> Some active criteria rely on incomplete or weaker evidence. Check the lowest-confidence factors before buying.</div>`:'';
       return `<article class="result ${i===0?'top':''}">
         <div class="result-head"><div><div class="kicker">${i===0?(showMatchScore?'TOP MATCH':'FIRST SHORTLIST OPTION'):'ALTERNATIVE'} · MODEL ${MODEL_VERSION}</div><h3>${i+1}. ${esc(x.name)}</h3></div>${budgetLabel}</div>
-        <div class="df-score-row">${scoreBadge}<div class="df-confidence-badge">Evidence confidence&nbsp;<strong>${Math.round(x.confidence)}%</strong>&nbsp;·&nbsp;${esc(band.label)}</div></div>${confidenceWarning}
-        <div class="result-plan"><strong>Plan to inspect first:</strong> ${esc(p.plan)} · ${money(p.cost)}</div>${annual}<div class="small"><strong>Capacity:</strong> ${esc(p.users)}</div>${planNote}
-        <p class="small">${esc(v.why)}</p>
+        <div class="df-score-row">${scoreBadge}</div>${confidenceWarning}
+        <div class="result-decision">
+        <div class="result-plan"><strong>Plan to inspect first:</strong> ${esc(p.plan)} · ${money(p.cost)}</div><div class="small"><strong>Capacity:</strong> ${esc(p.users)}</div>
+        <p class="result-reason"><strong>Why it fits:</strong> ${esc(v.why)}</p>
+        <div class="result-watch"><strong>Check before choosing:</strong> ${esc(v.watch)}</div>
+        </div>
         <div class="actions"><a class="btn secondary" href="${esc(v.url)}">See research notes</a><a class="btn primary" data-vendor="${esc(x.name)}" data-cta-position="finder_result" data-tool-name="finder" data-result-rank="${i+1}" data-result-plan="${esc(p.plan)}" href="${esc(v.vendorUrl)}" rel="${esc(v.vendorRel||'noopener')}"${v.vendorTarget?` target="${esc(v.vendorTarget)}"`:''}>Visit ${esc(x.name)}</a>${i===0?'<a class="btn ghost" href="compare">Open comparison hub</a>':''}</div>
+        <details class="result-evidence result-deep-dive">
+          <summary>View plan terms, research evidence &amp; features</summary>
+          <div class="result-deep-details">
+            ${annual}${planNote}
+            <div class="df-confidence-badge">Evidence confidence&nbsp;<strong>${Math.round(x.confidence)}%</strong>&nbsp;·&nbsp;${esc(band.label)}</div>
         <div class="result-tags">${v.tags.map(tag=>`<span class="result-tag">${esc(tag)}</span>`).join('')}</div>
-        <details class="result-evidence"><summary>Why this match? View the scoring factors</summary><div class="df-factors">${factors}</div></details>
+            <h4>How this shortlist was scored</h4>
+            <div class="df-factors">${factors}</div>
         <p class="df-score-note">Unknown or weakly supported criteria are pulled toward neutral 50 rather than treated as failures. <a href="match-score-methodology">How scoring works</a>.</p>
-        <div class="result-watch"><strong>Verify before buying:</strong> ${esc(v.watch)}</div>
+          </div>
+        </details>
 
       </article>`;
     }).join('');

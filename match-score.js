@@ -484,6 +484,10 @@
       budgetMessage.insertAdjacentHTML('beforeend', '<div class="note"><strong>Initial shortlist, not a final fit score.</strong> These options use only team size, monthly jobs and budget. <a class="df-refine-link" href="#finderRefine">Add an optional preference</a> to see your personalized Match Score. Evidence confidence reflects research quality, not your likelihood of satisfaction.</div>');
     }
 
+    if(ranked.length>0&&ranked.length<3){
+      budgetMessage.insertAdjacentHTML('beforeend', `<div class="note"><strong>${ranked.length} matching option${ranked.length===1?'':'s'} found.</strong> Only ${ranked.length} product${ranked.length===1?'':'s'} made the shortlist with your current requirements and budget. We do not pad it with options that fail those conditions. <a class="df-refine-link" href="#finderRefine">Adjust your preferences</a> to explore other options.</div>`);
+    }
+
     document.getElementById('finderResults').innerHTML=ranked.map((x,i)=>{
       const p=x.plan,v=x.vendor;
       const budgetLabel=x.inBudget?`<span class="pill goodpill">Fits $${input.budget.toFixed(0)} budget</span>`:Number.isFinite(p.cost)?`<span class="pill overpill">$${x.gap.toFixed(0)} over budget</span>`:`<span class="pill">Price to verify</span>`;
@@ -511,7 +515,7 @@
 
     if(!ranked.length){
       const reasons=scored.filter(x=>!x.eligible).map(x=>`${x.name}: ${x.gateReason}`);
-      document.getElementById('finderResults').innerHTML=`<div class="warning"><b>No verified match.</b> ${esc(reasons.join(' '))}</div>`;
+      document.getElementById('finderResults').innerHTML=`<div class="warning"><b>No verified match.</b> ${esc(reasons.join(' '))} <a class="df-refine-link" href="#finderRefine">Adjust your preferences</a> and try again.</div>`;
     }
 
     const box=document.getElementById('resultsBox');

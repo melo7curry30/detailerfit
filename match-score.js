@@ -457,18 +457,31 @@
     return `<div class="df-factor" title="${esc(c.note)}"><span>${esc(c.label)}</span><div class="df-factor-track"><div class="df-factor-fill" style="width:${Math.max(0,Math.min(100,val))}%"></div></div><small>${val} · ${conf}% conf.</small></div>`;
   }
 
+  function hasSelectedFitRequirements(input){
+    return input.booking==='yes'
+      || input.device!=='either'
+      || input.needs.length>0
+      || input.setup==='guided'
+      || input.migration==='yes';
+  }
+
   function render(input,scored){
     const eligible=scored.filter(x=>x.eligible);
     const anyInBudget=eligible.some(x=>x.inBudget);
     const pool=anyInBudget?eligible.filter(x=>x.inBudget):eligible;
     pool.sort((a,b)=>b.match-a.match||b.confidence-a.confidence||((a.plan.cost??999999)-(b.plan.cost??999999)));
     const ranked=pool.slice(0,3);
+    const showMatchScore=hasSelectedFitRequirements(input);
 
     const budgetMessage=document.getElementById('finderBudgetMessage');
     if(anyInBudget){
       budgetMessage.innerHTML=`<div class="note goodnote"><b>Budget gate applied:</b> At least one verified configuration fits your $${input.budget.toFixed(0)}/month budget, so over-budget options are excluded before Match Score ranking.</div>`;
     }else{
       budgetMessage.innerHTML=`<div class="warning"><b>No verified in-budget configuration found.</b> Over-budget or price-unverified candidates remain eligible and Price Fit is penalized continuously inside the Match Score.</div>`;
+    }
+
+    if(ranked.length&&!showMatchScore){
+      budgetMessage.insertAdjacentHTML('beforeend', '<div class="note"><strong>Initial shortlist, not a final fit score.</strong> These options use only team size, monthly jobs and budget. <a class="df-refine-link" href="#finderRefine">Add an optional preference</a> to see your personalized Match Score. Evidence confidence reflects research quality, not your likelihood of satisfaction.</div>');
     }
 
     document.getElementById('finderResults').innerHTML=ranked.map((x,i)=>{
@@ -478,10 +491,13 @@
       const planNote=p.note?`<div class="small"><strong>Plan note:</strong> ${esc(p.note)}</div>`:'';
       const factors=x.criteria.slice().sort((a,b)=>b.weight-a.weight).map(factorHtml).join('');
       const band=confidenceBand(x.confidence);
+      const scoreBadge=showMatchScore
+        ? `<div class="df-score-badge"><b>${Math.round(x.match)}%</b><span>Match Score</span></div>`
+        : '<div class="df-score-badge"><b>Initial</b><span>shortlist</span></div>';
       const confidenceWarning=x.confidence<75?`<div class="df-confidence-warning"><strong>${esc(band.label)} evidence:</strong> Some active criteria rely on incomplete or weaker evidence. Check the lowest-confidence factors before buying.</div>`:'';
       return `<article class="result ${i===0?'top':''}">
-        <div class="result-head"><div><div class="kicker">${i===0?'TOP MATCH':'ALTERNATIVE'} · MODEL ${MODEL_VERSION}</div><h3>${i+1}. ${esc(x.name)}</h3></div>${budgetLabel}</div>
-        <div class="df-score-row"><div class="df-score-badge"><b>${Math.round(x.match)}%</b><span>Match</span></div><div class="df-confidence-badge">Evidence confidence&nbsp;<strong>${Math.round(x.confidence)}%</strong>&nbsp;·&nbsp;${esc(band.label)}</div></div>${confidenceWarning}
+        <div class="result-head"><div><div class="kicker">${i===0?(showMatchScore?'TOP MATCH':'FIRST SHORTLIST OPTION'):'ALTERNATIVE'} · MODEL ${MODEL_VERSION}</div><h3>${i+1}. ${esc(x.name)}</h3></div>${budgetLabel}</div>
+        <div class="df-score-row">${scoreBadge}<div class="df-confidence-badge">Evidence confidence&nbsp;<strong>${Math.round(x.confidence)}%</strong>&nbsp;·&nbsp;${esc(band.label)}</div></div>${confidenceWarning}
         <div class="result-plan"><strong>Plan to inspect first:</strong> ${esc(p.plan)} · ${money(p.cost)}</div>${annual}<div class="small"><strong>Capacity:</strong> ${esc(p.users)}</div>${planNote}
         <p class="small">${esc(v.why)}</p>
         <div class="actions"><a class="btn secondary" href="${esc(v.url)}">See research notes</a><a class="btn primary" data-vendor="${esc(x.name)}" data-cta-position="finder_result" data-tool-name="finder" data-result-rank="${i+1}" data-result-plan="${esc(p.plan)}" href="${esc(v.vendorUrl)}" rel="${esc(v.vendorRel||'noopener')}"${v.vendorTarget?` target="${esc(v.vendorTarget)}"`:''}>Visit ${esc(x.name)}</a>${i===0?'<a class="btn ghost" href="compare">Open comparison hub</a>':''}</div>
@@ -510,6 +526,7 @@
         evidence_confidence:ranked[0].confidence,
         evidence_band:confidenceBand(ranked[0].confidence).key,
         scoring_model:MODEL_VERSION,
+        fit_stage:showMatchScore?'refined':'initial',
         any_in_budget:anyInBudget,
         setup_preference:input.setup,
         migration_requirement:input.migration
@@ -576,6 +593,11 @@
     // DetailPilot is normalized in Match Score v1.4+, so remove the old out-of-band affiliate block.
     document.querySelector('section[aria-label="Additional detailing software option"]')?.remove();
     form.addEventListener('submit',handleSubmit,{capture:true});
+    document.getElementById('resultsBox')?.addEventListener('click',e=>{
+      if(!e.target.closest?.('.df-refine-link'))return;
+      const refine=document.getElementById('finderRefine');
+      if(refine)refine.open=true;
+    });
     window.DetailerFitMatchScore={version:MODEL_VERSION,lastVerified:LAST_VERIFIED,evidence:EVIDENCE,scoreVendor};
   });
 })();

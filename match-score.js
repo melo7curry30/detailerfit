@@ -425,12 +425,12 @@
 
   function ensureExtendedQuestions(form){
     if(document.getElementById('df-setup-question'))return;
-    const submit=form.querySelector('button[type="submit"]');
-    if(!submit)return;
+    const mount=document.getElementById('finderExtendedMount');
+    if(!mount)return;
     const wrapper=document.createElement('div');
     wrapper.innerHTML=`
       <div class="q" id="df-setup-question">
-        <span class="qtitle">7. How important is a guided, well-documented setup?</span>
+        <span class="qtitle">How important is a guided, well-documented setup?</span>
         <span class="qhelp">When selected, Setup Readiness scores the documented setup path, training/onboarding and human setup help. We do not score vendor marketing claims about setup speed.</span>
         <div class="options">
           <label class="opt"><input name="setupPreference" type="radio" value="guided"/>Important — I want a clear setup path and training/support</label>
@@ -438,7 +438,7 @@
         </div>
       </div>
       <div class="q" id="df-migration-question">
-        <span class="qtitle">8. Are you moving existing business data into the new system?</span>
+        <span class="qtitle">Are you moving existing business data into the new system?</span>
         <span class="qhelp">When yes, Migration Readiness compares verified customer, service/price-book, work-history, field-mapping and assisted-migration support.</span>
         <div class="options">
           <label class="opt"><input name="migrationRequirement" type="radio" value="yes"/>Yes — I need to move existing data</label>
@@ -446,7 +446,7 @@
           <label class="opt"><input checked name="migrationRequirement" type="radio" value="unsure"/>Not sure yet</label>
         </div>
       </div>`;
-    while(wrapper.firstChild)form.insertBefore(wrapper.firstChild,submit);
+    while(wrapper.firstChild)mount.appendChild(wrapper.firstChild);
 
     const eyebrow=document.querySelector('.heroMini .eyebrow');
     if(eyebrow&&/EVIDENCE-WEIGHTED MATCHER/.test(eyebrow.textContent))eyebrow.textContent='EVIDENCE-WEIGHTED MATCHER · V3.4';

@@ -1,6 +1,6 @@
 {
-  "applied_at_utc": "2026-11-10T18:28:21.270099+00:00",
-  "base_commit": "65551da8043c0aa8298d7df21e3978bdc43c8415",
-  "command_id": "df-finder-ux-1to4-publish-20261110-v1",
-  "last_uid": 489
+  "applied_at_utc": "2026-11-11T18:08:18.379589+00:00",
+  "base_commit": "d9259c2aacd9437651b0aa2d340b09bcb9876fd4",
+  "command_id": "df-strata-finder-tier-publish-20261112-v1",
+  "last_uid": 491
 }

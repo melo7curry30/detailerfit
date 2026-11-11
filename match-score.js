@@ -75,12 +75,12 @@
     },
     'Strata':{
       url:'strata-crm-review',vendorUrl:'https://stratacrm.app/?via=ryo-yonemura',vendorRel:'sponsored noopener',vendorTarget:'_blank',
-      why:'Automotive-shop CRM with booking, deposits, texting, automation, quotes/invoices and vehicle history on every plan.',
-      watch:'Focus is one login and 2,000 clients; Flow adds unlimited team logins and 20,000 clients. Route optimization and VIN scanning are not treated as confirmed in the current evidence set.',
+      why:'Automotive-shop CRM with booking, deposits, quotes/invoices and vehicle history on every plan; two-way texting starts on Pro.',
+      watch:'Solo lists at $59/month (first three months $39) with 1 login and 500 clients, without two-way SMS. Pro lists at $89 ($69 introductory) with up to 5 logins and 1,000 clients plus two-way SMS. Premier lists at $199 with unlimited logins/clients and a local business number. Check promotional eligibility, client limits, and unverified routing/VIN features before buying.',
       tags:['iOS + Android','Automotive-focused','30-day trial'],
       industry:{raw:75,evidence:'official_product',note:'Automotive-specialist workflow built for detailing and adjacent automotive service shops.'},
-      automation:{raw:100,evidence:'official_product',note:'Strata documents automated confirmations, reminders, review requests, win-backs and Autopilot follow-up workflows on every plan.'},
-      scale:{raw:50,evidence:'official_product',note:'Flow confirms unlimited team logins, roles and job assignment, but route optimization is not established in the current evidence set.'},
+      automation:{raw:100,evidence:'official_product',note:'Strata documents automated email confirmations, reminders, review requests and Autopilot follow-up on entry tier; two-way SMS confirmations and replies start with Pro.'},
+      scale:{raw:50,evidence:'official_product',note:'Pro supports up to five logins; Premier provides unlimited team logins, roles and job assignment. Route optimization is not established in the current evidence set.'},
       vehicle:{raw:50,evidence:'official_product',note:'Vehicle CRM, service history, vehicle intake and photos are documented; VIN scanning is not established in the current evidence set.'}
     },
     'DetailPilot':{
@@ -309,9 +309,12 @@
     return {plan:'Express',cost:70,annual:'$840/year',users:'Unlimited users',booking:false,capacityConfidence:EVIDENCE.official_product};
   }
 
+  // New-buyer plan matrix verified against Strata official pricing on 2026-11-12.
+  // Use standard monthly list prices for the Finder budget gate, not temporary discounts.
   function strataPlan(team){
-    if(team<=1)return {plan:'Focus',cost:39,annual:'',users:'1 login · up to 2,000 clients',booking:true,capacityConfidence:EVIDENCE.official_product};
-    return {plan:'Flow',cost:89,annual:'',users:'Unlimited team logins · up to 20,000 clients',booking:true,capacityConfidence:EVIDENCE.official_product};
+    if(team<=1)return {plan:'Solo',cost:59,annual:'',users:'1 login · up to 500 clients',booking:true,capacityConfidence:EVIDENCE.official_product,note:'Introductory $39/month for the first three months if eligible; no two-way SMS.'};
+    if(team<=5)return {plan:'Pro',cost:89,annual:'',users:'Up to 5 team logins · up to 1,000 clients',booking:true,capacityConfidence:EVIDENCE.official_product,note:'Introductory $69/month for the first three months if eligible; two-way SMS included.'};
+    return {plan:'Premier',cost:199,annual:'',users:'Unlimited team logins · unlimited clients',booking:true,capacityConfidence:EVIDENCE.official_product,note:'Two-way SMS and a dedicated local business number; no introductory discount published.'};
   }
 
   function detailPilotPlan(team,needs){

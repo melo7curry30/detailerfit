@@ -26,7 +26,7 @@ const form = {dataset: {}, addEventListener() {}};
 const context = {
   window: {DetailerFitPricing: pricing},
   document: {
-    getElementById(id) {return id === 'finderForm' ? form : {};},
+    getElementById(id) {return id === 'finderForm' ? form : {addEventListener() {}};},
     querySelectorAll() {return [];},
     querySelector() {return null;},
     addEventListener(name, fn) {if (name === 'DOMContentLoaded') ready.push(fn);}

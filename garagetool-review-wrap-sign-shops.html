@@ -440,6 +440,10 @@
     if(target && target.matches('details.review-detail')) target.open=true;
   }
   window.addEventListener('hashchange',revealReviewSection);
+  document.querySelector('.toc').addEventListener('click',function(event){
+    var link=event.target.closest('a[href^="#"]');
+    if(link && link.hash===location.hash) revealReviewSection();
+  });
   revealReviewSection();
 })();
 </script></body>

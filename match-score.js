@@ -1,4 +1,4 @@
-/* DetailerFit Evidence-Weighted Match Score v1.4.0
+/* DetailerFit Evidence-Weighted Match Score
  * Scope: Software Finder only.
  * Match Score is personalized fit, not a universal vendor quality rating.
  * Affiliate relationships and commission data are intentionally absent.

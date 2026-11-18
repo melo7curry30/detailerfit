@@ -232,6 +232,13 @@
 (function(){
   'use strict';
 
+  function trackFinderEvent(eventName,payload){
+    if(typeof window.dfTrackEvent!=='function')return;
+    var version=window.DetailerFitMatchScore?.version;
+    if(typeof version==='string'&&version.trim())payload.scoring_model=version;
+    window.dfTrackEvent(eventName,payload);
+  }
+
   function initFastFinder(){
     var form=document.getElementById('finderForm');
     if(!form)return;
@@ -251,16 +258,13 @@
       var input=e.target;
       if(!input||!quickNames[input.name]||firstInteractionTracked)return;
       firstInteractionTracked=true;
-      if(typeof window.dfTrackEvent==='function'){
-        window.dfTrackEvent('finder_first_interaction',{
-          tool_name:'finder',
-          question_key:input.name,
-          option_value:input.value,
-          interaction_type:'tap_choice',
-          finder_experience:'quick_v1',
-          scoring_model:(window.DetailerFitMatchScore&&window.DetailerFitMatchScore.version)||'1.5.0'
-        });
-      }
+      trackFinderEvent('finder_first_interaction',{
+        tool_name:'finder',
+        question_key:input.name,
+        option_value:input.value,
+        interaction_type:'tap_choice',
+        finder_experience:'quick_v1'
+      });
     });
 
     var refine=document.getElementById('finderRefine');
@@ -269,13 +273,10 @@
       refine.addEventListener('toggle',function(){
         if(!refine.open||refineTracked)return;
         refineTracked=true;
-        if(typeof window.dfTrackEvent==='function'){
-          window.dfTrackEvent('finder_refine_open',{
-            tool_name:'finder',
-            finder_experience:'quick_v1',
-            scoring_model:(window.DetailerFitMatchScore&&window.DetailerFitMatchScore.version)||'1.5.0'
-          });
-        }
+        trackFinderEvent('finder_refine_open',{
+          tool_name:'finder',
+          finder_experience:'quick_v1'
+        });
       });
     }
   }
